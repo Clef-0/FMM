@@ -1,0 +1,4 @@
+C:\Users\Niall\documents\visual studio 2017\Projects\FMM2\FMM2\obj\Release\MainWindow.g.cs
+C:\Users\Niall\documents\visual studio 2017\Projects\FMM2\FMM2\obj\Release\App.g.cs
+C:\Users\Niall\documents\visual studio 2017\Projects\FMM2\FMM2\obj\Release\FMM2_MarkupCompile.cache
+C:\Users\Niall\documents\visual studio 2017\Projects\FMM2\FMM2\obj\Release\FMM2_MarkupCompile.lref

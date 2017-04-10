@@ -1,0 +1,263 @@
+﻿<Window x:Class="FMM2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FMM2"
+        mc:Ignorable="d"
+        Title="Foundation Mod Manager v2.00 Kandinsky" Height="670" Width="800" Loaded="Window_Loaded" DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <Window.Background>
+        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+    </Window.Background>
+
+    <Grid>
+        <TabControl x:Name="mainTabs" TabStripPlacement="Left" Margin="0,18,0,30">
+            <TabItem x:Name="modsTab" Header="Mods">
+                <TabControl x:Name="modsTabs">
+                    <TabItem x:Name="myModsTab" Header="My Mods">
+                        <Grid x:Name="myModsOuterGrid" Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid x:Name="myModsAlert" Background="#FFFFF2C7" Margin="0" Height="24">
+                                <TextBlock x:Name="myModsAlertText" TextWrapping="Wrap" Text="Mods highest on the list will be installed last, giving them higher priority." HorizontalAlignment="Left" Padding="5,0,0,0" Margin="0" VerticalAlignment="Center"/>
+                                <Button x:Name="myModsAlertHide" Content="OK" Margin="0" HorizontalAlignment="Right" Width="30" Padding="0" Click="myModsAlertHide_Click"/>
+                            </Grid>
+                            <Grid x:Name="myModsGrid" UseLayoutRounding="False" Margin="0" Grid.RowSpan="2" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="250"/>
+                                </Grid.ColumnDefinitions>
+                                <ListView x:Name="myModsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="myModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="myModsList_HeaderClicked">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Width="30">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="myModsCB" IsChecked="{Binding Path=IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                            <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}" Width="90"/>
+                                            <GridViewColumn Header="Version" DisplayMemberBinding="{Binding Version}" Width="90"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="WhiteSmoke" />
+                                <Grid x:Name="infobar" Grid.Column="2" Margin="5,0,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="40"/>
+                                    </Grid.RowDefinitions>
+                                    <ScrollViewer x:Name="infobarScroll" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel x:Name="infobarPanel" Orientation="Vertical" Margin="0,5,5,0" VerticalAlignment="Top">
+                                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                                <StackPanel x:Name="infobarHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                    <Image x:Name="infobarIcon" Height="64" Width="64" OpacityMask="Black" Source="REBKFs3.png" Margin="0,0,5,0" Stretch="UniformToFill"/>
+                                                    <StackPanel x:Name="infobarHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                        <StackPanel x:Name="infobarHeaderH" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                            <TextBlock x:Name="infobarName" Text="Centered Crosshairs" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="14" Margin="0" />
+                                                            <TextBlock x:Name="infobarVersion" Text="1.0" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0" FontSize="14"/>
+                                                        </StackPanel>
+                                                        <TextBlock x:Name="infobarAuthor" Text="Author" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="14"/>
+                                                        <TextBlock x:Name="infobarCredits" Text="Credits" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="12"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </ScrollViewer>
+                                            <StackPanel x:Name="infobarOps" Orientation="Horizontal" Margin="0,5,0,0">
+                                                <Button x:Name="infobarUp" Width="26" Height="20" Margin="0,0,2,0" Click="infobarUp_Click">
+                                                    <StackPanel Margin="0">
+                                                        <Image Source="fmmup.png" Width="16" Height="16"/>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button x:Name="infobarDn" Width="26" Height="20" Margin="0,0,2,0" Click="infobarDn_Click">
+                                                    <StackPanel Margin="0">
+                                                        <Image Source="fmmdown.png" Width="16" Height="16"/>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button x:Name="infobarDelete" Width="26" Height="20" Margin="0,0,2,0" Click="infobarDel_Click">
+                                                    <StackPanel Margin="0">
+                                                        <Image Source="fmmclose.png" Width="16" Height="16"/>
+                                                    </StackPanel>
+                                                </Button>
+                                            </StackPanel>
+                                            <TextBlock x:Name="infobarRevisionDate" TextWrapping="Wrap" Text="Last revision" VerticalAlignment="Top" Padding="0,5,0,0" FontSize="12"/>
+                                            <TextBlock x:Name="infobarEDVersion" TextWrapping="Wrap" Text="ElDewrito version" VerticalAlignment="Top" Padding="0,0,0,0" FontSize="12"/>
+                                            <TextBlock x:Name="infobarDescription" TextWrapping="Wrap" Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." Padding="0,5,0,0"/>
+                                            <TextBlock x:Name="infobarWarnings" TextWrapping="Wrap" Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." Padding="0,5,0,0" Foreground="#FFAA641E"/>
+                                            <Image x:Name="infobarImage" Height="72" Width="128" OpacityMask="Black" Source="REBKFs3.png" Margin="0,5,0,0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                    <Button x:Name="infobarApply" Content="Apply Checked Mods" Margin="0,10,10,10" Grid.Row="1" HorizontalAlignment="Right" Width="150"/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
+                    <TabItem x:Name="downloadableModsTab" Header="Downloadable Mods">
+                        <Grid x:Name="downloadableModsOuterGrid" Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid x:Name="downloadableModsAlert" Background="#FFFFCCC7" Margin="0" Height="24">
+                                <TextBlock x:Name="downloadableModsAlertText" TextWrapping="Wrap" Text="The GitHub mods repository is currently down. Please try again later." HorizontalAlignment="Left" Padding="5,0,0,0" Margin="0" VerticalAlignment="Center"/>
+                                <Button x:Name="downloadableModsAlertHide" Content="OK" Margin="0" HorizontalAlignment="Right" Width="30" Padding="0" Click="downloadableModsAlertHide_Click"/>
+                            </Grid>
+                            <Grid x:Name="downloadableModsGrid" UseLayoutRounding="False" Margin="0" Grid.RowSpan="2" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="250"/>
+                                </Grid.ColumnDefinitions>
+                                <ListView x:Name="downloadableModsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="downloadableModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="downloadableModsList_HeaderClicked">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Width="30">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="downloadableModsCB" IsChecked="{Binding Path=IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                            <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}" Width="90"/>
+                                            <GridViewColumn Header="Version" DisplayMemberBinding="{Binding Version}" Width="90"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="WhiteSmoke" />
+                                <Grid x:Name="infobarDL" Grid.Column="2" Margin="5,0,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="40"/>
+                                    </Grid.RowDefinitions>
+                                    <ScrollViewer x:Name="infobarDLScroll" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel x:Name="infobarDLPanel" Orientation="Vertical" Margin="0,5,5,0" VerticalAlignment="Top">
+                                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                                <StackPanel x:Name="infobarDLHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                    <Image x:Name="infobarDLIcon" Height="64" Width="64" OpacityMask="Black" Source="REBKFs3.png" Margin="0,0,5,0" Stretch="UniformToFill"/>
+                                                    <StackPanel x:Name="infobarDLHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                        <StackPanel x:Name="infobarDLHeaderH" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                            <TextBlock x:Name="infobarDLName" Text="Centered Crosshairs" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="14" />
+                                                            <TextBlock x:Name="infobarDLVersion" Text="1.0" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0" FontSize="14"/>
+                                                        </StackPanel>
+                                                        <TextBlock x:Name="infobarDLAuthor" Text="Author" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="14"/>
+                                                        <TextBlock x:Name="infobarDLCredits" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="12"><Run Text="Credit"/><Run Text="s"/></TextBlock>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </ScrollViewer>
+                                            <TextBlock x:Name="infobarDLRevisionDate" TextWrapping="Wrap" Text="Last revision" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,5,0,0" FontSize="12"/>
+                                            <TextBlock x:Name="infobarDLEDVersion" TextWrapping="Wrap" Text="ElDewrito version" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,0,0" FontSize="12"/>
+                                            <TextBlock x:Name="infobarDLDescription" TextWrapping="Wrap" Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." Padding="0,5,0,0"/>
+                                            <TextBlock x:Name="infobarDLWarnings" TextWrapping="Wrap" Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." Padding="0,5,0,0" Foreground="#FFAA641E"/>
+                                            <Image x:Name="infobarDLImage" Height="72" Width="128" OpacityMask="Black" Source="REBKFs3.png" Margin="0,5,0,0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                    <Button x:Name="infobarDLDownload" Content="Download Checked Mods" Margin="0,10,10,10" Grid.Row="1" HorizontalAlignment="Right" Width="150" Click="infobarDLDownload_Click"/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem x:Name="mapsTab" Header="Forge Maps">
+                <Grid x:Name="mapsGrid" UseLayoutRounding="False"/>
+            </TabItem>
+            <TabItem x:Name="gametypesTab" Header="Gametypes">
+                <Grid x:Name="gametypesGrid" UseLayoutRounding="False"/>
+            </TabItem>
+            <TabItem x:Name="serverBrowserTab" Header="Server Browser">
+                <Grid x:Name="serverBrowserOuterGrid" Margin="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid x:Name="serverBrowserAlert" Background="#FFFFCCC7" Margin="0" Height="24">
+                        <TextBlock x:Name="serverBrowserAlertText" TextWrapping="Wrap" Text="The master server is currently down. Please try again later." HorizontalAlignment="Left" Padding="5,0,0,0" Margin="0" VerticalAlignment="Center"/>
+                        <Button x:Name="serverBrowserAlertHide" Content="OK" Margin="0" HorizontalAlignment="Right" Width="30" Padding="0" Click="serverBrowserAlertHide_Click"/>
+                    </Grid>
+                    <Grid x:Name="serverBrowserGrid" UseLayoutRounding="False" Margin="0" Grid.RowSpan="2" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="250"/>
+                        </Grid.ColumnDefinitions>
+                        <ListView x:Name="serverBrowserList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                    <GridViewColumn Header="Host" DisplayMemberBinding="{Binding Host}" Width="90"/>
+                                    <GridViewColumn Header="Ping" DisplayMemberBinding="{Binding Ping}" Width="50"/>
+                                    <GridViewColumn Header="Map" DisplayMemberBinding="{Binding Map}" Width="90"/>
+                                    <GridViewColumn Header="Gametype" DisplayMemberBinding="{Binding Gametype}" Width="90"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="WhiteSmoke" />
+                        <Grid x:Name="infobarSB" Grid.Column="2" Margin="5,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="40"/>
+                            </Grid.RowDefinitions>
+                            <ScrollViewer x:Name="infobarSBScroll" VerticalScrollBarVisibility="Auto">
+                                <StackPanel x:Name="infobarSBPanel" Orientation="Vertical" Margin="0,5,5,0" VerticalAlignment="Top">
+                                    <TextBlock x:Name="infobarSBServerName" TextWrapping="Wrap" Text="[US-Midwest] G-Money's House of Honey's - 8v8 - Dedicated #2" VerticalAlignment="Top" Padding="0,0,0,3" FontSize="12"/>
+                                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel x:Name="infobarSBHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                            <StackPanel x:Name="infobarSBHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                <StackPanel x:Name="infobarSBHeaderH" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                    <TextBlock x:Name="infobarSBGametype" Text="Slayer" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="14" />
+                                                    <TextBlock x:Name="infobarSBon" Text="on" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0" FontSize="14"/>
+                                                    <TextBlock x:Name="infobarSBMap" Text="Guardian" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="14" />
+                                                </StackPanel>
+                                                <TextBlock x:Name="infobarSBHost" Text="Clef" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="14"/>
+                                                <TextBlock x:Name="infobarSBPing" Text="140ms" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="12"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                    <ListView Margin="0,5,0,0" Height="200" BorderThickness="0">
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="90"/>
+                                                <GridViewColumn Header="Score" DisplayMemberBinding="{Binding Score}" Width="50"/>
+                                                <GridViewColumn Header="K" DisplayMemberBinding="{Binding Kills}" Width="25"/>
+                                                <GridViewColumn Header="D" DisplayMemberBinding="{Binding Deaths}" Width="25"/>
+                                                <GridViewColumn Header="A" DisplayMemberBinding="{Binding Assists}" Width="25"/>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                    <CheckBox x:Name="infobarSBVoIP" Content="VoIP" Margin="0,5,0,0" IsEnabled="False" IsChecked="True"/>
+                                    <CheckBox x:Name="infobarSBSprint" Content="Sprint" Margin="0,0,0,0" IsEnabled="False"/>
+                                    <CheckBox x:Name="infobarSBAssassinations" Content="Assassinations" Margin="0,0,0,0" IsEnabled="False" IsChecked="True"/>
+                                    <Image x:Name="infobarSBImage" Height="72" Width="128" OpacityMask="Black" Source="REBKFs3.png" Margin="0,5,0,0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                </StackPanel>
+                            </ScrollViewer>
+                            <Button x:Name="infobarSBConnect" Content="Sync Mods and Connect" Margin="0,10,10,10" Grid.Row="1" HorizontalAlignment="Right" Width="150" Click="infobarDLDownload_Click"/>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Menu x:Name="menu" IsMainMenu="True" VerticalAlignment="Top" Height="18">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New" />
+                <MenuItem Header="_Open" />
+                <MenuItem Header="_Save" />
+                <Separator />
+                <MenuItem Header="_Exit" Click="MenuItem_Click" />
+            </MenuItem>
+            <MenuItem Header="_Options">
+                <MenuItem Header="_Offline Mode" IsCheckable="True" />
+                <MenuItem Header="_Developer Mode" IsCheckable="True" IsChecked="True" />
+            </MenuItem>
+        </Menu>
+        <StatusBar Height="30" VerticalAlignment="Bottom" Padding="5,0">
+            <Button x:Name="refreshButton" Content="Refresh" Width="62" Click="refreshButton_Click"/>
+            <StatusBarItem Content="x mods available" Height="30" VerticalAlignment="Top" Margin="5,0,0,0"/>
+            <StatusBarItem x:Name="statusBarText" Content="all's right with the world" Height="30" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        </StatusBar>
+    </Grid>
+</Window>
