@@ -1,0 +1,28 @@
+edit 157D
+setfield SpecialHudIcon 5
+setfield FirstPerson[0].FirstPersonModel 10F9
+setfield FirstPerson[1].FirstPersonModel 10F9
+savechanges
+exit
+edit 10F9
+addto markergroups
+edit markergroups[*]
+addto markers
+exit
+setfield markergroups[*].name weapon_stow_anchor
+setfield markergroups[*].markers[0].RegionIndex -1
+setfield markergroups[*].markers[0].PermutationIndex -1
+setfield markergroups[*].markers[0].NodeIndex 0
+setfield markergroups[*].markers[0].Unknown3 0
+setfield markergroups[*].markers[0].Translation -0.03480078 -0.009601063 0.001836636
+setfield markergroups[*].markers[0].Rotation -0.6982421 -0.01886405 -0.08508978 0.7105364
+setfield markergroups[*].markers[0].Scale 0
+savechanges
+exitto tags.dat
+edit 1F46
+setfield RenderModel 10F9
+setfield LodModel null
+savechanges
+exit
+dumplog test.log      
+exit

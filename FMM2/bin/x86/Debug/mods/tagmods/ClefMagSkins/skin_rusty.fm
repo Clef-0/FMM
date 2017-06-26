@@ -1,0 +1,3 @@
+ECHO FMM_OUTPUT Installing Rusty Magnum Skin
+cd mods\tagmods\ClefMagSkins
+Type skin_rusty.cmds | HaloOnlineTagTool.exe ..\..\..\maps\tags.dat

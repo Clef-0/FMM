@@ -23,3 +23,28 @@ C:\Users\Niall\documents\visual studio 2017\Projects\FMM2\FMM2\obj\x86\Debug\FMM
 C:\Users\Niall\documents\visual studio 2017\Projects\FMM2\FMM2\obj\x86\Debug\FMM.g.resources
 C:\Users\Niall\documents\visual studio 2017\Projects\FMM2\FMM2\obj\x86\Debug\FMM.exe
 C:\Users\Niall\documents\visual studio 2017\Projects\FMM2\FMM2\obj\x86\Debug\FMM.pdb
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\FMM.exe.config
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\FMM.exe
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\FMM.pdb
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\INIFileParser.dll
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\Newtonsoft.Json.dll
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\SharpSvn.dll
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\SharpSvn.UI.dll
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\INIFileParser.xml
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\Newtonsoft.Json.xml
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\SharpSvn.pdb
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\SharpSvn.xml
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\SharpSvn.UI.pdb
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\SharpSvn.UI.xml
+C:\Users\Niall\Source\Repos\FMM2\FMM2\bin\x86\Debug\SharpPlink-Win32.svnExe
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM2.csprojResolveAssemblyReference.cache
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\MainWindow.g.cs
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\App.g.cs
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM_MarkupCompile.cache
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM_MarkupCompile.lref
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\MainWindow.baml
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM.g.resources
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM2.Properties.Resources.resources
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM2.csproj.GenerateResource.Cache
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM.exe
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM.pdb

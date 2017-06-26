@@ -1,0 +1,3 @@
+ECHO FMM_OUTPUT Installing Indigo Magnum Skin
+cd mods\tagmods\H4Skins
+Type mag_indigo.cmds | HaloOnlineTagTool.exe ..\..\..\maps\tags.dat

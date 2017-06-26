@@ -1,0 +1,2 @@
+cd mods\tagMods\Hexagone
+Type import.cmds | HaloOnlineTagTool.exe ..\..\..\maps\tags.dat

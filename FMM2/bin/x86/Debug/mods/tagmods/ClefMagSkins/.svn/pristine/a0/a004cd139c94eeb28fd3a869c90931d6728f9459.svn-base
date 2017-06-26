@@ -1,0 +1,3 @@
+ECHO FMM_OUTPUT Installing Flare Magnum Skin
+cd mods\tagmods\H4Skins
+Type mag_flare.cmds | HaloOnlineTagTool.exe ..\..\..\maps\tags.dat

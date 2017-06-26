@@ -1,0 +1,94 @@
+Tag Tool [1.0.5907.15260]
+
+Please report any bugs and feature requests at
+<https://github.com/camden-smallwood/TagTool/issues>.
+
+Reading tags...22310 tags loaded.
+- Detected target engine version 1.106708 cert_ms23.
+- This cache file was built on 3/20/2015 at 7:40 AM.
+Reading stringIDs...37378 strings loaded.
+
+Enter "help" to list available commands. Enter "exit" to quit.
+
+tags.dat> edit 157D
+Tag 0x0000157D.weapon has been opened for editing.
+New commands are now available. Enter "help" to view them.
+Use "exit" to return to tags.dat.
+
+tags.dat\0x157D.weapon> setfield SpecialHudIcon 5
+SpecialHudIcon: Int32 = 5
+
+tags.dat\0x157D.weapon> setfield FirstPerson[0].FirstPersonModel 10F9
+FirstPersonModel: TagInstance = 0x000010F9
+
+tags.dat\0x157D.weapon> setfield FirstPerson[1].FirstPersonModel 10F9
+FirstPersonModel: TagInstance = 0x000010F9
+
+tags.dat\0x157D.weapon> savechanges
+Done!
+
+tags.dat\0x157D.weapon> exit
+
+tags.dat> edit 10F9
+Tag 0x000010F9.render_model has been opened for editing.
+New commands are now available. Enter "help" to view them.
+Use "exit" to return to tags.dat.
+
+tags.dat\0x10F9.render_model> addto markergroups
+Successfully added 1 element to MarkerGroups: List`1<MarkerGroup>
+{...}[4]
+
+tags.dat\0x10F9.render_model> edit markergroups[*]
+
+tags.dat\0x10F9.render_model\markergroups[3]> addto markers
+Successfully added 1 element to Markers: List`1<Marker>
+{...}[1]
+
+tags.dat\0x10F9.render_model\markergroups[3]> exit
+
+tags.dat\0x10F9.render_model> setfield markergroups[*].name weapon_stow_anchor
+Name: StringID = weapon_stow_anchor
+
+tags.dat\0x10F9.render_model> setfield markergroups[*].markers[0].RegionIndex -1
+RegionIndex: SByte = -1
+
+tags.dat\0x10F9.render_model> setfield markergroups[*].markers[0].PermutationIndex -1
+PermutationIndex: SByte = -1
+
+tags.dat\0x10F9.render_model> setfield markergroups[*].markers[0].NodeIndex 0
+NodeIndex: SByte = 0
+
+tags.dat\0x10F9.render_model> setfield markergroups[*].markers[0].Unknown3 0
+Unknown3: SByte = 0
+
+tags.dat\0x10F9.render_model> setfield markergroups[*].markers[0].Translation -0.03480078 -0.009601063 0.001836636
+Translation: Vector3 = { X: -0.03480078, Y: -0.009601063, Z: 0.001836636 }
+
+tags.dat\0x10F9.render_model> setfield markergroups[*].markers[0].Rotation -0.6982421 -0.01886405 -0.08508978 0.7105364
+Rotation: Vector4 = -0.6982421, -0.01886405, -0.08508978, 0.7105364
+
+tags.dat\0x10F9.render_model> setfield markergroups[*].markers[0].Scale 0
+Scale: Single = 0
+
+tags.dat\0x10F9.render_model> savechanges
+Done!
+
+tags.dat\0x10F9.render_model> exitto tags.dat
+
+tags.dat> edit 1F46
+Tag 0x00001F46.model has been opened for editing.
+New commands are now available. Enter "help" to view them.
+Use "exit" to return to tags.dat.
+
+tags.dat\0x1F46.model> setfield RenderModel 10F9
+RenderModel: TagInstance = 0x000010F9
+
+tags.dat\0x1F46.model> setfield LodModel null
+LodModel: TagInstance = null
+
+tags.dat\0x1F46.model> savechanges
+Done!
+
+tags.dat\0x1F46.model> exit
+
+tags.dat> dumplog test.log      

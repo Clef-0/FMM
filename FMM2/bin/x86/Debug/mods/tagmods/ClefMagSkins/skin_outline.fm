@@ -1,0 +1,3 @@
+ECHO FMM_OUTPUT Installing Outline Magnum Skin
+cd mods\tagmods\ClefMagSkins
+Type skin_outline.cmds | HaloOnlineTagTool.exe ..\..\..\maps\tags.dat

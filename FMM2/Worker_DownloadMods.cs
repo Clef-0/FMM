@@ -60,19 +60,24 @@ namespace FMM2
                 }));
 
                 SvnClient svnClient = new SvnClient();
-
+                svnClient.Progress += new EventHandler<SvnProgressEventArgs>(svnProgress);
                 string remoteLocation = repository + Path.GetDirectoryName(checkedMod.Location);
                 string localLocation = Path.GetDirectoryName(Path.Combine(System.IO.Directory.GetCurrentDirectory(), "mods", "tagmods", checkedMod.Location.Replace("/", "\\")));
                 
                 try
                 {
-                    DeleteDirectory(localLocation);
+                    deleteDirectory(localLocation);
                 } catch
                 {
                     // mod doesn't already exist - all fine
                 }
 
                 Directory.CreateDirectory(localLocation);
+
+                if (Directory.Exists(Path.Combine(localLocation, ".svn")))
+                {
+                    svnClient.CleanUp(localLocation);
+                }
 
                 try
                 {
@@ -101,7 +106,15 @@ namespace FMM2
             }));
         }
 
-        private void DeleteDirectory(string path)
+        private void svnProgress(object sender, SvnProgressEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                statusBarText.Content = e.Progress;
+            }));
+        }
+
+        private void deleteDirectory(string path)
         {
             var directory = new DirectoryInfo(path)
             { Attributes = FileAttributes.Normal };

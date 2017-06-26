@@ -1,0 +1,4 @@
+ECHO FMM_OUTPUT Installing Halo 3 Intro ...
+cd mods\tagMods\h3mods\h3intro
+
+Type Install.bat | cmd.exe C:\Windows\System32
