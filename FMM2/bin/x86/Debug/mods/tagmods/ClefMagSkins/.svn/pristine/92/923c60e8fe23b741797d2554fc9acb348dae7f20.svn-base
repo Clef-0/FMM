@@ -1,3 +1,0 @@
-ECHO FMM_OUTPUT Installing Grey Marble Magnum Skin
-cd mods\tagmods\ClefMagSkins
-Type skin_grey.cmds | HaloOnlineTagTool.exe ..\..\..\maps\tags.dat

@@ -14,6 +14,8 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -92,11 +94,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DLLExtractor.cs" />
     <Compile Include="ListView\Task.cs" />
+    <Compile Include="List_SelectionChanged.cs" />
+    <Compile Include="List_Sort.cs" />
+    <Compile Include="Worker_InstallMods.cs" />
     <Compile Include="Menu.cs" />
-    <Compile Include="Worker_DownloadInis.cs" />
+    <Compile Include="SwitchConverter.cs" />
+    <Compile Include="Worker_PopulateDLMaps.cs" />
+    <Compile Include="Worker_PopulateDLMods.cs" />
+    <Compile Include="Worker_DownloadMaps.cs" />
     <Compile Include="Worker_DownloadMods.cs" />
+    <Compile Include="Worker_PopulateMyMods.cs" />
     <Compile Include="Worker_PopulateServers.cs" />
+    <Compile Include="Worker_PopulateMyMaps.cs" />
+    <Compile Include="WrappingStream.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -155,5 +167,56 @@
   <ItemGroup>
     <Resource Include="FMM.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="gametypes\assault.png" />
+    <Resource Include="gametypes\ctf.png" />
+    <Resource Include="gametypes\forge.png" />
+    <Resource Include="gametypes\infection.png" />
+    <Resource Include="gametypes\juggernaut.png" />
+    <Resource Include="gametypes\koth.png" />
+    <Resource Include="gametypes\none.png" />
+    <Resource Include="gametypes\oddball.png" />
+    <Resource Include="gametypes\slayer.png" />
+    <Resource Include="gametypes\territories.png" />
+    <Resource Include="gametypes\undefined.png" />
+    <Resource Include="gametypes\vip.png" />
+    <Resource Include="gametypes\zombiez.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="maps\bunkerworld.png" />
+    <Resource Include="maps\chill.png" />
+    <Resource Include="maps\cyberdyne.png" />
+    <Resource Include="maps\deadlock.png" />
+    <Resource Include="maps\guardian.png" />
+    <Resource Include="maps\hangem-high.png" />
+    <Resource Include="maps\lockout.png" />
+    <Resource Include="maps\mainmenu.png" />
+    <Resource Include="maps\riverworld.png" />
+    <Resource Include="maps\s3d_avalanche.png" />
+    <Resource Include="maps\s3d_edge.png" />
+    <Resource Include="maps\s3d_reactor.png" />
+    <Resource Include="maps\s3d_turf.png" />
+    <Resource Include="maps\shrine.png" />
+    <Resource Include="maps\station.png" />
+    <Resource Include="maps\unknown.png" />
+    <Resource Include="maps\flatgrass.png" />
+    <Resource Include="maps\zanzibar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="INIFileParser.dll" />
+    <EmbeddedResource Include="Newtonsoft.Json.dll" />
+    <EmbeddedResource Include="SharpSvn.dll" />
+    <EmbeddedResource Include="SharpSvn.UI.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="FMM.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Fody.2.0.0\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.2.0.0\build\dotnet\Fody.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Fody.2.0.0\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.2.0.0\build\dotnet\Fody.targets'))" />
+  </Target>
 </Project>

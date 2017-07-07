@@ -1,3 +1,0 @@
-ECHO FMM_OUTPUT Installing Combustion Magnum Skin
-cd mods\tagmods\H4Skins
-Type mag_combustion.cmds | HaloOnlineTagTool.exe ..\..\..\maps\tags.dat

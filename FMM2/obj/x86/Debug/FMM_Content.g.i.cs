@@ -8,6 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("fmm.ico")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("fmm.png")]
 
 

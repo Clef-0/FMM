@@ -3,11 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -15,7 +18,7 @@ namespace FMM2
 {
     public partial class MainWindow : Window
     {
-        private void serverBrowserWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void populateServersList(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
@@ -23,21 +26,23 @@ namespace FMM2
             UpdateServerList();
         }
 
-        private void serverBrowserWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void populateServersList_Completed(object sender, RunWorkerCompletedEventArgs e)
         {
             if (!(e.Error == null))
             {
-                statusBarText.Content = ("Error: " + e.Error.Message);
+                // :shrug:
             }
         }
+
+
         /// <summary>
         /// Hardcoded string array of master-server url's.
         /// dynamically instead.
         /// </summary>
         private string[] masterServers = new string[]
         {
-            "http://eldewrito.red-m.net/list",
-            "http://158.69.166.144:8080/list"
+            "http://158.69.166.144:8080/list",
+            "http://eldewrito.red-m.net/list"
         };
 
         /// <summary>
@@ -45,175 +50,219 @@ namespace FMM2
         /// Downloads the .json from each server listed in each MasterServer object as a string while pinging the servers.
         /// Then serializes the server-info .jsons into HostServer objects, and adds them as ListViewItem's to "listView3"
         /// </summary>
-        private async void UpdateServerList()
+        private void UpdateServerList()
         {
-            // This is used for downloading the server-info .jsons...
-            HttpClient client = new HttpClient() { MaxResponseContentBufferSize = 1000000 };
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                serversRefreshButton.Content = "Loading...";
+                serversRefreshButton.IsEnabled = false;
+            }));
 
-            // List of the Task<string[]> from the output of ProcessURLAsync for each server, so that they can be awaited
-            // in the "Add Servers To Listview" #Region.
-            var serverTaskStrings = new List<Task<string[]>> { };
+            List<string> masterJsons = new List<string>();
+            var serversAdded = new List<string>();
 
-            // Using a WebClient object for downloading the MasterServer .jsons.
             using (var wc = new WebClient())
             {
                 // This is to prevent Red-M's master server from 403'ing.
                 wc.Headers.Add("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
 
-                // Used for storing IP's of server's that have been added to "listView3" already, so that it can be checked
-                // if a server has already been added before adding it potentially again.
-                var serversAdded = new List<string> { };
-                // Foreach "masterServer" url-string in the "masterServers" url array...
                 foreach (string masterServer in masterServers)
                 {
+                    // Download the masterServer .json
                     try
                     {
-                        // Download the masterServer .json
-                        string masterJson = wc.DownloadString(masterServer);
-                        // Serialize the masterServer .json into a MasterServer object.
-                        MasterServer master = JsonConvert.DeserializeObject<MasterServer>(masterJson);
-
-                        // Foreach "server" url-string in the MasterServer object...
-                        foreach (string server in master.result.servers)
-                        {
-                            // If the server has already been added to "serversAdded", don't doawnload the server-info json again.
-                            if (!serversAdded.Contains(server))
-                            {
-                                // Add the server to "serversAdded" so that any following duplicate servers get filtered out.
-                                serversAdded.Add(server);
-                                // Download the server-info .json for the "server"
-                                Task<string[]> download = ProcessURLAsync(server, client);
-                                // Add the task to serverTaskStrings so that it can be awaited in the "Add Servers To Listview" #Region.
-                                serverTaskStrings.Add(download);
-                            }
-                        }
+                        masterJsons.Add(wc.DownloadString(masterServer));
                     }
-                    catch { }
-                }
-
-                /// Awaits the tasks in "serverTaskStrings", serializes the .jsons from that output into "HostServer" objects,
-                /// creates a ListViewItem from the properties of that HostServer, and then adds it to "listView3".
-                #region Add Servers To Listview
-                
-
-                // Every Task<string[]> in "serverTaskStrings" needs to be awaited, serialized, and then added to "listView3".
-                foreach (Task<string[]> serverTaskString in serverTaskStrings)
-                {
-                    try
+                    catch
                     {
-                        // Await the "serverTaskString", which returns a string[] containing: server-info json text, server IP, and Ping.
-                        string[] server = await serverTaskString;
-                        // Serialize the server-info .json at index [0] in the "server-string[]" into a HostServer object.
-                        Server host = JsonConvert.DeserializeObject<Server>(server[0]);
-                        // Set the "ipAddress" in the HostServer object to index [1] in the "server-string[]".
-                        host.ipAddress = server[1].Substring(0, server[1].IndexOf(":"));
-
-                        if (host.variant == "" || host.variant == "none" || host.variant == "None")
-                        {
-                            char[] a = host.variantType.ToCharArray();
-                            a[0] = char.ToUpper(a[0]);
-                            host.variant = new string(a);
-                        }
-                        if (host.map == "" || host.map == "none" || host.map == "None")
-                        {
-                            char[] a = host.mapFile.ToCharArray();
-                            a[0] = char.ToUpper(a[0]);
-                            host.map = new string(a);
-                        }
-
-                        // Set the "ping" in the HostServer object to index [2] in the "server-string[]"... after doing some warfare on it.
-                        // This is some weird math to calculate the "ping multiplier" based on the user's own connection
-                        // instead of just using a flat 0.45 multiplier for everyone... If no server's responded to an
-                        // actual ping request, the multiplier cannot be derived through this, so 0.45 is used instead.
-                        if (pings != 0 && pingEsts != 0)
-                            host.ping = ((int)(int.Parse(server[2]) * ((float)pings / pingEsts))).ToString();
-                        else
-                            host.ping = ((int)(int.Parse(server[2]) * 0.45)).ToString();
-
-                        // NOTE: only here for evaluation purposes during debuging/testing.
-                        //host.hostPlayer = ((float)pings / pingEsts).ToString();
-                        
-                        // Invoke needs to be called here to access the control outside of the thread it was created on...
-                        await Dispatcher.BeginInvoke(new Action(() => {
-                            //// Create a new ListViewItem using the HostServer's properties.
-                            //Server item = new Server() { 
-                            //        Passworded = host.Passworded, Name = host.Name, Host = host.Host, Ping = host.Ping, Map = host.Map, Gametype = host.Gametype, host.NumPlayers.ToString() + '/' + host.maxPlayers.ToString()
-                            //    };
-                            //// Set the ListViewItem.Tag to the HostServer object, so that additional information that isn't
-                            //// being displayed in the listview can be easily looked up when a server is selected.
-                            //item.Tag = host;
-
-                            servers.Add(host);
-                        }));
-
-                        // Update the statusStrip at bottom left corner to show the amount of server's available.
-                        if (mainTabs.SelectedIndex == 4)
-                        {
-                            int itemCount = servers.Count;
-                            if (itemCount == 1) // If ONLY one server is available, use singular "server".
-                            {
-                                await Dispatcher.BeginInvoke(new Action(() => { statusNumber.Content = "1 server available"; }));
-                            }
-                            else // If MORE than one server is available, use plural "servers".
-                            {
-                                await Dispatcher.BeginInvoke(new Action(() => { statusNumber.Content = " servers available"; }));
-                            }
-                        }
+                        //server down or 403
                     }
-                    catch { continue; }
                 }
-                #endregion 
             }
-            client.Dispose();
+            foreach (string masterJson in masterJsons)
+                {
+                    // Serialize the masterServer .json into a MasterServer object.
+                    MasterServer master = JsonConvert.DeserializeObject<MasterServer>(masterJson);
+
+
+                    foreach (string server in master.result.servers)
+                    {
+                        // If the server has already been added to "serversAdded", don't download the server-info json again.
+                        if (!serversAdded.Contains(server))
+                        {
+                            // Add the server to "serversAdded" so that any following duplicate servers get filtered out.
+                            serversAdded.Add(server);
+                            taskPopulateServers.Add(new Task(() =>
+                            {
+                                AddServerToListView(server);
+                            }));
+                        }
+                    }
+                }
+                Task[] tasks = taskPopulateServers.ToArray();
+                if (tasks.Length > 0)
+                {
+                    Task.Factory.ContinueWhenAll(tasks, AddServersToListView_Done);
+                    Array.ForEach(tasks, (t) => t.Start());
+                }
         }
 
-        // These are used to add successive pings into, to later be used in the multiplier derivation.
-        // If either of these are empty, 0.45 will be used as the multiplier instead.
-        public static long pings = 0;
-        public static long pingEsts = 0;
-        private async Task<string[]> ProcessURLAsync(string url, HttpClient client)
+
+
+        private void AddServerToListView(string serverString)
         {
+                HttpClient client = new HttpClient() { MaxResponseContentBufferSize = 1000000 };
+                string[] server = ProcessURL(serverString, client);
+            if (server == null || server.Count() == 0 || server[0] == null || server[0] == "")
+            {
+                client.Dispose();
+                return;
+            }
+            if (server[1] == null)
+            {
+                server[1] = serverString;
+            }
+            if (server[2] == null)
+            {
+                server[2] = "9999";
+            }
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                // Serialize the server-info .json at index [0] in the "server-string[]" into a HostServer object.
+                Server host = JsonConvert.DeserializeObject<Server>(server[0]);
+                // Set the "ipAddress" in the HostServer object to index [1] in the "server-string[]".
+                host.ipAddress = server[1].Substring(0, server[1].IndexOf(":"));
+
+                host.name = host.name.Trim();
+                host.hostPlayer = host.hostPlayer.Trim();
+
+                if (host.variant == "" || host.variant == "none" || host.variant == "None")
+                {
+                    char[] a = host.variantType.ToCharArray();
+                    a[0] = char.ToUpper(a[0]);
+                    host.variant = new string(a);
+                }
+                if (host.map == "" || host.map == "none" || host.map == "None")
+                {
+                    char[] a = host.mapFile.ToCharArray();
+                    a[0] = char.ToUpper(a[0]);
+                    host.map = new string(a);
+                }
+
+                List<Player> newPlayers = new List<Player>();
+
+                foreach(Player player in host.players)
+                {
+                    if (player.name != null && player.name != "")
+                    {
+                        newPlayers.Add(player);
+                    }
+                }
+                host.players = newPlayers;
+                
+                host.ping = int.Parse(server[2]).ToString();
+
+                // NOTE: only here for evaluation purposes during debuging/testing.
+                //host.hostPlayer = ((float)pings / pingEsts).ToString();
+
+                servers.Add(host);
+
+                // Update the statusStrip at bottom left corner to show the amount of server's available.
+                if (mainTabs.SelectedIndex == 4)
+                {
+                    int itemCount = servers.Count;
+                    if (itemCount == 1) // If ONLY one server is available, use singular "server".
+                    {
+                        serversStatusNumber.Content = "1 server available";
+                    }
+                    else // If MORE than one server is available, use plural "servers".
+                    {
+                        serversStatusNumber.Content = itemCount + " servers available";
+                    }
+                }
+                client.Dispose();
+            }));
+}
+        
+        private string[] ProcessURL(string url, HttpClient client)
+        {
+            string serverString = "";
             try
             {
-                //Downloads the infoserver json (uses the download time for a rough ping estimate...)
-                var serverString = await client.GetStringAsync($"http://{url}");
-
+                serverString = client.GetStringAsync($"http://{url}").Result;
+            }
+            catch { }
+            if (serverString != "")
+            {
                 // Intialize ping variable to "9999" so that if ping-estimation fails for a server, it gets sorted
                 // to the bottom when sorting by ping..
                 int ping = 9999;
 
-                // Timing this to estimate a ping... Other server browsers use a 0.45 multiplier, and through
-                // testing that seems like a pretty good one. This is innacurate for very slow connections though...
-                // Not timing "GetStringAsync" above because the number is much higher... Because it is "async" maybe???
-                // - really unsure on that... Server-Hosts really need to set up their machines to respond to
-                // ping requests properly.
-                try
+                var times = new List<double>();
+                for (int i = 0; i < 4; i++)
                 {
-                    Stopwatch timer = new Stopwatch();
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"http://{url}");
-                    timer.Start();
-                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                    response.Close();
-                    timer.Stop();
-                    ping = (int)timer.ElapsedMilliseconds;
-                }
-                catch { }
+                    var sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    sock.Blocking = true;
 
-                // If an actual ping request is successful, add both ping types to their totaller, so that they can
-                // be used to derive an average ratio to use as a multiplier for calculating ping from the HTTP RTT
-                Ping pingSender = new Ping();
-                long reply = pingSender.Send(url.Replace(":11775", "")).RoundtripTime;
-                if (reply != 0 && ping != 9999)
-                {
-                    pings += reply;
-                    pingEsts += ping;
+                    var stopwatch = new Stopwatch();
+
+                    // Measure the Connect call only
+                    stopwatch.Start();
+                    sock.Connect(CreateIPEndPoint(url));
+                    stopwatch.Stop();
+
+                    double t = stopwatch.Elapsed.TotalMilliseconds;
+                    times.Add(t);
+
+                    sock.Close();
+
+                    Thread.Sleep(100);
                 }
 
 
-                string[] serverArray = { serverString, url, ping.ToString() };
+                string[] serverArray = { serverString, url, Math.Round(times.Average(), MidpointRounding.AwayFromZero).ToString() };
                 return serverArray;
             }
-            catch { return null; }
+            else
+            {
+                return new string[] { "", "", "" };
+            }
+        }
+        private void AddServersToListView_Done(Task[] tasks)
+        {
+            taskPopulateServers.Clear();
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                serversRefreshButton.Content = "Refresh";
+                serversRefreshButton.IsEnabled = true;
+            }));
+        }
+
+        public static IPEndPoint CreateIPEndPoint(string endPoint)
+        {
+            string[] ep = endPoint.Split(':');
+            if (ep.Length < 2) throw new FormatException("Invalid endpoint format");
+            IPAddress ip;
+            if (ep.Length > 2)
+            {
+                if (!IPAddress.TryParse(string.Join(":", ep, 0, ep.Length - 1), out ip))
+                {
+                    throw new FormatException("Invalid ip-adress");
+                }
+            }
+            else
+            {
+                if (!IPAddress.TryParse(ep[0], out ip))
+                {
+                    throw new FormatException("Invalid ip-adress");
+                }
+            }
+            int port;
+            if (!int.TryParse(ep[ep.Length - 1], NumberStyles.None, NumberFormatInfo.CurrentInfo, out port))
+            {
+                throw new FormatException("Invalid port");
+            }
+            return new IPEndPoint(ip, port);
         }
     }
 }

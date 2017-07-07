@@ -72,10 +72,33 @@ namespace FMM2
         }
         private void writeFMMIni(string property, string value)
         {
-            var parser = new FileIniDataParser();
-            IniData data = parser.ReadFile("FMM.ini");
-            data["FMMPrefs"][property] = value;
-            parser.WriteFile("FMM.ini", data);
+            try
+            {
+                var parser = new FileIniDataParser();
+                IniData data = parser.ReadFile("FMM.ini");
+                data["FMMPrefs"][property] = value;
+                parser.WriteFile("FMM.ini", data);
+            }
+            catch
+            {
+
+            }
+        }
+
+        private void optionsRepoConduit_Click(object sender, RoutedEventArgs e)
+        {
+            optionsRepoConduit.IsChecked = true;
+            optionsRepoMarchi.IsChecked = false;
+            repositoryConduit = true;
+            writeFMMIni("Repo", "Conduit");
+        }
+
+        private void optionsRepoMarchi_Click(object sender, RoutedEventArgs e)
+        {
+            optionsRepoConduit.IsChecked = false;
+            optionsRepoMarchi.IsChecked = true;
+            repositoryConduit = false;
+            writeFMMIni("Repo", "Marchi");
         }
 
         private void optionsOffline_Click(object sender, RoutedEventArgs e)
@@ -83,12 +106,12 @@ namespace FMM2
             if (offlineMode)
             {
                 offlineMode = false;
-                writeFMMIni("OfflineMode", "false");
+                writeFMMIni("OfflineMode", "False");
             }
             else
             {
                 offlineMode = true;
-                writeFMMIni("OfflineMode", "true");
+                writeFMMIni("OfflineMode", "True");
             }
         }
 
@@ -97,12 +120,16 @@ namespace FMM2
             if (developerMode)
             {
                 developerMode = false;
-                writeFMMIni("DeveloperMode", "false");
+                writeFMMIni("DeveloperMode", "False");
+                optionsDeveloperSeparator.Visibility = Visibility.Collapsed;
+                optionsDeveloperOptions.Visibility = Visibility.Collapsed;
             }
             else
             {
-                offlineMode = true;
-                writeFMMIni("DeveloperMode", "true");
+                developerMode = true;
+                writeFMMIni("DeveloperMode", "True");
+                optionsDeveloperSeparator.Visibility = Visibility.Visible;
+                optionsDeveloperOptions.Visibility = Visibility.Visible;
             }
         }
 
@@ -128,10 +155,10 @@ namespace FMM2
 
         private void loadFMMSettings()
         {
-            switch (readFMMIni("OfflineMode").ToLowerInvariant())
+            switch (readFMMIni("OfflineMode").ToLower())
             {
                 case "":
-                    writeFMMIni("OfflineMode", "false");
+                    writeFMMIni("OfflineMode", "False");
                     optionsOffline.IsChecked = false;
                     offlineMode = false;
                     break;
@@ -147,17 +174,23 @@ namespace FMM2
             switch (readFMMIni("DeveloperMode").ToLower())
             {
                 case "":
-                    writeFMMIni("DeveloperMode", "false");
+                    writeFMMIni("DeveloperMode", "False");
                     optionsDeveloper.IsChecked = false;
                     developerMode = false;
+                    optionsDeveloperSeparator.Visibility = Visibility.Collapsed;
+                    optionsDeveloperOptions.Visibility = Visibility.Collapsed;
                     break;
                 case "false":
                     optionsDeveloper.IsChecked = false;
                     developerMode = false;
+                    optionsDeveloperSeparator.Visibility = Visibility.Collapsed;
+                    optionsDeveloperOptions.Visibility = Visibility.Collapsed;
                     break;
                 case "true":
                     optionsDeveloper.IsChecked = true;
                     developerMode = true;
+                    optionsDeveloperSeparator.Visibility = Visibility.Visible;
+                    optionsDeveloperOptions.Visibility = Visibility.Visible;
                     break;
             }
             switch (readFMMIni("Order").ToLower())
@@ -178,6 +211,147 @@ namespace FMM2
                     optionsOrderPriority.IsChecked = true;
                     installListOrder = false;
                     break;
+            }
+            switch (readFMMIni("Repo").ToLower())
+            {
+                case "":
+                    writeFMMIni("Repo", "Conduit");
+                    optionsRepoConduit.IsChecked = true;
+                    optionsRepoMarchi.IsChecked = false;
+                    repositoryConduit = true;
+                    break;
+                case "conduit":
+                    optionsRepoConduit.IsChecked = true;
+                    optionsRepoMarchi.IsChecked = false;
+                    repositoryConduit = true;
+                    break;
+                case "marchi":
+                    optionsRepoConduit.IsChecked = false;
+                    optionsRepoMarchi.IsChecked = true;
+                    repositoryConduit = false;
+                    break;
+            }
+            switch (readFMMIni("Tab").ToLower())
+            {
+                case "":
+                    writeFMMIni("Tab", "Left");
+                    optionsTabLeft.IsChecked = true;
+                    optionsTabTop.IsChecked = false;
+                    mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Left;
+                    break;
+                case "left":
+                    optionsTabLeft.IsChecked = true;
+                    optionsTabTop.IsChecked = false;
+                    mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Left;
+                    break;
+                case "top":
+                    optionsTabLeft.IsChecked = false;
+                    optionsTabTop.IsChecked = true;
+                    mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Top;
+                    break;
+            }
+            switch (readFMMIni("CreateBackup").ToLower())
+            {
+                case "":
+                    optionsDeveloperBackup.IsChecked = true;
+                    createBackup = true;
+                    break;
+                case "false":
+                    optionsDeveloperBackup.IsChecked = false;
+                    createBackup = false;
+                    break;
+                case "true":
+                    optionsDeveloperBackup.IsChecked = true;
+                    createBackup = true;
+                    break;
+            }
+            switch (readFMMIni("RestoreBackup").ToLower())
+            {
+                case "":
+                    optionsDeveloperRestore.IsChecked = true;
+                    restoreBackup = true;
+                    break;
+                case "false":
+                    optionsDeveloperRestore.IsChecked = false;
+                    restoreBackup = false;
+                    break;
+                case "true":
+                    optionsDeveloperRestore.IsChecked = true;
+                    restoreBackup = true;
+                    break;
+            }
+            switch (readFMMIni("ShowTagTool").ToLower())
+            {
+                case "":
+                    optionsDeveloperTagTool.IsChecked = false;
+                    showTagTool = false;
+                    break;
+                case "false":
+                    optionsDeveloperTagTool.IsChecked = false;
+                    showTagTool = false;
+                    break;
+                case "true":
+                    optionsDeveloperTagTool.IsChecked = true;
+                    showTagTool = true;
+                    break;
+            }
+        }
+
+        private void optionsTabLeft_Click(object sender, RoutedEventArgs e)
+        {
+            optionsTabLeft.IsChecked = true;
+            optionsTabTop.IsChecked = false;
+            mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Left;
+            writeFMMIni("Tab", "Left");
+        }
+
+        private void optionsTabTop_Click(object sender, RoutedEventArgs e)
+        {
+            optionsTabLeft.IsChecked = false;
+            optionsTabTop.IsChecked = true;
+            mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Top;
+            writeFMMIni("Tab", "Top");
+        }
+
+        private void optionsDeveloperBackup_Click(object sender, RoutedEventArgs e)
+        {
+            if (createBackup)
+            {
+                createBackup = false;
+                writeFMMIni("CreateBackup", "False");
+            }
+            else
+            {
+                createBackup = true;
+                writeFMMIni("CreateBackup", "True");
+            }
+        }
+
+        private void optionsDeveloperRestore_Click(object sender, RoutedEventArgs e)
+        {
+            if (restoreBackup)
+            {
+                restoreBackup = false;
+                writeFMMIni("RestoreBackup", "False");
+            }
+            else
+            {
+                restoreBackup = true;
+                writeFMMIni("RestoreBackup", "True");
+            }
+        }
+
+        private void optionsDeveloperTagTool_Click(object sender, RoutedEventArgs e)
+        {
+            if (showTagTool)
+            {
+                showTagTool = false;
+                writeFMMIni("ShowTagTool", "False");
+            }
+            else
+            {
+                showTagTool = true;
+                writeFMMIni("ShowTagTool", "True");
             }
         }
     }

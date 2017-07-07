@@ -61,6 +61,8 @@ namespace FMM2 {
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0")]
         public static void Main() {
+            SplashScreen splashScreen = new SplashScreen("fmm.png");
+            splashScreen.Show(true);
             FMM2.App app = new FMM2.App();
             app.InitializeComponent();
             app.Run();

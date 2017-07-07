@@ -11,42 +11,36 @@
     </Window.Background>
 
     <Window.Resources>
-        <!--<Style TargetType="ListViewItem">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked}" Value=" ">
-                    <Setter Property="Background" Value="Transparent" />
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IsChecked}" Value="True">
-                    <Setter Property="Background" Value="#3300FF00" />
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IsChecked}" Value="False">
-                    <Setter Property="Background" Value="#33FFA500" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>-->
+        <local:SwitchConverter x:Key="convSwitch"/>
     </Window.Resources>
 
     <Grid>
-        <TabControl x:Name="mainTabs" TabStripPlacement="Left" Margin="0,18,0,30" SelectionChanged="tabsUpdateStatus">
+        <TabControl x:Name="mainTabs" TabStripPlacement="Left" Margin="0,18,0,0" SelectionChanged="tabsUpdateStatus">
             <TabItem x:Name="modsTab" Header="Mods">
                 <TabControl x:Name="modsTabs" SelectionChanged="tabsUpdateStatus">
                     <TabItem x:Name="myModsTab" Header="My Mods">
                         <Grid x:Name="myModsOuterGrid" Margin="0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Grid x:Name="myModsAlert" Background="#FFFFF2C7" Margin="0" Height="24">
+                            <Grid x:Name="myModsAlert" Background="#FFFFF2C7" Margin="0" Grid.Row="0" Height="24">
                                 <TextBlock x:Name="myModsAlertText" TextWrapping="Wrap" Text="As of FMM2, mods highest on the list will be installed first by default." HorizontalAlignment="Left" Padding="5,0,0,0" Margin="0" VerticalAlignment="Center"/>
                                 <Button x:Name="myModsAlertHide" Content="OK" Margin="0" HorizontalAlignment="Right" Width="30" Padding="0" Click="myModsAlertHide_Click"/>
                             </Grid>
-                            <Grid x:Name="myModsGrid" UseLayoutRounding="False" Margin="0" Grid.RowSpan="2" Grid.Row="1">
+                            <Grid x:Name="myModsMenu" Margin="0" Height="24" Grid.Row="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+                                <Button x:Name="myModsRefreshButton" Content="Refresh" Width="62" Click="refreshButton_Click" Margin="2,2,0,2" HorizontalAlignment="Left"/>
+                                <StatusBarItem x:Name="myModsStatusNumber" Content="0 mods available" Margin="69,0,0,0" HorizontalAlignment="Left" Width="259"/>
+                                <TextBox x:Name="myModsSearchBox" TextWrapping="Wrap" HorizontalAlignment="Right" Width="187" Margin="0,2,0,2" TextChanged="searchBox_TextChanged"/>
+                            </Grid>
+                            <Grid x:Name="myModsGrid" UseLayoutRounding="False" Margin="0" Grid.Row="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                     <ColumnDefinition Width="5"/>
                                     <ColumnDefinition Width="250"/>
                                 </Grid.ColumnDefinitions>
-                                <ListView x:Name="myModsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="myModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="myModsList_HeaderClicked">
+                                <ListView x:Name="myModsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="myModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="myModsList_HeaderClicked" GotFocus="modsList_GotFocus">
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Width="30">
@@ -59,33 +53,46 @@
                                             <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
                                             <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}" Width="90"/>
                                             <GridViewColumn Header="Version" DisplayMemberBinding="{Binding Version}" Width="90"/>
-                                            <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Desc}" Width="200"/>
+                                            <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}" Width="200"/>
                                             <GridViewColumn Header="Warnings" DisplayMemberBinding="{Binding Warnings}" Width="170"/>
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
                                 <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="WhiteSmoke" />
-                                <Grid x:Name="infobar" Grid.Column="2" Margin="5,0,0,0">
+                                <Grid x:Name="infobar" Grid.Column="2" Margin="0,0,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
                                         <RowDefinition Height="40"/>
                                     </Grid.RowDefinitions>
                                     <ScrollViewer x:Name="infobarScroll" VerticalScrollBarVisibility="Auto">
-                                        <StackPanel x:Name="infobarPanel" Orientation="Vertical" Margin="0,5,5,0" VerticalAlignment="Top">
-                                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="0,0,0,5">
-                                                <StackPanel x:Name="infobarHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                    <Image x:Name="infobarIcon" Height="64" Width="64" OpacityMask="Black" Source="REBKFs3.png" Margin="0,0,5,0" Stretch="UniformToFill"/>
-                                                    <StackPanel x:Name="infobarHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                        <StackPanel x:Name="infobarHeaderH" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                            <TextBlock x:Name="infobarName" Text="Centered Crosshairs" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="14" Margin="0" />
-                                                            <TextBlock x:Name="infobarVersion" Text="1.0" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0" FontSize="14"/>
+                                        <StackPanel x:Name="infobarPanel" Orientation="Vertical" Margin="0,0,0,0" VerticalAlignment="Top">
+                                            <Viewbox Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Grid HorizontalAlignment="Left" Height="72" Width="128">
+                                                    <Image x:Name="infobarImage" OpacityMask="Black" Source="{Binding SelectedItem.Image, ElementName=myModsList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                                    <Rectangle >
+                                                        <Rectangle.Fill>
+                                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                <GradientStop Color="#CC000000" Offset="1"/>
+                                                                <GradientStop Color="#00555555" Offset="0.3"/>
+                                                                <GradientStop Color="#22555555" Offset="0.5"/>
+                                                                <GradientStop Color="#77555555" Offset="0.748"/>
+                                                            </LinearGradientBrush>
+                                                        </Rectangle.Fill>
+                                                    </Rectangle>
+                                                    <StackPanel x:Name="infobarHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,3,3">
+                                                        <StackPanel x:Name="infobarHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                            <WrapPanel x:Name="infobarHeaderH" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                                <TextBlock x:Name="infobarName" Text="{Binding SelectedItem.Name, ElementName=myModsList}" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="7" Margin="0" Foreground="White"/>
+                                                                <TextBlock x:Name="infobarVersion" Text="{Binding SelectedItem.Version, ElementName=myModsList}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="3,0" FontSize="7" Foreground="White"/>
+                                                            </WrapPanel>
+                                                            <TextBlock x:Name="infobarAuthor" Text="{Binding SelectedItem.Author, ElementName=myModsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="7" Foreground="White"/>
+                                                            <TextBlock x:Name="infobarCredits" Text="{Binding SelectedItem.Credits, ElementName=myModsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="5" Foreground="White"/>
                                                         </StackPanel>
-                                                        <TextBlock x:Name="infobarAuthor" Text="Author" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="14"/>
-                                                        <TextBlock x:Name="infobarCredits" Text="Credits" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="12"/>
                                                     </StackPanel>
-                                                </StackPanel>
-                                            </ScrollViewer>
-                                            <StackPanel x:Name="infobarOps" Orientation="Horizontal" Margin="0,0,0,5">
+                                                    <Image x:Name="infobarIcon" Height="24" Width="24" OpacityMask="Black" Source="{Binding SelectedItem.Icon, ElementName=myModsList}" Margin="0,0,2,2" Stretch="UniformToFill" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                                </Grid>
+                                            </Viewbox>
+                                            <StackPanel x:Name="infobarOps" Orientation="Horizontal" Margin="5,5,5,0">
                                                 <Button x:Name="infobarUp" Width="26" Height="20" Margin="0,0,2,0" Click="infobarUp_Click">
                                                     <StackPanel Margin="0">
                                                         <Image Source="fmmup.png" Width="16" Height="16"/>
@@ -102,17 +109,27 @@
                                                     </StackPanel>
                                                 </Button>
                                             </StackPanel>
-                                            <TextBlock x:Name="infobarRevisionDate" TextWrapping="Wrap" Text="Last revision" VerticalAlignment="Top" Padding="0" FontSize="12"/>
-                                            <TextBlock x:Name="infobarEDVersion" TextWrapping="Wrap" Text="ElDewrito version" VerticalAlignment="Top" Padding="0,0,0,0" FontSize="12"/>
-                                            <TextBlock x:Name="infobarDescription" TextWrapping="Wrap" Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." Padding="0,5,0,0"/>
-                                            <TextBlock x:Name="infobarWarnings" TextWrapping="Wrap" Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." Padding="0,5,0,0" Foreground="#FFAA641E"/>
-
-                                            <Viewbox Margin="0,5,0,0">
-                                                <Image x:Name="infobarImage" Height="72" Width="128" OpacityMask="Black" Source="REBKFs3.png" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
-                                            </Viewbox>
+                                            <TextBlock x:Name="infobarRevisionDate" TextWrapping="Wrap" Text="{Binding SelectedItem.RevisionDate, ElementName=myModsList, StringFormat=Last revision: {0}}" VerticalAlignment="Top" Padding="0" FontSize="12" Margin="5,5,5,0"/>
+                                            <TextBlock x:Name="infobarEDVersion" TextWrapping="Wrap" Text="{Binding SelectedItem.EDVersion, ElementName=myModsList, StringFormat=ElDewrito version: {0}}" VerticalAlignment="Top" Padding="0,0,0,0" FontSize="12" Margin="5,5,5,0"/>
+                                            <TextBlock x:Name="infobarDescription" TextWrapping="Wrap" Padding="0" Margin="5,5,5,0">
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource convSwitch}">
+                                                        <Binding ElementName="myModsList" Path="SelectedItem.LongDesc"/>
+                                                        <Binding ElementName="myModsList" Path="SelectedItem.Desc"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                            <TextBlock x:Name="infobarWarnings" TextWrapping="Wrap" Padding="0" Foreground="#FFAA641E" Margin="5,5,5,0">
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource convSwitch}">
+                                                        <Binding ElementName="myModsList" Path="SelectedItem.LongWarnings"/>
+                                                        <Binding ElementName="myModsList" Path="SelectedItem.Warnings"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
                                         </StackPanel>
                                     </ScrollViewer>
-                                    <Button x:Name="infobarApply" Content="Apply Checked Mods" Margin="0,10,10,10" Grid.Row="1" HorizontalAlignment="Right" Width="150"/>
+                                    <Button x:Name="infobarApply" Content="Apply Checked Mods" Margin="0,10,10,10" Grid.Row="1" HorizontalAlignment="Right" Width="150" Click="infobarApply_Click"/>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -121,19 +138,25 @@
                         <Grid x:Name="downloadableModsOuterGrid" Margin="0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Grid x:Name="downloadableModsAlert" Background="#FFFFCCC7" Margin="0" Height="24">
+                            <Grid x:Name="downloadableModsAlert" Background="#FFFFCCC7" Grid.Row="0" Margin="0" Height="24">
                                 <TextBlock x:Name="downloadableModsAlertText" TextWrapping="Wrap" Text="The GitHub mods repository is currently down. Please try again later." HorizontalAlignment="Left" Padding="5,0,0,0" Margin="0" VerticalAlignment="Center"/>
                                 <Button x:Name="downloadableModsAlertHide" Content="OK" Margin="0" HorizontalAlignment="Right" Width="30" Padding="0" Click="downloadableModsAlertHide_Click"/>
                             </Grid>
-                            <Grid x:Name="downloadableModsGrid" UseLayoutRounding="False" Margin="0" Grid.RowSpan="2" Grid.Row="1">
+                            <Grid x:Name="downloadableModsMenu" Margin="0" Height="24" Grid.Row="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+                                <Button x:Name="dlModsRefreshButton" Content="Refresh" Width="62" Click="refreshButton_Click" Margin="2,2,0,2" HorizontalAlignment="Left"/>
+                                <StatusBarItem x:Name="dlModsStatusNumber" Content="0 mods available" Margin="69,0,0,0" HorizontalAlignment="Left" Width="259"/>
+                                <TextBox x:Name="dlModsSearchBox" TextWrapping="Wrap" HorizontalAlignment="Right" Width="187" Margin="0,2,0,2" TextChanged="searchBox_TextChanged"/>
+                            </Grid>
+                            <Grid x:Name="downloadableModsGrid" UseLayoutRounding="False" Margin="0" Grid.Row="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                     <ColumnDefinition Width="5"/>
                                     <ColumnDefinition Width="250"/>
                                 </Grid.ColumnDefinitions>
-                                <ListView x:Name="downloadableModsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="downloadableModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="downloadableModsList_HeaderClicked">
+                                <ListView x:Name="downloadableModsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="downloadableModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="downloadableModsList_HeaderClicked" GotFocus="modsList_GotFocus">
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Width="30">
@@ -146,40 +169,63 @@
                                             <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
                                             <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}" Width="90"/>
                                             <GridViewColumn Header="Version" DisplayMemberBinding="{Binding Version}" Width="90"/>
-                                            <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Desc}" Width="200"/>
+                                            <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}" Width="200"/>
                                             <GridViewColumn Header="Warnings" DisplayMemberBinding="{Binding Warnings}" Width="170"/>
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
                                 <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="WhiteSmoke" />
-                                <Grid x:Name="infobarDL" Grid.Column="2" Margin="5,0,0,0">
+                                <Grid x:Name="infobarDL" Grid.Column="2" Margin="0,0,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
                                         <RowDefinition Height="40"/>
                                     </Grid.RowDefinitions>
                                     <ScrollViewer x:Name="infobarDLScroll" VerticalScrollBarVisibility="Auto">
-                                        <StackPanel x:Name="infobarDLPanel" Orientation="Vertical" Margin="0,5,5,0" VerticalAlignment="Top">
-                                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="0,0,0,5">
-                                                <StackPanel x:Name="infobarDLHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                    <Image x:Name="infobarDLIcon" Height="64" Width="64" OpacityMask="Black" Source="REBKFs3.png" Margin="0,0,5,0" Stretch="UniformToFill"/>
-                                                    <StackPanel x:Name="infobarDLHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                        <StackPanel x:Name="infobarDLHeaderH" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                            <TextBlock x:Name="infobarDLName" Text="Centered Crosshairs" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="14" />
-                                                            <TextBlock x:Name="infobarDLVersion" Text="1.0" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0" FontSize="14"/>
+                                        <StackPanel x:Name="infobarDLPanel" Orientation="Vertical" Margin="0,0,0,0" VerticalAlignment="Top">
+                                            <Viewbox Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Grid HorizontalAlignment="Left" Height="72" Width="128">
+                                                    <Image x:Name="infobarDLImage" OpacityMask="Black" Source="{Binding SelectedItem.Image, ElementName=downloadableModsList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                                    <Rectangle >
+                                                        <Rectangle.Fill>
+                                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                <GradientStop Color="#CC000000" Offset="1"/>
+                                                                <GradientStop Color="#00555555" Offset="0.3"/>
+                                                                <GradientStop Color="#22555555" Offset="0.5"/>
+                                                                <GradientStop Color="#77555555" Offset="0.748"/>
+                                                            </LinearGradientBrush>
+                                                        </Rectangle.Fill>
+                                                    </Rectangle>
+                                                    <StackPanel x:Name="infobarDLHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,3,3">
+                                                        <StackPanel x:Name="infobarDLHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                            <WrapPanel x:Name="infobarDLHeaderH" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                                <TextBlock x:Name="infobarDLName" Text="{Binding SelectedItem.Name, ElementName=downloadableModsList}" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="7" Foreground="White" />
+                                                                <TextBlock x:Name="infobarDLVersion" Text="{Binding SelectedItem.Version, ElementName=downloadableModsList}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="3,0" FontSize="7" Foreground="White"/>
+                                                            </WrapPanel>
+                                                            <TextBlock x:Name="infobarDLAuthor" Text="{Binding SelectedItem.Author, ElementName=downloadableModsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="7" Foreground="White"/>
+                                                            <TextBlock x:Name="infobarDLCredits" Text="{Binding SelectedItem.Credits, ElementName=downloadableModsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="5" Foreground="White"/>
                                                         </StackPanel>
-                                                        <TextBlock x:Name="infobarDLAuthor" Text="Author" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="14"/>
-                                                        <TextBlock x:Name="infobarDLCredits" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="12"><Run Text="Credit"/><Run Text="s"/></TextBlock>
                                                     </StackPanel>
-                                                </StackPanel>
-                                            </ScrollViewer>
-                                            <TextBlock x:Name="infobarDLRevisionDate" TextWrapping="Wrap" Text="Last revision" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0" FontSize="12"/>
-                                            <TextBlock x:Name="infobarDLEDVersion" TextWrapping="Wrap" Text="ElDewrito version" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,0,0" FontSize="12"/>
-                                            <TextBlock x:Name="infobarDLDescription" TextWrapping="Wrap" Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." Padding="0,5,0,0"/>
-                                            <TextBlock x:Name="infobarDLWarnings" TextWrapping="Wrap" Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." Padding="0,5,0,0" Foreground="#FFAA641E"/>
-
-                                            <Viewbox Margin="0,5,0,0">
-                                                <Image x:Name="infobarDLImage" Height="72" Width="128" OpacityMask="Black" Source="REBKFs3.png" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                                    <Image x:Name="infobarDLIcon" Height="24" Width="24" OpacityMask="Black" Source="{Binding SelectedItem.Icon, ElementName=downloadableModsList}" Margin="0,0,2,2" Stretch="UniformToFill" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                                </Grid>
                                             </Viewbox>
+                                            <TextBlock x:Name="infobarDLRevisionDate" TextWrapping="Wrap" Text="{Binding SelectedItem.RevisionDate, ElementName=downloadableModsList, StringFormat=Last revision: {0}}" VerticalAlignment="Top" Padding="0" FontSize="12" Margin="5,5,5,0"/>
+                                            <TextBlock x:Name="infobarDLEDVersion" TextWrapping="Wrap" Text="{Binding SelectedItem.EDVersion, ElementName=downloadableModsList, StringFormat=ElDewrito version: {0}}" VerticalAlignment="Top" Padding="0,0,0,0" FontSize="12" Margin="5,5,5,0"/>
+                                            <TextBlock x:Name="infobarDLDescription" TextWrapping="Wrap" Padding="0" Margin="5,5,5,0">
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource convSwitch}">
+                                                        <Binding ElementName="downloadableModsList" Path="SelectedItem.LongDesc"/>
+                                                        <Binding ElementName="downloadableModsList" Path="SelectedItem.Desc"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                            <TextBlock x:Name="infobarDLWarnings" TextWrapping="Wrap" Padding="0" Foreground="#FFAA641E" Margin="5,5,5,0">
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource convSwitch}">
+                                                        <Binding ElementName="downloadableModsList" Path="SelectedItem.LongWarnings"/>
+                                                        <Binding ElementName="downloadableModsList" Path="SelectedItem.Warnings"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
                                         </StackPanel>
                                     </ScrollViewer>
                                     <Button x:Name="infobarDLDownload" Content="Download Checked Mods" Margin="0,10,10,10" Grid.Row="1" HorizontalAlignment="Right" Width="150" Click="infobarDLDownload_Click"/>
@@ -190,7 +236,156 @@
                 </TabControl>
             </TabItem>
             <TabItem x:Name="mapsTab" Header="Forge Maps">
-                <Grid x:Name="mapsGrid" UseLayoutRounding="False"/>
+                <TabControl x:Name="mapsTabs" SelectionChanged="tabsUpdateStatus">
+                    <TabItem x:Name="myMapsTab" Header="My Maps">
+                        <Grid x:Name="myMapsOuterGrid" Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid x:Name="myMapsMenu" Margin="0" Height="24" Grid.Row="0" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+                                <Button x:Name="myMapsRefreshButton" Content="Refresh" Width="62" Click="refreshButton_Click" Margin="2,2,0,2" HorizontalAlignment="Left"/>
+                                <StatusBarItem x:Name="myMapsStatusNumber" Content="0 maps available" Margin="69,0,0,0" HorizontalAlignment="Left" Width="259"/>
+                                <TextBox x:Name="myMapsSearchBox" TextWrapping="Wrap" HorizontalAlignment="Right" Width="187" Margin="0,2,0,2" TextChanged="searchBox_TextChanged"/>
+                            </Grid>
+                            <Grid x:Name="myMapsGrid" UseLayoutRounding="False" Grid.Row="1" Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="250"/>
+                                </Grid.ColumnDefinitions>
+                                <ListView x:Name="myMapsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="myMapsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="myMapsList_HeaderClicked" GotFocus="modsList_GotFocus">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                            <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}" Width="90"/>
+                                            <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Desc}" Width="200"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="WhiteSmoke" />
+                                <Grid x:Name="infobarMM" Grid.Column="2" Margin="0,0,0,0">
+                                    <ScrollViewer x:Name="infobarMMScroll" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel x:Name="infobarMMPanel" Orientation="Vertical" Margin="0,0,0,0" VerticalAlignment="Top">
+                                            <Viewbox Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Grid HorizontalAlignment="Left" Height="72" Width="128">
+                                                    <Image x:Name="infobarMMImage" OpacityMask="Black" Source="{Binding SelectedItem.Image, ElementName=myMapsList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                                    <Rectangle >
+                                                        <Rectangle.Fill>
+                                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                <GradientStop Color="#CC000000" Offset="1"/>
+                                                                <GradientStop Color="#00555555" Offset="0.3"/>
+                                                                <GradientStop Color="#22555555" Offset="0.5"/>
+                                                                <GradientStop Color="#77555555" Offset="0.748"/>
+                                                            </LinearGradientBrush>
+                                                        </Rectangle.Fill>
+                                                    </Rectangle>
+                                                    <StackPanel x:Name="infobarMMHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,3,3">
+                                                        <StackPanel x:Name="infobarMMHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                            <TextBlock x:Name="infobarMMName" Text="{Binding SelectedItem.Name, ElementName=myMapsList}" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="7" Foreground="White" Margin="0" />
+                                                            <TextBlock x:Name="infobarMMAuthor" Text="{Binding SelectedItem.Author, ElementName=myMapsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="7" Foreground="White"/>
+                                                            <TextBlock x:Name="infobarMMCredits" Text="{Binding SelectedItem.Credits, ElementName=myMapsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="5" Foreground="White"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                    <Image x:Name="infobarMMIcon" Height="24" Width="24" OpacityMask="Black" Source="{Binding SelectedItem.Icon, ElementName=myMapsList}" Margin="0,0,2,2" Stretch="UniformToFill" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                                </Grid>
+                                            </Viewbox>
+                                            <StackPanel x:Name="infobarMMOps" Orientation="Horizontal" Margin="5,5,5,0">
+                                                <Button x:Name="infobarMMDelete" Width="26" Height="20" Margin="0,0,2,0" Click="infobarMMDel_Click">
+                                                    <StackPanel Margin="0">
+                                                        <Image Source="fmmclose.png" Width="16" Height="16"/>
+                                                    </StackPanel>
+                                                </Button>
+                                            </StackPanel>
+                                            <TextBlock x:Name="infobarMMRevisionDate" TextWrapping="Wrap" Text="{Binding SelectedItem.RevisionDate, ElementName=myMapsList, StringFormat=Last revision: {0}}" VerticalAlignment="Top" Padding="0" FontSize="12" Margin="5,5,5,0"/>
+                                            <TextBlock x:Name="infobarMMEDVersion" TextWrapping="Wrap" Text="{Binding SelectedItem.EDVersion, ElementName=myMapsList, StringFormat=ElDewrito version: {0}}" VerticalAlignment="Top" Padding="0,0,0,0" FontSize="12" Margin="5,5,5,0"/>
+                                            <TextBlock x:Name="infobarMMDescription" TextWrapping="Wrap" Text="{Binding SelectedItem.Desc, ElementName=myMapsList}" Padding="0" Margin="5,5,5,0"/>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
+                    <TabItem x:Name="downloadableMapsTab" Header="Downloadable Maps" GotFocus="modsList_GotFocus">
+                        <Grid x:Name="downloadableMapsOuterGrid" Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid x:Name="downloadableMapsAlert" Background="#FFFFCCC7" Margin="0" Height="24" Grid.Row="0">
+                                <TextBlock x:Name="downloadableMapsAlertText" TextWrapping="Wrap" Text="The selected maps repository is currently down. Please try again later." HorizontalAlignment="Left" Padding="5,0,0,0" Margin="0" VerticalAlignment="Center"/>
+                                <Button x:Name="downloadableMapsAlertHide" Content="OK" Margin="0" HorizontalAlignment="Right" Width="30" Padding="0" Click="downloadableMapsAlertHide_Click"/>
+                            </Grid>
+                            <Grid x:Name="downloadableMapsMenu" Margin="0" Height="24" Grid.Row="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+                                <Button x:Name="dlMapsRefreshButton" Content="Refresh" Width="62" Click="refreshButton_Click" Margin="2,2,0,2" HorizontalAlignment="Left"/>
+                                <StatusBarItem x:Name="dlMapsStatusNumber" Content="0 maps available" Margin="69,0,0,0" HorizontalAlignment="Left" Width="259"/>
+                                <TextBox x:Name="dlMapsSearchBox" TextWrapping="Wrap" HorizontalAlignment="Right" Width="187" Margin="0,2,2,2" TextChanged="searchBox_TextChanged"/>
+                            </Grid>
+                            <Grid x:Name="downloadableMapsGrid" UseLayoutRounding="False" Margin="0" Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="250"/>
+                                </Grid.ColumnDefinitions>
+                                <ListView x:Name="downloadableMapsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="downloadableMapsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="downloadableMapsList_HeaderClicked">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Width="30">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="downloadableMapsCB" IsChecked="{Binding Path=IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                            <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}" Width="90"/>
+                                            <GridViewColumn Header="DLs" DisplayMemberBinding="{Binding DLs}" Width="40"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="WhiteSmoke" />
+                                <Grid x:Name="infobarMDL" Grid.Column="2" Margin="0,0,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="40"/>
+                                    </Grid.RowDefinitions>
+                                    <ScrollViewer x:Name="infobarMDLScroll" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel x:Name="infobarMDLPanel" Orientation="Vertical" Margin="0,0,0,0" VerticalAlignment="Top">
+                                            <Viewbox Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Grid HorizontalAlignment="Left" Height="72" Width="128">
+                                                    <Image x:Name="infobarMDLImage" OpacityMask="Black" Source="{Binding SelectedItem.Image, ElementName=downloadableMapsList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                                    <Rectangle>
+                                                        <Rectangle.Fill>
+                                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                <GradientStop Color="#CC000000" Offset="1"/>
+                                                                <GradientStop Color="#00555555" Offset="0.3"/>
+                                                                <GradientStop Color="#22555555" Offset="0.5"/>
+                                                                <GradientStop Color="#77555555" Offset="0.748"/>
+                                                            </LinearGradientBrush>
+                                                        </Rectangle.Fill>
+                                                    </Rectangle>
+                                                    <StackPanel x:Name="infobarMDLHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,3,3">
+                                                        <StackPanel x:Name="infobarMDLHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                                            <TextBlock x:Name="infobarMDLName" Text="{Binding SelectedItem.Name, ElementName=downloadableMapsList}" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="7" Foreground="White"/>
+                                                            <TextBlock x:Name="infobarMDLAuthor" Text="{Binding SelectedItem.Author, ElementName=downloadableMapsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="7" Foreground="White"/>
+                                                            <TextBlock x:Name="infobarMDLSubmitter" Text="{Binding SelectedItem.Submitter, ElementName=downloadableMapsList, StringFormat=Submitted by {0}}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="5" Foreground="White"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                    <Image x:Name="infobarMDLIcon" Height="24" Width="24" OpacityMask="Black" Source="{Binding SelectedItem.Icon, ElementName=downloadableMapsList}" Margin="0,0,2,2" Stretch="UniformToFill" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                                </Grid>
+                                            </Viewbox>
+                                            <TextBlock x:Name="infobarMDLRevisionDate" TextWrapping="Wrap" Text="{Binding SelectedItem.RevisionDate, ElementName=downloadableMapsList, StringFormat=Last revision: {0}}" VerticalAlignment="Top" Padding="0" FontSize="12" Margin="5,5,5,0"/>
+                                            <TextBlock x:Name="infobarMDLEDVersion" TextWrapping="Wrap" Text="{Binding SelectedItem.EDVersion, ElementName=downloadableMapsList, StringFormat=ElDewrito version: {0}}" VerticalAlignment="Top" Padding="0,0,0,0" FontSize="12" Margin="5,5,5,0"/>
+                                            <TextBlock x:Name="infobarMDLDescription" TextWrapping="Wrap" Text="{Binding SelectedItem.Desc, ElementName=downloadableMapsList}" Padding="0" Margin="5,5,5,0"/>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                    <Button x:Name="infobarMDLDownload" Content="Download Checked Maps" Margin="0,10,10,10" Grid.Row="1" HorizontalAlignment="Right" Width="150" Click="infobarMDLDownload_Click"/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
             </TabItem>
             <TabItem x:Name="gametypesTab" Header="Gametypes">
                 <Grid x:Name="gametypesGrid" UseLayoutRounding="False"/>
@@ -202,43 +397,62 @@
                 <Grid x:Name="serverBrowserOuterGrid" Margin="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Grid x:Name="serverBrowserAlert" Background="#FFFFCCC7" Margin="0" Height="24">
+                    <Grid x:Name="serverBrowserAlert" Background="#FFFFCCC7" Grid.Row="0" Margin="0" Height="24">
                         <TextBlock x:Name="serverBrowserAlertText" TextWrapping="Wrap" Text="The master server is currently down. Please try again later." HorizontalAlignment="Left" Padding="5,0,0,0" Margin="0" VerticalAlignment="Center"/>
                         <Button x:Name="serverBrowserAlertHide" Content="OK" Margin="0" HorizontalAlignment="Right" Width="30" Padding="0" Click="serverBrowserAlertHide_Click"/>
                     </Grid>
-                    <Grid x:Name="serverBrowserGrid" UseLayoutRounding="False" Margin="0" Grid.RowSpan="2" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <Grid x:Name="serverBrowserMenu" Margin="0" Height="24" Grid.Row="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+                        <Button x:Name="serversRefreshButton" Content="Refresh" Width="62" Click="refreshButton_Click" Margin="2,2,0,2" HorizontalAlignment="Left"/>
+                        <StatusBarItem x:Name="serversStatusNumber" Content="0 servers available" Margin="69,0,0,0" HorizontalAlignment="Left" Width="259"/>
+                        <TextBox x:Name="serversSearchBox" TextWrapping="Wrap" HorizontalAlignment="Right" Width="187" Margin="0,2,0,2" TextChanged="searchBox_TextChanged"/>
+                    </Grid>
+                    <Grid x:Name="serverBrowserGrid" UseLayoutRounding="False" Margin="0" Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Disabled">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="5"/>
                             <ColumnDefinition Width="250"/>
                         </Grid.ColumnDefinitions>
-                        <ListView x:Name="serverBrowserList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" GridViewColumnHeader.Click="serverBrowserList_HeaderClicked">
+                        <ListView x:Name="serverBrowserList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" GridViewColumnHeader.Click="serverBrowserList_HeaderClicked" SelectionChanged="serverBrowserList_SelectionChanged" GotFocus="modsList_GotFocus">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}" Width="150"/>
                                     <GridViewColumn Header="Host" DisplayMemberBinding="{Binding hostPlayer}" Width="90"/>
                                     <GridViewColumn Header="Ping" DisplayMemberBinding="{Binding ping}" Width="50"/>
+                                    <GridViewColumn Header="Players" DisplayMemberBinding="{Binding playerSlash}" Width="70"/>
                                     <GridViewColumn Header="Map" DisplayMemberBinding="{Binding map}" Width="90"/>
                                     <GridViewColumn Header="Gametype" DisplayMemberBinding="{Binding variant}" Width="90"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
                         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="WhiteSmoke" />
-                        <Grid x:Name="infobarSB" Grid.Column="2" Margin="5,0,0,0">
+                        <Grid x:Name="infobarSB" Grid.Column="2" Margin="0,0,0,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition Height="40"/>
                             </Grid.RowDefinitions>
                             <ScrollViewer x:Name="infobarSBScroll" VerticalScrollBarVisibility="Auto">
-                                <StackPanel x:Name="infobarSBPanel" Orientation="Vertical" Margin="0,5,5,0" VerticalAlignment="Top">
-                                    <TextBlock x:Name="infobarSBServerName" TextWrapping="Wrap" Text="{Binding SelectedItem.name, ElementName=serverBrowserList}" VerticalAlignment="Top" Padding="0,0,0,3" FontSize="12" Margin="0,0,0,5"/>
-
-                                    <Viewbox>
-                                        <Image x:Name="infobarSBImage" Height="72" Width="128" OpacityMask="Black" Source="REBKFs3.png" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                <StackPanel x:Name="infobarSBPanel" Orientation="Vertical" Margin="0,0,0,0" VerticalAlignment="Top">
+                                    <Viewbox Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Grid HorizontalAlignment="Left" Height="72" Width="128">
+                                            <Image x:Name="infobarSBImage" OpacityMask="Black" Source="{Binding SelectedItem.MapImage, ElementName=serverBrowserList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                            <Image x:Name="infobarSBGametypeImage" OpacityMask="Black" Source="{Binding SelectedItem.GametypeImage, ElementName=serverBrowserList}" Margin="0" HorizontalAlignment="Center" Height="40"/>
+                                            <Rectangle>
+                                                <Rectangle.Fill>
+                                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                        <GradientStop Color="#CC000000" Offset="1"/>
+                                                        <GradientStop Color="#00555555" Offset="0.3"/>
+                                                        <GradientStop Color="#22555555" Offset="0.5"/>
+                                                        <GradientStop Color="#77555555" Offset="0.748"/>
+                                                    </LinearGradientBrush>
+                                                </Rectangle.Fill>
+                                            </Rectangle>
+                                            <TextBlock x:Name="infobarSBServerName" TextWrapping="Wrap" Text="{Binding SelectedItem.name, ElementName=serverBrowserList}" VerticalAlignment="Bottom" Padding="3,0,3,3" FontSize="7" Margin="0" Foreground="White"/>
+                                        </Grid>
                                     </Viewbox>
-                                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="0,5,0,0">
+                                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="5,5,0,0">
                                         <StackPanel x:Name="infobarSBHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
                                             <StackPanel x:Name="infobarSBHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
                                                 <StackPanel x:Name="infobarSBHeaderH" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
@@ -251,7 +465,7 @@
                                             </StackPanel>
                                         </StackPanel>
                                     </ScrollViewer>
-                                    <ListView x:Name="infobarSBPlayers" Margin="0,5,0,0" Height="200" BorderThickness="0" ItemsSource="{Binding SelectedItem.players, ElementName=serverBrowserList}" Foreground="Black">
+                                    <ListView x:Name="infobarSBPlayers" Margin="5,5,5,0" Height="200" BorderThickness="0" ItemsSource="{Binding SelectedItem.players, ElementName=serverBrowserList}" Foreground="Black">
                                         <ListView.Resources>
                                             <Style TargetType="{x:Type ListViewItem}">
                                                 <Style.Triggers>
@@ -295,9 +509,9 @@
                                             </GridView>
                                         </ListView.View>
                                     </ListView>
-                                    <CheckBox x:Name="infobarSBVoIP" Content="VoIP" Margin="0,5,0,0" IsEnabled="False" IsChecked="{Binding SelectedItem.VoIP, ElementName=serverBrowserList}"/>
-                                    <CheckBox x:Name="infobarSBSprint" Content="Sprint" Margin="0,0,0,0" IsEnabled="False" IsChecked="{Binding SelectedItem.sprintEnabledBool, ElementName=serverBrowserList, Mode=OneWay}"/>
-                                    <CheckBox x:Name="infobarSBAssassinations" Content="Assassinations" Margin="0,0,0,0" IsEnabled="False" IsChecked="{Binding SelectedItem.assassinationEnabledBool, ElementName=serverBrowserList, Mode=OneWay}"/>
+                                    <CheckBox x:Name="infobarSBVoIP" Content="VoIP" Margin="5,6,5,0" IsEnabled="False" IsChecked="{Binding SelectedItem.VoIP, ElementName=serverBrowserList}"/>
+                                    <CheckBox x:Name="infobarSBSprint" Content="Sprint" Margin="5,0,5,0" IsEnabled="False" IsChecked="{Binding SelectedItem.sprintEnabledBool, ElementName=serverBrowserList, Mode=OneWay}"/>
+                                    <CheckBox x:Name="infobarSBAssassinations" Content="Assassinations" Margin="5,0,5,0" IsEnabled="False" IsChecked="{Binding SelectedItem.assassinationEnabledBool, ElementName=serverBrowserList, Mode=OneWay}"/>
                                 </StackPanel>
                             </ScrollViewer>
                             <Button x:Name="infobarSBConnect" Content="Sync Mods and Connect" Margin="0,10,10,10" Grid.Row="1" HorizontalAlignment="Right" Width="150" Click="infobarDLDownload_Click"/>
@@ -318,6 +532,15 @@
                 <MenuItem Header="_Create New Profile" />
             </MenuItem>
             <MenuItem x:Name="options" Header="_Options">
+                <MenuItem Header="_Repository">
+                    <MenuItem x:Name="optionsRepoConduit" Header="_DewShare" IsCheckable="True" IsChecked="True" Click="optionsRepoConduit_Click" />
+                    <MenuItem x:Name="optionsRepoMarchi" Header="_arkdown" IsCheckable="True" IsChecked="False" Click="optionsRepoMarchi_Click" />
+                </MenuItem>
+                <Separator></Separator>
+                <MenuItem Header="_Tab Position">
+                    <MenuItem x:Name="optionsTabLeft" Header="_Left" IsCheckable="True" IsChecked="True" Click="optionsTabLeft_Click" />
+                    <MenuItem x:Name="optionsTabTop" Header="_Top" IsCheckable="True" IsChecked="False" Click="optionsTabTop_Click" />
+                </MenuItem>
                 <MenuItem Header="_Install Order">
                     <MenuItem x:Name="optionsOrderList" Header="_List Order" IsCheckable="True" IsChecked="True" Click="optionsOrderList_Click" />
                     <MenuItem x:Name="optionsOrderPriority" Header="_Priority Order" IsCheckable="True" IsChecked="False" Click="optionsOrderPriority_Click" />
@@ -325,12 +548,23 @@
                 <Separator></Separator>
                 <MenuItem x:Name="optionsOffline" Header="_Offline Mode" IsCheckable="True" Click="optionsOffline_Click" />
                 <MenuItem x:Name="optionsDeveloper" Header="_Developer Mode" IsCheckable="True" Click="optionsDeveloper_Click" />
+                <Separator x:Name="optionsDeveloperSeparator"></Separator>
+                <MenuItem x:Name="optionsDeveloperOptions" Header="_Developer Options">
+                    <MenuItem x:Name="optionsDeveloperBackup" Header="_Create Backup On First Install" IsCheckable="True" IsChecked="True" Click="optionsDeveloperBackup_Click" />
+                    <MenuItem x:Name="optionsDeveloperRestore" Header="_Restore Files On Install" IsCheckable="True" IsChecked="True" Click="optionsDeveloperRestore_Click" />
+                    <MenuItem x:Name="optionsDeveloperTagTool" Header="_Show TagTool Window" IsCheckable="True" IsChecked="False" Click="optionsDeveloperTagTool_Click" />
+                </MenuItem>
             </MenuItem>
         </Menu>
-        <StatusBar Height="30" VerticalAlignment="Bottom" Padding="5,0">
-            <Button x:Name="refreshButton" Content="Refresh" Width="62" Click="refreshButton_Click"/>
-            <StatusBarItem x:Name="statusNumber" Content="x mods available" Height="30" VerticalAlignment="Top" Margin="5,0,0,0"/>
-            <StatusBarItem x:Name="statusBarText" Content="all's right with the world" Height="30" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
-        </StatusBar>
+        <Grid x:Name="installLogGrid" Visibility="Collapsed" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}">
+            <ScrollViewer x:Name="installLogScroll" Margin="0,0,0,30" ScrollChanged="installLogScroll_ScrollChanged">
+                <TextBlock x:Name="installLogBox" TextWrapping="Wrap" FontFamily="Consolas, Courier New, Lucida Console, Ubuntu Mono" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Padding="5"/>
+            </ScrollViewer>
+            <StatusBar Height="30" VerticalAlignment="Bottom" Padding="5,0">
+                <StatusBarItem HorizontalContentAlignment="Right">
+                    <Button x:Name="closeLogButton" Content="Close Install Log" Width="150" Click="closeLogButton_Click"/>
+                </StatusBarItem>
+            </StatusBar>
+        </Grid>
     </Grid>
 </Window>

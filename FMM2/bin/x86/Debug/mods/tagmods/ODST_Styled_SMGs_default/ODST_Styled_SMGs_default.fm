@@ -1,6 +1,0 @@
-REM ODST Styled SMGs default Installer.
-
-cd mods/tagmods/ODST_Styled_SMGs_default
-TYPE ODST_Styled_SMGs_default.cmds | TagTool.exe ../../../maps/tags.dat
-
-EXIT /B 0

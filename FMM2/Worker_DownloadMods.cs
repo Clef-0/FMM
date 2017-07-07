@@ -56,7 +56,11 @@ namespace FMM2
                 {
                     mainTabs.IsEnabled = false;
                     menu.IsEnabled = false;
-                    refreshButton.IsEnabled = false;
+                    myModsRefreshButton.IsEnabled = false;
+                    dlModsRefreshButton.IsEnabled = false;
+                    myMapsRefreshButton.IsEnabled = false;
+                    dlMapsRefreshButton.IsEnabled = false;
+                    serversRefreshButton.IsEnabled = false;
                 }));
 
                 SvnClient svnClient = new SvnClient();
@@ -90,8 +94,12 @@ namespace FMM2
             {
                 mainTabs.IsEnabled = true;
                 menu.IsEnabled = true;
-                refreshButton.IsEnabled = true;
-                MessageBox.Show("Mods downloaded.", "Foundation Mod Manager");
+                myModsRefreshButton.IsEnabled = true;
+                dlModsRefreshButton.IsEnabled = true;
+                myMapsRefreshButton.IsEnabled = true;
+                dlMapsRefreshButton.IsEnabled = true;
+                serversRefreshButton.IsEnabled = true;
+                MessageBox.Show("Mods downloaded.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 foreach (Mod listedMod in downloadableModsList.Items)
                 {
@@ -102,16 +110,14 @@ namespace FMM2
                 }
 
                 mMods.Clear();
-                lookDirectory(Path.Combine(Environment.CurrentDirectory, "mods"));
+                infobarScroll.Visibility = Visibility.Collapsed;
+                lookModsDirectory(Path.Combine(Environment.CurrentDirectory, "mods"));
             }));
         }
 
         private void svnProgress(object sender, SvnProgressEventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                statusBarText.Content = e.Progress;
-            }));
+            // can't really do progress with SharpSvn, oh well
         }
 
         private void deleteDirectory(string path)
