@@ -40,16 +40,11 @@ namespace FMM2
             {
                 mainTabs.IsEnabled = false;
                 menu.IsEnabled = false;
-                myModsRefreshButton.IsEnabled = false;
-                dlModsRefreshButton.IsEnabled = false;
-                myMapsRefreshButton.IsEnabled = false;
-                dlMapsRefreshButton.IsEnabled = false;
-                serversRefreshButton.IsEnabled = false;
             }));
 
             List<Map> checkedMaps = new List<Map>();
 
-            foreach (Map listedMap in downloadableMapsList.Items)
+            foreach (Map listedMap in dMaps)
             {
                 if (listedMap.IsChecked == true)
                 {
@@ -58,6 +53,11 @@ namespace FMM2
             }
             if (checkedMaps.Count == 0)
             {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    mainTabs.IsEnabled = true;
+                    menu.IsEnabled = true;
+                }));
                 return;
             }
 
@@ -83,11 +83,6 @@ namespace FMM2
             {
                 mainTabs.IsEnabled = true;
                 menu.IsEnabled = true;
-                myModsRefreshButton.IsEnabled = true;
-                dlModsRefreshButton.IsEnabled = true;
-                myMapsRefreshButton.IsEnabled = true;
-                dlMapsRefreshButton.IsEnabled = true;
-                serversRefreshButton.IsEnabled = true;
                 MessageBox.Show(Application.Current.MainWindow, "Maps downloaded.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 foreach (Map listedMap in downloadableMapsList.Items)

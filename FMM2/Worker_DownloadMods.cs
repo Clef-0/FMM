@@ -56,11 +56,6 @@ namespace FMM2
                 {
                     mainTabs.IsEnabled = false;
                     menu.IsEnabled = false;
-                    myModsRefreshButton.IsEnabled = false;
-                    dlModsRefreshButton.IsEnabled = false;
-                    myMapsRefreshButton.IsEnabled = false;
-                    dlMapsRefreshButton.IsEnabled = false;
-                    serversRefreshButton.IsEnabled = false;
                 }));
 
                 SvnClient svnClient = new SvnClient();
@@ -94,11 +89,6 @@ namespace FMM2
             {
                 mainTabs.IsEnabled = true;
                 menu.IsEnabled = true;
-                myModsRefreshButton.IsEnabled = true;
-                dlModsRefreshButton.IsEnabled = true;
-                myMapsRefreshButton.IsEnabled = true;
-                dlMapsRefreshButton.IsEnabled = true;
-                serversRefreshButton.IsEnabled = true;
                 MessageBox.Show(Application.Current.MainWindow, "Mods downloaded.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 foreach (Mod listedMod in downloadableModsList.Items)

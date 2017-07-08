@@ -32,6 +32,14 @@ namespace FMM2
                 Task.Factory.ContinueWhenAll(tasks, myModsBitmapsInBackground_Done);
                 Array.ForEach(tasks, (t) => t.Start());
             }
+            else
+            {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    myModsRefreshButton.Content = "Refresh";
+                    myModsRefreshButton.IsEnabled = true;
+                }));
+            }
         }
         
         private void lookModsDirectory(string targetDirectory)

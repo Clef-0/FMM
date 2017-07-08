@@ -26,11 +26,6 @@ namespace FMM2
             installLogGrid.Visibility = Visibility.Collapsed;
             mainTabs.IsEnabled = true;
             menu.IsEnabled = true;
-            myModsRefreshButton.IsEnabled = true;
-            dlModsRefreshButton.IsEnabled = true;
-            myMapsRefreshButton.IsEnabled = true;
-            dlMapsRefreshButton.IsEnabled = true;
-            serversRefreshButton.IsEnabled = true;
         }
 
         private void installLogScroll_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -63,11 +58,6 @@ namespace FMM2
             Dispatcher.BeginInvoke(new Action(() => {
                 mainTabs.IsEnabled = false;
                 menu.IsEnabled = false;
-                myModsRefreshButton.IsEnabled = false;
-                dlModsRefreshButton.IsEnabled = false;
-                myMapsRefreshButton.IsEnabled = false;
-                dlMapsRefreshButton.IsEnabled = false;
-                serversRefreshButton.IsEnabled = false;
                 installLogGrid.Visibility = Visibility.Visible;
                 closeLogButton.Visibility = Visibility.Collapsed;
                 closeLogButton.Focus();

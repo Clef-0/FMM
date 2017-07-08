@@ -105,7 +105,7 @@
     <Compile Include="List_Sort.cs" />
     <Compile Include="Worker_InstallMods.cs" />
     <Compile Include="Menu.cs" />
-    <Compile Include="SwitchConverter.cs" />
+    <Compile Include="Converters.cs" />
     <Compile Include="Worker_PopulateDLMaps.cs" />
     <Compile Include="Worker_PopulateDLMods.cs" />
     <Compile Include="Worker_DownloadMaps.cs" />

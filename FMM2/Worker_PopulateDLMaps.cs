@@ -114,7 +114,14 @@ namespace FMM2
                 wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
                 if (repositoryConduit)
                 {
-                    wc.DownloadStringAsync(new Uri("http://halovau.lt/inc/api/listMaps.api?key=ab26e50f274d6ab6122305659c938d99"));
+                    try
+                    {
+                        wc.DownloadStringAsync(new Uri("http://halovau.lt/inc/api/listMaps.api?key=ab26e50f274d6ab6122305659c938d99"));
+                    }
+                    catch (WebException)
+                    {
+                        downloadableMapsAlert.Visibility = Visibility.Visible;
+                    }
                 }
                 else
                 {
