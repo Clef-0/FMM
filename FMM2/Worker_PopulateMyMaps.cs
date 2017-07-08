@@ -57,7 +57,7 @@ namespace FMM2
                 string mapBaseMap = "";
                 baseMaps.TryGetValue(LittleEndianByteArrayToInteger(ReadByteArrayFromFile(path, 0x120, 0x4), 0x0), out mapBaseMap);
                 await Dispatcher.BeginInvoke(new Action(() => {
-                    mMaps.Add(new Map { Name = mapName, Desc = mapDesc, Author = mapAuthor, BaseMap = mapBaseMap, Icon = null });
+                    mMaps.Add(new Map { Name = mapName, Desc = mapDesc, Author = mapAuthor, BaseMap = mapBaseMap, Icon = null, Location = path });
                 }));
             }
         }

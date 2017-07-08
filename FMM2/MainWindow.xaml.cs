@@ -763,14 +763,16 @@ namespace FMM2
             switch (rsltMessageBox)
             {
                 case MessageBoxResult.Yes:
+                    int selectedIndex = myMapsList.SelectedIndex;
+                    string locDel = mMaps[selectedIndex].Location;
+                    File.Delete(locDel);
                     try
                     {
-                        int selectedIndex = myMapsList.SelectedIndex;
-                        File.Delete(mMaps[selectedIndex].Location);
+                        Directory.Delete(Path.GetDirectoryName(locDel), false);
                     }
-                    catch
+                    catch (IOException)
                     {
-                        // mod folder doesn't exist or user not elevated. oh well.
+                        // directory is not empty, so that's fine.
                     }
 
                     if (!workerPopulateMyMaps.IsBusy)
