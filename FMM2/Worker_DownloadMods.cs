@@ -99,7 +99,7 @@ namespace FMM2
                 myMapsRefreshButton.IsEnabled = true;
                 dlMapsRefreshButton.IsEnabled = true;
                 serversRefreshButton.IsEnabled = true;
-                MessageBox.Show("Mods downloaded.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(Application.Current.MainWindow, "Mods downloaded.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 foreach (Mod listedMod in downloadableModsList.Items)
                 {
@@ -111,7 +111,7 @@ namespace FMM2
 
                 mMods.Clear();
                 infobarScroll.Visibility = Visibility.Collapsed;
-                lookModsDirectory(Path.Combine(Environment.CurrentDirectory, "mods"));
+                workerPopulateMyMods.RunWorkerAsync();
             }));
         }
 

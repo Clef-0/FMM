@@ -24,6 +24,13 @@ namespace FMM2
         private void closeLogButton_Click(object sender, RoutedEventArgs e)
         {
             installLogGrid.Visibility = Visibility.Collapsed;
+            mainTabs.IsEnabled = true;
+            menu.IsEnabled = true;
+            myModsRefreshButton.IsEnabled = true;
+            dlModsRefreshButton.IsEnabled = true;
+            myMapsRefreshButton.IsEnabled = true;
+            dlMapsRefreshButton.IsEnabled = true;
+            serversRefreshButton.IsEnabled = true;
         }
 
         private void installLogScroll_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -63,11 +70,14 @@ namespace FMM2
                 serversRefreshButton.IsEnabled = false;
                 installLogGrid.Visibility = Visibility.Visible;
                 closeLogButton.Visibility = Visibility.Collapsed;
-                for (int x = 1; x < 10; x++)
-                installLogBox.Text += "Foundation Mod Manager [2.00]" + Environment.NewLine + 
-                Environment.NewLine +
-                "Please report any bugs and/or feature requests at" + Environment.NewLine +
-                "<http://github.com/Clef-0/FMM2>." + Environment.NewLine + Environment.NewLine;
+                closeLogButton.Focus();
+                installLogBox.Text = "";
+                //for (int x = 1; x < 10; x++) {
+                    installLogBox.Text += "Foundation Mod Manager [2.00]" + Environment.NewLine +
+                    Environment.NewLine +
+                    "Please report any bugs and/or feature requests at" + Environment.NewLine +
+                    "<http://github.com/Clef-0/FMM2>." + Environment.NewLine + Environment.NewLine;
+                //}
             }));
 
             BackgroundWorker worker = sender as BackgroundWorker;
@@ -75,7 +85,7 @@ namespace FMM2
 
             // Save File Storing Checked Items And Order
 
-            string fmmdat = Path.Combine(Directory.GetCurrentDirectory(), "fmm.dat");
+            string fmmdat = Path.Combine(Directory.GetCurrentDirectory(), "fmm", "profiles", profile + ".dat");
             FileStream fmmdatWiper = File.Open(fmmdat, FileMode.OpenOrCreate);
             fmmdatWiper.SetLength(0);
             fmmdatWiper.Close();
@@ -103,13 +113,6 @@ namespace FMM2
 
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                mainTabs.IsEnabled = true;
-                menu.IsEnabled = true;
-                myModsRefreshButton.IsEnabled = true;
-                dlModsRefreshButton.IsEnabled = true;
-                myMapsRefreshButton.IsEnabled = true;
-                dlMapsRefreshButton.IsEnabled = true;
-                serversRefreshButton.IsEnabled = true;
                 closeLogButton.Visibility = Visibility.Visible;
             }));
 

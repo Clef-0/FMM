@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -149,7 +150,7 @@ namespace FMM2
                     host.map = new string(a);
                 }
 
-                List<Player> newPlayers = new List<Player>();
+                ObservableCollection<Player> newPlayers = new ObservableCollection<Player>();
 
                 foreach(Player player in host.players)
                 {
@@ -194,10 +195,6 @@ namespace FMM2
             catch { }
             if (serverString != "")
             {
-                // Intialize ping variable to "9999" so that if ping-estimation fails for a server, it gets sorted
-                // to the bottom when sorting by ping..
-                int ping = 9999;
-
                 var times = new List<double>();
                 for (int i = 0; i < 4; i++)
                 {
@@ -205,13 +202,20 @@ namespace FMM2
                     sock.Blocking = true;
 
                     var stopwatch = new Stopwatch();
+                    double t = 0;
 
                     // Measure the Connect call only
-                    stopwatch.Start();
-                    sock.Connect(CreateIPEndPoint(url));
-                    stopwatch.Stop();
-
-                    double t = stopwatch.Elapsed.TotalMilliseconds;
+                    try
+                    {
+                        stopwatch.Start();
+                        sock.Connect(CreateIPEndPoint(url));
+                        stopwatch.Stop();
+                        t = stopwatch.Elapsed.TotalMilliseconds;
+                    }
+                    catch (SocketException)
+                    {
+                        t = 9999;
+                    }
                     times.Add(t);
 
                     sock.Close();

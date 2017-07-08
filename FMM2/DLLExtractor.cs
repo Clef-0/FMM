@@ -15,7 +15,6 @@ namespace FMM2
         {
             if (assembly == null)
             {
-                MessageBox.Show("test2");
                 return null;
             }
 
@@ -36,31 +35,28 @@ namespace FMM2
 
         private void ExtractDLLs()
         {
-            try
+            if (File.Exists(Path.Combine("FMM", "lib", "SharpSvn.dll")))
             {
-                File.Delete("SharpSvn.dll");
+                File.Delete(Path.Combine("FMM", "lib", "SharpSvn.dll"));
             }
-            catch { }
-            try
+
+            if (File.Exists(Path.Combine("FMM", "lib", "SharpSvn.UI.dll")))
             {
-                File.Delete("SharpSvn.UI.dll");
+                File.Delete(Path.Combine("FMM", "lib", "SharpSvn.UI.dll"));
             }
-            catch { }
-            try
+            if (File.Exists(Path.Combine("FMM", "lib", "Newtonsoft.Json.dll")))
             {
-                File.Delete("Newtonsoft.Json.dll");
+                File.Delete(Path.Combine("FMM", "lib", "Newtonsoft.Json.dll"));
             }
-            catch { }
-            try
+            if (File.Exists(Path.Combine("FMM", "lib", "INIFileParser.dll")))
             {
-                File.Delete("INIFileParser.dll");
+                File.Delete(Path.Combine("FMM", "lib", "INIFileParser.dll"));
             }
-            catch { }
-            File.WriteAllBytes(@"SharpSvn.dll", ExtractResource(Assembly.GetExecutingAssembly(), "FMM2.SharpSvn.dll"));
-            File.WriteAllBytes(@"SharpSvn.UI.dll", ExtractResource(Assembly.GetExecutingAssembly(), "FMM2.SharpSvn.UI.dll"));
-            File.WriteAllBytes(@"Newtonsoft.Json.dll", ExtractResource(Assembly.GetExecutingAssembly(), "FMM2.Newtonsoft.Json.dll"));
-            File.WriteAllBytes(@"INIFileParser.dll", ExtractResource(Assembly.GetExecutingAssembly(), "FMM2.INIFileParser.dll"));
-            
+            Directory.CreateDirectory(Path.Combine("FMM", "lib"));
+            File.WriteAllBytes(Path.Combine("FMM", "lib", "SharpSvn.dll"), ExtractResource(Assembly.GetExecutingAssembly(), "FMM2.SharpSvn.dll"));
+            File.WriteAllBytes(Path.Combine("FMM", "lib", "SharpSvn.UI.dll"), ExtractResource(Assembly.GetExecutingAssembly(), "FMM2.SharpSvn.UI.dll"));
+            File.WriteAllBytes(Path.Combine("FMM", "lib", "Newtonsoft.Json.dll"), ExtractResource(Assembly.GetExecutingAssembly(), "FMM2.Newtonsoft.Json.dll"));
+            File.WriteAllBytes(Path.Combine("FMM", "lib", "INIFileParser.dll"), ExtractResource(Assembly.GetExecutingAssembly(), "FMM2.INIFileParser.dll"));
         }
     }
 }

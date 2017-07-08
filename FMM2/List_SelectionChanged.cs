@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace FMM2
 {
@@ -85,24 +86,56 @@ namespace FMM2
                 {
                     infobarWarnings.Visibility = Visibility.Collapsed;
                 }
-
+                
                 if (item.Icon != null)
                 {
                     infobarIcon.Visibility = Visibility.Visible;
+                    infobarHeader.Margin = new Thickness(infobarHeader.Margin.Left, infobarHeader.Margin.Top, 28, infobarHeader.Margin.Bottom);
                 }
                 else
                 {
                     infobarIcon.Visibility = Visibility.Collapsed;
+                    infobarHeader.Margin = new Thickness(infobarHeader.Margin.Left, infobarHeader.Margin.Top, 3, infobarHeader.Margin.Bottom);
                 }
 
                 if (item.Image != null)
                 {
                     infobarImage.Visibility = Visibility.Visible;
+                    infobarViewGrid.Height = 72;
+                    infobarPanel.Margin = new Thickness(0,0,0,0);
+                    infobarHeader.Margin = new Thickness(3, 0, infobarHeader.Margin.Right, 3);
+                    infobarHeader.VerticalAlignment = VerticalAlignment.Bottom;
+                    infobarIcon.VerticalAlignment = VerticalAlignment.Bottom;
+                    infobarRect.Fill = this.Resources["infobarGradient"] as LinearGradientBrush;
+                    infobarName.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                    infobarAuthor.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                    infobarCredits.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                 }
                 else
                 {
                     infobarImage.Visibility = Visibility.Collapsed;
+                    infobarViewGrid.Height = Double.NaN;
+                    infobarPanel.Margin = new Thickness(0,5,0,0);
+                    infobarHeader.Margin = new Thickness(3,0,infobarHeader.Margin.Right,0);
+                    infobarHeader.VerticalAlignment = VerticalAlignment.Top;
+                    infobarIcon.VerticalAlignment = VerticalAlignment.Top;
+                    infobarRect.Fill = new SolidColorBrush(Color.FromArgb(0,0,0,0));
+                    infobarName.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                    infobarAuthor.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                    infobarCredits.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
                 }
+                if (!string.IsNullOrEmpty(item.ImageFull) || !string.IsNullOrEmpty(item.Url))
+                {
+                    infobarCon.Cursor = Cursors.Hand;
+                }
+                else
+                {
+                    infobarCon.Cursor = null;
+                }
+            }
+            else
+            {
+                infobarScroll.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -169,20 +202,52 @@ namespace FMM2
                 if (item.Icon != null)
                 {
                     infobarDLIcon.Visibility = Visibility.Visible;
+                    infobarDLHeader.Margin = new Thickness(infobarDLHeader.Margin.Left, infobarDLHeader.Margin.Top, 28, infobarDLHeader.Margin.Bottom);
                 }
                 else
                 {
                     infobarDLIcon.Visibility = Visibility.Collapsed;
+                    infobarDLHeader.Margin = new Thickness(infobarDLHeader.Margin.Left, infobarDLHeader.Margin.Top, 3, infobarDLHeader.Margin.Bottom);
                 }
 
                 if (item.Image != null)
                 {
                     infobarDLImage.Visibility = Visibility.Visible;
+                    infobarDLViewGrid.Height = 72;
+                    infobarDLPanel.Margin = new Thickness(0, 0, 0, 0);
+                    infobarDLHeader.Margin = new Thickness(3, 0, infobarDLHeader.Margin.Right, 3);
+                    infobarDLHeader.VerticalAlignment = VerticalAlignment.Bottom;
+                    infobarDLIcon.VerticalAlignment = VerticalAlignment.Bottom;
+                    infobarDLRect.Fill = this.Resources["infobarGradient"] as LinearGradientBrush;
+                    infobarDLName.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                    infobarDLAuthor.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                    infobarDLCredits.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                 }
                 else
                 {
                     infobarDLImage.Visibility = Visibility.Collapsed;
+                    infobarDLViewGrid.Height = Double.NaN;
+                    infobarDLPanel.Margin = new Thickness(0, 5, 0, 0);
+                    infobarDLHeader.Margin = new Thickness(3, 0, infobarDLHeader.Margin.Right, 0);
+                    infobarDLHeader.VerticalAlignment = VerticalAlignment.Top;
+                    infobarDLIcon.VerticalAlignment = VerticalAlignment.Top;
+                    infobarDLRect.Fill = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+                    infobarDLName.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                    infobarDLAuthor.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                    infobarDLCredits.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
                 }
+                if (!string.IsNullOrEmpty(item.ImageFull) || !string.IsNullOrEmpty(item.Url))
+                {
+                    infobarDLCon.Cursor = Cursors.Hand;
+                }
+                else
+                {
+                    infobarDLCon.Cursor = null;
+                }
+            }
+            else
+            {
+                infobarDLScroll.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -232,20 +297,52 @@ namespace FMM2
                 if (item.Icon != null)
                 {
                     infobarMMIcon.Visibility = Visibility.Visible;
+                    infobarMMHeader.Margin = new Thickness(infobarMMHeader.Margin.Left, infobarMMHeader.Margin.Top, 28, infobarMMHeader.Margin.Bottom);
                 }
                 else
                 {
                     infobarMMIcon.Visibility = Visibility.Collapsed;
+                    infobarMMHeader.Margin = new Thickness(infobarMMHeader.Margin.Left, infobarMMHeader.Margin.Top, 3, infobarMMHeader.Margin.Bottom);
                 }
 
                 if (item.Image != null)
                 {
                     infobarMMImage.Visibility = Visibility.Visible;
+                    infobarMMViewGrid.Height = 72;
+                    infobarMMPanel.Margin = new Thickness(0, 0, 0, 0);
+                    infobarMMHeader.Margin = new Thickness(3, 0, infobarMMHeader.Margin.Right, 3);
+                    infobarMMHeader.VerticalAlignment = VerticalAlignment.Bottom;
+                    infobarMMIcon.VerticalAlignment = VerticalAlignment.Bottom;
+                    infobarMMRect.Fill = this.Resources["infobarGradient"] as LinearGradientBrush;
+                    infobarMMName.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                    infobarMMAuthor.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                    infobarMMCredits.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                 }
                 else
                 {
                     infobarMMImage.Visibility = Visibility.Collapsed;
+                    infobarMMViewGrid.Height = Double.NaN;
+                    infobarMMPanel.Margin = new Thickness(0, 5, 0, 0);
+                    infobarMMHeader.Margin = new Thickness(3, 0, infobarMMHeader.Margin.Right, 0);
+                    infobarMMHeader.VerticalAlignment = VerticalAlignment.Top;
+                    infobarMMIcon.VerticalAlignment = VerticalAlignment.Top;
+                    infobarMMRect.Fill = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+                    infobarMMName.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                    infobarMMAuthor.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                    infobarMMCredits.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
                 }
+                if (!string.IsNullOrEmpty(item.ImageFull) || !string.IsNullOrEmpty(item.Url))
+                {
+                    infobarMMCon.Cursor = Cursors.Hand;
+                }
+                else
+                {
+                    infobarMMCon.Cursor = null;
+                }
+            }
+            else
+            {
+                infobarMMScroll.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -295,20 +392,52 @@ namespace FMM2
                 if (item.Icon != null)
                 {
                     infobarMDLIcon.Visibility = Visibility.Visible;
+                    infobarMDLHeader.Margin = new Thickness(infobarDLHeader.Margin.Left, infobarMDLHeader.Margin.Top, 28, infobarDLHeader.Margin.Bottom);
                 }
                 else
                 {
                     infobarMDLIcon.Visibility = Visibility.Collapsed;
+                    infobarMDLHeader.Margin = new Thickness(infobarDLHeader.Margin.Left, infobarMDLHeader.Margin.Top, 3, infobarDLHeader.Margin.Bottom);
                 }
 
                 if (item.Image != null)
                 {
                     infobarMDLImage.Visibility = Visibility.Visible;
+                    infobarMDLViewGrid.Height = 72;
+                    infobarMDLPanel.Margin = new Thickness(0, 0, 0, 0);
+                    infobarMDLHeader.Margin = new Thickness(3, 0, infobarMDLHeader.Margin.Right, 3);
+                    infobarMDLHeader.VerticalAlignment = VerticalAlignment.Bottom;
+                    infobarMDLIcon.VerticalAlignment = VerticalAlignment.Bottom;
+                    infobarMDLRect.Fill = this.Resources["infobarGradient"] as LinearGradientBrush;
+                    infobarMDLName.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                    infobarMDLAuthor.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                    infobarMDLSubmitter.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                 }
                 else
                 {
                     infobarMDLImage.Visibility = Visibility.Collapsed;
+                    infobarMDLViewGrid.Height = Double.NaN;
+                    infobarMDLPanel.Margin = new Thickness(0, 5, 0, 0);
+                    infobarMDLHeader.Margin = new Thickness(3, 0, infobarMDLHeader.Margin.Right, 0);
+                    infobarMDLHeader.VerticalAlignment = VerticalAlignment.Top;
+                    infobarMDLIcon.VerticalAlignment = VerticalAlignment.Top;
+                    infobarMDLRect.Fill = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+                    infobarMDLName.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                    infobarMDLAuthor.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                    infobarMDLSubmitter.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
                 }
+                if (!string.IsNullOrEmpty(item.ImageFull) || !string.IsNullOrEmpty(item.Url))
+                {
+                    infobarMDLCon.Cursor = Cursors.Hand;
+                }
+                else
+                {
+                    infobarMDLCon.Cursor = null;
+                }
+            }
+            else
+            {
+                infobarMDLScroll.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -322,11 +451,25 @@ namespace FMM2
                 if (item.name != null && item.name != "")
                 {
                     infobarSBServerName.Visibility = Visibility.Visible;
+                    if (infobarSBServerName.Text.Length > 60)
+                    {
+                        infobarSBServerName.FontSize = 6;
+                        infobarSBServerName.FontWeight = FontWeights.Normal;
+                    }
+                    else
+                    {
+                        infobarSBServerName.FontSize = 7;
+                        infobarSBServerName.FontWeight = FontWeights.Bold;
+                    }
                 }
                 else
                 {
                     infobarSBServerName.Visibility = Visibility.Collapsed;
                 }
+            }
+            else
+            {
+                infobarSBScroll.Visibility = Visibility.Collapsed;
             }
         }
     }

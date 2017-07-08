@@ -12,6 +12,12 @@
 
     <Window.Resources>
         <local:SwitchConverter x:Key="convSwitch"/>
+        <LinearGradientBrush x:Key="infobarGradient" EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#CC000000" Offset="1"/>
+            <GradientStop Color="#00555555" Offset="0.3"/>
+            <GradientStop Color="#22555555" Offset="0.5"/>
+            <GradientStop Color="#77555555" Offset="0.748"/>
+        </LinearGradientBrush>
     </Window.Resources>
 
     <Grid>
@@ -41,6 +47,16 @@
                                     <ColumnDefinition Width="250"/>
                                 </Grid.ColumnDefinitions>
                                 <ListView x:Name="myModsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="myModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="myModsList_HeaderClicked" GotFocus="modsList_GotFocus">
+                                    <ListView.Resources>
+                                        <ContextMenu x:Key="ItemContextMenu">
+                                            <MenuItem Header="Open Folder in File Explorer" Command="{Binding Path=DataContext.MoreInfo, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" />
+                                        </ContextMenu>
+                                    </ListView.Resources>
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListViewItem}" >
+                                            <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Width="30">
@@ -67,9 +83,10 @@
                                     <ScrollViewer x:Name="infobarScroll" VerticalScrollBarVisibility="Auto">
                                         <StackPanel x:Name="infobarPanel" Orientation="Vertical" Margin="0,0,0,0" VerticalAlignment="Top">
                                             <Viewbox Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Grid HorizontalAlignment="Left" Height="72" Width="128">
+                                                <ContentControl x:Name="infobarCon" MouseLeftButtonUp="infobarCon_MouseLeftButtonUp">
+                                                <Grid x:Name="infobarViewGrid" HorizontalAlignment="Left" Height="72" Width="128">
                                                     <Image x:Name="infobarImage" OpacityMask="Black" Source="{Binding SelectedItem.Image, ElementName=myModsList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
-                                                    <Rectangle >
+                                                    <Rectangle x:Name="infobarRect">
                                                         <Rectangle.Fill>
                                                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                                                 <GradientStop Color="#CC000000" Offset="1"/>
@@ -79,18 +96,19 @@
                                                             </LinearGradientBrush>
                                                         </Rectangle.Fill>
                                                     </Rectangle>
-                                                    <StackPanel x:Name="infobarHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,3,3">
-                                                        <StackPanel x:Name="infobarHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                            <WrapPanel x:Name="infobarHeaderH" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                                <TextBlock x:Name="infobarName" Text="{Binding SelectedItem.Name, ElementName=myModsList}" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="7" Margin="0" Foreground="White"/>
-                                                                <TextBlock x:Name="infobarVersion" Text="{Binding SelectedItem.Version, ElementName=myModsList}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="3,0" FontSize="7" Foreground="White"/>
-                                                            </WrapPanel>
-                                                            <TextBlock x:Name="infobarAuthor" Text="{Binding SelectedItem.Author, ElementName=myModsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="7" Foreground="White"/>
-                                                            <TextBlock x:Name="infobarCredits" Text="{Binding SelectedItem.Credits, ElementName=myModsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="5" Foreground="White"/>
-                                                        </StackPanel>
+                                                    <StackPanel x:Name="infobarHeader" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,28,3">
+                                                        <TextBlock x:Name="infobarName" VerticalAlignment="Top" FontWeight="Bold" Padding="0" FontSize="7" Margin="0" Foreground="White" TextWrapping="Wrap">
+                                                            <TextBlock.Inlines>
+                                                                <Run FontWeight="Bold" Text="{Binding SelectedItem.Name, ElementName=myModsList}" />
+                                                                <Run FontWeight="Normal" Text="{Binding SelectedItem.Version, ElementName=myModsList}" />
+                                                            </TextBlock.Inlines>
+                                                        </TextBlock>
+                                                        <TextBlock x:Name="infobarAuthor" Text="{Binding SelectedItem.Author, ElementName=myModsList}" VerticalAlignment="Top" Padding="0" FontSize="7" Foreground="White" TextWrapping="Wrap"/>
+                                                        <TextBlock x:Name="infobarCredits" Text="{Binding SelectedItem.Credits, ElementName=myModsList}" VerticalAlignment="Top" Padding="0" FontSize="5" Foreground="White" TextWrapping="Wrap"/>
                                                     </StackPanel>
                                                     <Image x:Name="infobarIcon" Height="24" Width="24" OpacityMask="Black" Source="{Binding SelectedItem.Icon, ElementName=myModsList}" Margin="0,0,2,2" Stretch="UniformToFill" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-                                                </Grid>
+                                                    </Grid>
+                                                </ContentControl>
                                             </Viewbox>
                                             <StackPanel x:Name="infobarOps" Orientation="Horizontal" Margin="5,5,5,0">
                                                 <Button x:Name="infobarUp" Width="26" Height="20" Margin="0,0,2,0" Click="infobarUp_Click">
@@ -157,6 +175,11 @@
                                     <ColumnDefinition Width="250"/>
                                 </Grid.ColumnDefinitions>
                                 <ListView x:Name="downloadableModsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="downloadableModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="downloadableModsList_HeaderClicked" GotFocus="modsList_GotFocus">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListViewItem}">
+                                            <Setter Property="ToolTip" Value="{Binding Path=Description}"/>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Width="30">
@@ -183,30 +206,32 @@
                                     <ScrollViewer x:Name="infobarDLScroll" VerticalScrollBarVisibility="Auto">
                                         <StackPanel x:Name="infobarDLPanel" Orientation="Vertical" Margin="0,0,0,0" VerticalAlignment="Top">
                                             <Viewbox Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Grid HorizontalAlignment="Left" Height="72" Width="128">
-                                                    <Image x:Name="infobarDLImage" OpacityMask="Black" Source="{Binding SelectedItem.Image, ElementName=downloadableModsList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
-                                                    <Rectangle >
-                                                        <Rectangle.Fill>
-                                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                                                <GradientStop Color="#CC000000" Offset="1"/>
-                                                                <GradientStop Color="#00555555" Offset="0.3"/>
-                                                                <GradientStop Color="#22555555" Offset="0.5"/>
-                                                                <GradientStop Color="#77555555" Offset="0.748"/>
-                                                            </LinearGradientBrush>
-                                                        </Rectangle.Fill>
-                                                    </Rectangle>
-                                                    <StackPanel x:Name="infobarDLHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,3,3">
-                                                        <StackPanel x:Name="infobarDLHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                            <WrapPanel x:Name="infobarDLHeaderH" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                                <TextBlock x:Name="infobarDLName" Text="{Binding SelectedItem.Name, ElementName=downloadableModsList}" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="7" Foreground="White" />
-                                                                <TextBlock x:Name="infobarDLVersion" Text="{Binding SelectedItem.Version, ElementName=downloadableModsList}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="3,0" FontSize="7" Foreground="White"/>
-                                                            </WrapPanel>
-                                                            <TextBlock x:Name="infobarDLAuthor" Text="{Binding SelectedItem.Author, ElementName=downloadableModsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="7" Foreground="White"/>
-                                                            <TextBlock x:Name="infobarDLCredits" Text="{Binding SelectedItem.Credits, ElementName=downloadableModsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="5" Foreground="White"/>
+                                                <ContentControl x:Name="infobarDLCon" MouseLeftButtonUp="infobarCon_MouseLeftButtonUp">
+                                                    <Grid x:Name="infobarDLViewGrid" HorizontalAlignment="Left" Height="72" Width="128">
+                                                        <Image x:Name="infobarDLImage" OpacityMask="Black" Source="{Binding SelectedItem.Image, ElementName=downloadableModsList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                                        <Rectangle x:Name="infobarDLRect">
+                                                            <Rectangle.Fill>
+                                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                    <GradientStop Color="#CC000000" Offset="1"/>
+                                                                    <GradientStop Color="#00555555" Offset="0.3"/>
+                                                                    <GradientStop Color="#22555555" Offset="0.5"/>
+                                                                    <GradientStop Color="#77555555" Offset="0.748"/>
+                                                                </LinearGradientBrush>
+                                                            </Rectangle.Fill>
+                                                        </Rectangle>
+                                                        <StackPanel x:Name="infobarDLHeader" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,28,3">
+                                                            <TextBlock x:Name="infobarDLName" VerticalAlignment="Top" FontWeight="Bold" Padding="0" FontSize="7" Foreground="White" TextWrapping="Wrap">
+                                                                <TextBlock.Inlines>
+                                                                    <Run FontWeight="Bold" Text="{Binding SelectedItem.Name, ElementName=downloadableModsList}" />
+                                                                    <Run FontWeight="Normal" Text="{Binding SelectedItem.Version, ElementName=downloadableModsList}" />
+                                                                </TextBlock.Inlines>
+                                                            </TextBlock>
+                                                            <TextBlock x:Name="infobarDLAuthor" Text="{Binding SelectedItem.Author, ElementName=downloadableModsList}" VerticalAlignment="Top" Padding="0" FontSize="7" Foreground="White" TextWrapping="Wrap"/>
+                                                            <TextBlock x:Name="infobarDLCredits" Text="{Binding SelectedItem.Credits, ElementName=downloadableModsList}" VerticalAlignment="Top" Padding="0" FontSize="5" Foreground="White" TextWrapping="Wrap"/>
                                                         </StackPanel>
-                                                    </StackPanel>
-                                                    <Image x:Name="infobarDLIcon" Height="24" Width="24" OpacityMask="Black" Source="{Binding SelectedItem.Icon, ElementName=downloadableModsList}" Margin="0,0,2,2" Stretch="UniformToFill" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-                                                </Grid>
+                                                        <Image x:Name="infobarDLIcon" Height="24" Width="24" OpacityMask="Black" Source="{Binding SelectedItem.Icon, ElementName=downloadableModsList}" Margin="0,0,2,2" Stretch="UniformToFill" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                                    </Grid>
+                                                </ContentControl>
                                             </Viewbox>
                                             <TextBlock x:Name="infobarDLRevisionDate" TextWrapping="Wrap" Text="{Binding SelectedItem.RevisionDate, ElementName=downloadableModsList, StringFormat=Last revision: {0}}" VerticalAlignment="Top" Padding="0" FontSize="12" Margin="5,5,5,0"/>
                                             <TextBlock x:Name="infobarDLEDVersion" TextWrapping="Wrap" Text="{Binding SelectedItem.EDVersion, ElementName=downloadableModsList, StringFormat=ElDewrito version: {0}}" VerticalAlignment="Top" Padding="0,0,0,0" FontSize="12" Margin="5,5,5,0"/>
@@ -255,6 +280,11 @@
                                     <ColumnDefinition Width="250"/>
                                 </Grid.ColumnDefinitions>
                                 <ListView x:Name="myMapsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="myMapsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="myMapsList_HeaderClicked" GotFocus="modsList_GotFocus">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListViewItem}">
+                                            <Setter Property="ToolTip" Value="{Binding Path=Description}"/>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
@@ -268,27 +298,27 @@
                                     <ScrollViewer x:Name="infobarMMScroll" VerticalScrollBarVisibility="Auto">
                                         <StackPanel x:Name="infobarMMPanel" Orientation="Vertical" Margin="0,0,0,0" VerticalAlignment="Top">
                                             <Viewbox Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Grid HorizontalAlignment="Left" Height="72" Width="128">
-                                                    <Image x:Name="infobarMMImage" OpacityMask="Black" Source="{Binding SelectedItem.Image, ElementName=myMapsList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
-                                                    <Rectangle >
-                                                        <Rectangle.Fill>
-                                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                                                <GradientStop Color="#CC000000" Offset="1"/>
-                                                                <GradientStop Color="#00555555" Offset="0.3"/>
-                                                                <GradientStop Color="#22555555" Offset="0.5"/>
-                                                                <GradientStop Color="#77555555" Offset="0.748"/>
-                                                            </LinearGradientBrush>
-                                                        </Rectangle.Fill>
-                                                    </Rectangle>
-                                                    <StackPanel x:Name="infobarMMHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,3,3">
-                                                        <StackPanel x:Name="infobarMMHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                            <TextBlock x:Name="infobarMMName" Text="{Binding SelectedItem.Name, ElementName=myMapsList}" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="7" Foreground="White" Margin="0" />
-                                                            <TextBlock x:Name="infobarMMAuthor" Text="{Binding SelectedItem.Author, ElementName=myMapsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="7" Foreground="White"/>
-                                                            <TextBlock x:Name="infobarMMCredits" Text="{Binding SelectedItem.Credits, ElementName=myMapsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="5" Foreground="White"/>
+                                                <ContentControl x:Name="infobarMMCon" MouseLeftButtonUp="infobarCon_MouseLeftButtonUp">
+                                                    <Grid x:Name="infobarMMViewGrid" HorizontalAlignment="Left" Height="72" Width="128">
+                                                        <Image x:Name="infobarMMImage" OpacityMask="Black" Source="{Binding SelectedItem.Image, ElementName=myMapsList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                                        <Rectangle x:Name="infobarMMRect">
+                                                            <Rectangle.Fill>
+                                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                    <GradientStop Color="#CC000000" Offset="1"/>
+                                                                    <GradientStop Color="#00555555" Offset="0.3"/>
+                                                                    <GradientStop Color="#22555555" Offset="0.5"/>
+                                                                    <GradientStop Color="#77555555" Offset="0.748"/>
+                                                                </LinearGradientBrush>
+                                                            </Rectangle.Fill>
+                                                        </Rectangle>
+                                                        <StackPanel x:Name="infobarMMHeader" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,28,3">
+                                                            <TextBlock x:Name="infobarMMName" Text="{Binding SelectedItem.Name, ElementName=myMapsList}" VerticalAlignment="Top" FontWeight="Bold" Padding="0" FontSize="7" Foreground="White" Margin="0" TextWrapping="Wrap"/>
+                                                            <TextBlock x:Name="infobarMMAuthor" Text="{Binding SelectedItem.Author, ElementName=myMapsList}" VerticalAlignment="Top" Padding="0" FontSize="7" Foreground="White" TextWrapping="Wrap"/>
+                                                            <TextBlock x:Name="infobarMMCredits" Text="{Binding SelectedItem.Credits, ElementName=myMapsList}" VerticalAlignment="Top" Padding="0" FontSize="5" Foreground="White" TextWrapping="Wrap"/>
                                                         </StackPanel>
-                                                    </StackPanel>
-                                                    <Image x:Name="infobarMMIcon" Height="24" Width="24" OpacityMask="Black" Source="{Binding SelectedItem.Icon, ElementName=myMapsList}" Margin="0,0,2,2" Stretch="UniformToFill" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-                                                </Grid>
+                                                        <Image x:Name="infobarMMIcon" Height="24" Width="24" OpacityMask="Black" Source="{Binding SelectedItem.Icon, ElementName=myMapsList}" Margin="0,0,2,2" Stretch="UniformToFill" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                                    </Grid>
+                                                </ContentControl>
                                             </Viewbox>
                                             <StackPanel x:Name="infobarMMOps" Orientation="Horizontal" Margin="5,5,5,0">
                                                 <Button x:Name="infobarMMDelete" Width="26" Height="20" Margin="0,0,2,0" Click="infobarMMDel_Click">
@@ -329,6 +359,11 @@
                                     <ColumnDefinition Width="250"/>
                                 </Grid.ColumnDefinitions>
                                 <ListView x:Name="downloadableMapsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="downloadableMapsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="downloadableMapsList_HeaderClicked">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListViewItem}">
+                                            <Setter Property="ToolTip" Value="{Binding Path=Description}"/>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Width="30">
@@ -353,27 +388,27 @@
                                     <ScrollViewer x:Name="infobarMDLScroll" VerticalScrollBarVisibility="Auto">
                                         <StackPanel x:Name="infobarMDLPanel" Orientation="Vertical" Margin="0,0,0,0" VerticalAlignment="Top">
                                             <Viewbox Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Grid HorizontalAlignment="Left" Height="72" Width="128">
-                                                    <Image x:Name="infobarMDLImage" OpacityMask="Black" Source="{Binding SelectedItem.Image, ElementName=downloadableMapsList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
-                                                    <Rectangle>
-                                                        <Rectangle.Fill>
-                                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                                                <GradientStop Color="#CC000000" Offset="1"/>
-                                                                <GradientStop Color="#00555555" Offset="0.3"/>
-                                                                <GradientStop Color="#22555555" Offset="0.5"/>
-                                                                <GradientStop Color="#77555555" Offset="0.748"/>
-                                                            </LinearGradientBrush>
-                                                        </Rectangle.Fill>
-                                                    </Rectangle>
-                                                    <StackPanel x:Name="infobarMDLHeader" Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,3,3">
-                                                        <StackPanel x:Name="infobarMDLHeaderV" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                                            <TextBlock x:Name="infobarMDLName" Text="{Binding SelectedItem.Name, ElementName=downloadableMapsList}" VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" Padding="0" FontSize="7" Foreground="White"/>
-                                                            <TextBlock x:Name="infobarMDLAuthor" Text="{Binding SelectedItem.Author, ElementName=downloadableMapsList}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="7" Foreground="White"/>
-                                                            <TextBlock x:Name="infobarMDLSubmitter" Text="{Binding SelectedItem.Submitter, ElementName=downloadableMapsList, StringFormat=Submitted by {0}}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,0,5,0" FontSize="5" Foreground="White"/>
+                                                <ContentControl x:Name="infobarMDLCon" MouseLeftButtonUp="infobarCon_MouseLeftButtonUp">
+                                                    <Grid x:Name="infobarMDLViewGrid" HorizontalAlignment="Left" Height="72" Width="128">
+                                                        <Image x:Name="infobarMDLImage" OpacityMask="Black" Source="{Binding SelectedItem.Image, ElementName=downloadableMapsList}" Margin="0" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                                        <Rectangle x:Name="infobarMDLRect">
+                                                            <Rectangle.Fill>
+                                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                    <GradientStop Color="#CC000000" Offset="1"/>
+                                                                    <GradientStop Color="#00555555" Offset="0.3"/>
+                                                                    <GradientStop Color="#22555555" Offset="0.5"/>
+                                                                    <GradientStop Color="#77555555" Offset="0.748"/>
+                                                                </LinearGradientBrush>
+                                                            </Rectangle.Fill>
+                                                        </Rectangle>
+                                                        <StackPanel x:Name="infobarMDLHeader" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Bottom" Margin="3,0,28,3">
+                                                            <TextBlock x:Name="infobarMDLName" Text="{Binding SelectedItem.Name, ElementName=downloadableMapsList}" VerticalAlignment="Top" FontWeight="Bold" Padding="0" FontSize="7" Foreground="White" TextWrapping="Wrap"/>
+                                                            <TextBlock x:Name="infobarMDLAuthor" Text="{Binding SelectedItem.Author, ElementName=downloadableMapsList}" VerticalAlignment="Top" Padding="0" FontSize="7" Foreground="White" TextWrapping="Wrap"/>
+                                                            <TextBlock x:Name="infobarMDLSubmitter" Text="{Binding SelectedItem.Submitter, ElementName=downloadableMapsList, StringFormat=Submitted by {0}}" VerticalAlignment="Top" Padding="0" FontSize="5" Foreground="White" TextWrapping="Wrap"/>
                                                         </StackPanel>
-                                                    </StackPanel>
-                                                    <Image x:Name="infobarMDLIcon" Height="24" Width="24" OpacityMask="Black" Source="{Binding SelectedItem.Icon, ElementName=downloadableMapsList}" Margin="0,0,2,2" Stretch="UniformToFill" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-                                                </Grid>
+                                                        <Image x:Name="infobarMDLIcon" Height="24" Width="24" OpacityMask="Black" Source="{Binding SelectedItem.Icon, ElementName=downloadableMapsList}" Margin="0,0,2,2" Stretch="UniformToFill" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                                    </Grid>
+                                                </ContentControl>
                                             </Viewbox>
                                             <TextBlock x:Name="infobarMDLRevisionDate" TextWrapping="Wrap" Text="{Binding SelectedItem.RevisionDate, ElementName=downloadableMapsList, StringFormat=Last revision: {0}}" VerticalAlignment="Top" Padding="0" FontSize="12" Margin="5,5,5,0"/>
                                             <TextBlock x:Name="infobarMDLEDVersion" TextWrapping="Wrap" Text="{Binding SelectedItem.EDVersion, ElementName=downloadableMapsList, StringFormat=ElDewrito version: {0}}" VerticalAlignment="Top" Padding="0,0,0,0" FontSize="12" Margin="5,5,5,0"/>
@@ -416,6 +451,11 @@
                             <ColumnDefinition Width="250"/>
                         </Grid.ColumnDefinitions>
                         <ListView x:Name="serverBrowserList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" GridViewColumnHeader.Click="serverBrowserList_HeaderClicked" SelectionChanged="serverBrowserList_SelectionChanged" GotFocus="modsList_GotFocus">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListViewItem}">
+                                    <Setter Property="ToolTip" Value="{Binding Path=name}"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}" Width="150"/>
@@ -449,7 +489,7 @@
                                                     </LinearGradientBrush>
                                                 </Rectangle.Fill>
                                             </Rectangle>
-                                            <TextBlock x:Name="infobarSBServerName" TextWrapping="Wrap" Text="{Binding SelectedItem.name, ElementName=serverBrowserList}" VerticalAlignment="Bottom" Padding="3,0,3,3" FontSize="7" Margin="0" Foreground="White"/>
+                                            <TextBlock x:Name="infobarSBServerName" TextWrapping="Wrap" Text="{Binding SelectedItem.name, ElementName=serverBrowserList}" VerticalAlignment="Bottom" Padding="3,0,3,3" FontSize="6" Margin="0" Foreground="White"/>
                                         </Grid>
                                     </Viewbox>
                                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="5,5,0,0">
@@ -465,7 +505,7 @@
                                             </StackPanel>
                                         </StackPanel>
                                     </ScrollViewer>
-                                    <ListView x:Name="infobarSBPlayers" Margin="5,5,5,0" Height="200" BorderThickness="0" ItemsSource="{Binding SelectedItem.players, ElementName=serverBrowserList}" Foreground="Black">
+                                    <ListView x:Name="infobarSBPlayers" Margin="5,5,5,0" Height="200" BorderThickness="0" ItemsSource="{Binding SelectedItem.players, ElementName=serverBrowserList}" Foreground="Black" GridViewColumnHeader.Click="infobarSBPlayersList_HeaderClicked">
                                         <ListView.Resources>
                                             <Style TargetType="{x:Type ListViewItem}">
                                                 <Style.Triggers>
@@ -527,7 +567,7 @@
                 <MenuItem x:Name="fileExit" Header="_Exit" Click="fileExit_Click" />
             </MenuItem>
             <MenuItem x:Name="profiles" Header="_Profiles">
-                <MenuItem Header="_Default" IsCheckable="True" IsChecked="True" />
+                <MenuItem Header="_Default" IsCheckable="True" IsChecked="True" Click="profile_Click" />
                 <Separator />
                 <MenuItem Header="_Create New Profile" />
             </MenuItem>

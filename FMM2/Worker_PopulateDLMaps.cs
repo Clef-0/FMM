@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -104,7 +105,7 @@ namespace FMM2
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                dlMapsRefreshButton.Content = "Loading...";
+                dlMapsRefreshButton.Content = "Loading..."; 
                 dlMapsRefreshButton.IsEnabled = false;
             }));
             using (var wc = new WebClient())
@@ -113,8 +114,7 @@ namespace FMM2
                 wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
                 if (repositoryConduit)
                 {
-                    wc.DownloadStringAsync(new Uri("http://halovau.lt/inc/api/listMaps_7-6-17.json"));
-                    //wc.DownloadStringAsync(new Uri("http://halovau.lt/inc/api/listMaps.api?key=ab26e50f274d6ab6122305659c938d99"));
+                    wc.DownloadStringAsync(new Uri("http://halovau.lt/inc/api/listMaps.api?key=ab26e50f274d6ab6122305659c938d99"));
                 }
                 else
                 {
@@ -124,7 +124,22 @@ namespace FMM2
         }
         private void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            string stringJson = e.Result;
+            string stringJson;
+            try
+            {
+                stringJson = e.Result;
+            }
+            catch (Exception ex)
+            {
+                if (ex is TargetInvocationException || ex is WebException)
+                {
+                    stringJson = string.Empty;
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             ObservableCollection<MapJson> oCMJ;
             if (stringJson != string.Empty)
@@ -146,7 +161,7 @@ namespace FMM2
                     Task[] tasks = taskPopulateDLMaps.ToArray();
                     if (tasks.Length > 0)
                     {
-                        Task.Factory.ContinueWhenAll(tasks, bitmapsInBackground_Done);
+                        Task.Factory.ContinueWhenAll(tasks, dlMapsBitmapsInBackground_Done);
                         Array.ForEach(tasks, (t) => t.Start());
                     }
                 }
@@ -171,7 +186,8 @@ namespace FMM2
             Uri imageUri = null;
             BitmapImage bmi = new BitmapImage();
 
-            if (mapJson.thumbnail != "" && Uri.TryCreate(mapJson.thumbnail, UriKind.Absolute, out imageUri) && (mapJson.img.EndsWith(".png") || mapJson.img.EndsWith(".jpg") || mapJson.img.EndsWith(".bmp")))
+            if ((mapJson.img != "" && Uri.TryCreate(mapJson.img, UriKind.Absolute, out imageUri) && (mapJson.img.EndsWith(".png") || mapJson.img.EndsWith(".jpg") || mapJson.img.EndsWith(".bmp")))
+                || (mapJson.thumbnail != "" && Uri.TryCreate(mapJson.thumbnail, UriKind.Absolute, out imageUri) && (mapJson.thumbnail.EndsWith(".png") || mapJson.thumbnail.EndsWith(".jpg") || mapJson.thumbnail.EndsWith(".bmp"))))
             {
                 try
                 {
@@ -196,33 +212,15 @@ namespace FMM2
                 }
                 catch
                 {
+                    // image probably corrupted or intercepted
                     bmi = null;
-                }
-            }
-            else if (mapJson.img != "" && Uri.TryCreate(mapJson.img, UriKind.Absolute, out imageUri) && (mapJson.img.EndsWith(".png") || mapJson.img.EndsWith(".jpg") || mapJson.img.EndsWith(".bmp")))
-            {
-                using (WrappingStream wrapper = new WrappingStream(GetStreamFromUrl(imageUri.OriginalString)))
-                {
-                    try
-                    {
-                        bmi.BeginInit();
-                        bmi.DecodePixelWidth = 200;
-                        bmi.CacheOption = BitmapCacheOption.OnLoad;
-                        bmi.StreamSource = wrapper;
-                        bmi.EndInit();
-                        bmi.Freeze();
-                    }
-                    catch
-                    {
-                        // image probably corrupted or intercepted
-                        bmi = null;
-                    }
                 }
             }
             else
             {
                 bmi = null;
             }
+            
             Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (ThreadStart)delegate ()
             {
                 Map newMap = new Map();
@@ -234,10 +232,35 @@ namespace FMM2
                 newMap.Location = mapJson.directURL;
                 newMap.DLs = mapJson.downloads;
                 newMap.Icon = null;
-                try
+                if (!string.IsNullOrEmpty(mapJson.url))
                 {
-                    string[] updatedDateTime = mapJson.edited.Split(' ');
-                    string[] updatedDate = updatedDateTime[0].Split('-');
+                    if (mapJson.url.StartsWith("//"))
+                    {
+                        newMap.Url = "http:" + mapJson.url;
+                    }
+                    else
+                    {
+                        newMap.Url = mapJson.url;
+                    }
+                }
+
+                string[] updatedDateTime = mapJson.edited.Split(' ');
+                string[] updatedDate = updatedDateTime[0].Split('-');
+                if (updatedDate.Count() == 3)
+                {
+                    string year = updatedDate[0];
+                    int monthint = 0;
+                    Int32.TryParse(updatedDate[1], out monthint);
+                    string month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthint);
+                    int dayint = 0;
+                    Int32.TryParse(updatedDate[2], out dayint);
+                    string day = AddOrdinal(dayint);
+                    newMap.RevisionDate = month + " " + day + ", " + year;
+                }
+                else
+                {
+                    updatedDateTime = mapJson.date.Split(' ');
+                    updatedDate = updatedDateTime[0].Split('-');
                     if (updatedDate.Count() == 3)
                     {
                         string year = updatedDate[0];
@@ -254,33 +277,6 @@ namespace FMM2
                         newMap.RevisionDate = null;
                     }
                 }
-                catch
-                {
-                    try
-                    {
-                        string[] updatedDateTime = mapJson.date.Split(' ');
-                        string[] updatedDate = updatedDateTime[0].Split('-');
-                        if (updatedDate.Count() == 3)
-                        {
-                            string year = updatedDate[0];
-                        int monthint = 0;
-                        Int32.TryParse(updatedDate[1], out monthint);
-                        string month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthint);
-                        int dayint = 0;
-                        Int32.TryParse(updatedDate[2], out dayint);
-                        string day = AddOrdinal(dayint);
-                        newMap.RevisionDate = month + " " + day + ", " + year;
-                    }
-                    else
-                    {
-                        newMap.RevisionDate = null;
-                    }
-                }
-                    catch
-                    {
-                        newMap.RevisionDate = null;
-                    }
-                }
 
                 try
                 {
@@ -290,10 +286,12 @@ namespace FMM2
                 {
                     newMap.Image = null;
                 }
+
                 dMaps.Add(newMap);
             });
         }
-        private void bitmapsInBackground_Done(Task[] tasks)
+
+        private void dlMapsBitmapsInBackground_Done(Task[] tasks)
         {
             taskPopulateDLMaps.Clear();
             Dispatcher.BeginInvoke(new Action(() =>

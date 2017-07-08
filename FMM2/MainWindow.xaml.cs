@@ -90,6 +90,7 @@ namespace FMM2
 
     public class Map : CollectionItem
     {
+        public string ID { get; set; } = "";
         public string Name { get; set; } = "";
         public string Author { get; set; } = "";
         public string Desc { get; set; } = "";
@@ -236,6 +237,13 @@ namespace FMM2
                 _map = value;
             }
         }
+        public string Map
+        {
+            get
+            {
+                return map;
+            }
+        }
         public string mapFile { get; set; } = "";
         private string _variant;
         public string variant
@@ -299,7 +307,7 @@ namespace FMM2
                 return numPlayers;
             }
         }
-        public List<Player> players { get; set; } = new List<Player> { };
+        public ObservableCollection<Player> players { get; set; } = new ObservableCollection<Player> { };
         public List<string> mods { get; set; } = new List<string> { };
         public string gameVersion { get; set; } = "";
         public string eldewritoVersion { get; set; } = "";
@@ -445,7 +453,7 @@ namespace FMM2
         public Result result { get; set; }
     }
 
-    public class Player
+    public class Player : CollectionItem
     {
         public string name { get; set; } = "";
         public int score { get; set; } = 0;
@@ -456,6 +464,42 @@ namespace FMM2
 
         public bool isAlive { get; set; } = false;
         public string uid { get; set; } = "";
+
+        public string Name // for column sorting
+        {
+            get
+            {
+                return name;
+            }
+        }
+        public int Score
+        {
+            get
+            {
+                return score;
+            }
+        }
+        public int K
+        {
+            get
+            {
+                return kills;
+            }
+        }
+        public int A
+        {
+            get
+            {
+                return assists;
+            }
+        }
+        public int D
+        {
+            get
+            {
+                return deaths;
+            }
+        }
     }
 
     /// <summary>
@@ -471,6 +515,7 @@ namespace FMM2
         bool createBackup = true;
         bool restoreBackup = true;
         bool showTagTool = false;
+        string profile = "Default";
         // end
 
 
@@ -480,9 +525,13 @@ namespace FMM2
         ObservableCollection<Map> mMaps { get; set; }
         ObservableCollection<Map> dMaps { get; set; }
         ObservableCollection<Server> servers { get; set; }
+        BackgroundWorker workerPopulateMyMods = new BackgroundWorker();
         BackgroundWorker workerPopulateDLMods = new BackgroundWorker();
         BackgroundWorker workerPopulateMyMaps = new BackgroundWorker();
         BackgroundWorker workerPopulateDLMaps = new BackgroundWorker();
+        List<Task> taskPopulateMyMods = new List<Task>();
+        List<Task> taskPopulateMyMaps = new List<Task>();
+        List<Task> taskPopulateDLMods = new List<Task>();
         List<Task> taskPopulateDLMaps = new List<Task>();
         BackgroundWorker workerPopulateServers = new BackgroundWorker();
         List<Task> taskPopulateServers = new List<Task>();
@@ -510,18 +559,43 @@ namespace FMM2
             return sb.ToString();
         }
 
+        public static void initialiseAssembly()
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs args)
+            {
+                string assemblyFile = (args.Name.Contains(','))
+                    ? args.Name.Substring(0, args.Name.IndexOf(','))
+                    : args.Name;
+
+                assemblyFile += ".dll";
+
+                string absoluteFolder = new FileInfo((new System.Uri(Assembly.GetExecutingAssembly().CodeBase)).LocalPath).Directory.FullName;
+                string targetPath = Path.Combine(absoluteFolder, "FMM", "lib", assemblyFile);
+
+                try
+                {
+                    return Assembly.LoadFile(targetPath);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            };
+        }
+
         public MainWindow()
         {
             InitializeComponent();
 
             // add handlers for workers
+            workerPopulateMyMods.DoWork += new DoWorkEventHandler(populateMyModsList);
             workerPopulateDLMods.DoWork += new DoWorkEventHandler(populateDLModsList);
             workerPopulateMyMaps.DoWork += new DoWorkEventHandler(populateMyMapsList);
             workerPopulateDLMaps.DoWork += new DoWorkEventHandler(populateDLMapsList);
             workerPopulateServers.DoWork += new DoWorkEventHandler(populateServersList);
             workerPopulateServers.RunWorkerCompleted += new RunWorkerCompletedEventHandler(populateServersList_Completed);
             workerDownloadMods.DoWork += new DoWorkEventHandler(dlModWorker);
-            //workerDownloadMaps.DoWork += new DoWorkEventHandler(dlMapWorker);
+            workerDownloadMaps.DoWork += new DoWorkEventHandler(dlMapWorker);
             workerInstallMods.DoWork += new DoWorkEventHandler(installModWorker);
 
 
@@ -546,18 +620,26 @@ namespace FMM2
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            initialiseAssembly();
             bool doNotInit = false;
-            if (!File.Exists("INIFileParser.dll"))
+            if (!File.Exists(Path.Combine("FMM", "lib", "INIFileParser.dll")))
             {
                 doNotInit = true;
                 ExtractDLLs();
-                ProcessStartInfo Info = new ProcessStartInfo();
-                Info.Arguments = "/C choice /C Y /N /D Y /T 1 & START \"\" \"" + Assembly.GetExecutingAssembly().Location + "\"";
-                Info.WindowStyle = ProcessWindowStyle.Hidden;
-                Info.CreateNoWindow = true;
-                Info.FileName = "cmd.exe";
-                Process.Start(Info);
-                Application.Current.Shutdown();
+                if (File.Exists(Path.Combine("FMM", "lib", "INIFileParser.dll")))
+                {
+                    ProcessStartInfo Info = new ProcessStartInfo();
+                    Info.Arguments = "/C choice /C Y /N /D Y /T 1 & START \"\" \"" + Assembly.GetExecutingAssembly().Location + "\"";
+                    Info.WindowStyle = ProcessWindowStyle.Hidden;
+                    Info.CreateNoWindow = true;
+                    Info.FileName = "cmd.exe";
+                    Process.Start(Info);
+                    Application.Current.Shutdown();
+                }
+                else
+                {
+                    MessageBox.Show(Application.Current.MainWindow, "Error: FMM failed to deploy its libraries.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
 
             if (doNotInit != true)
@@ -580,20 +662,24 @@ namespace FMM2
                 if (readFMMIni("FirstTime") != "False")
                 {
                     writeFMMIni("FirstTime", "False");
-                    MessageBox.Show("Mods are not officially supported by the ElDewrito developers.\nIf you experience bugs while mods are installed, please report them to the creators of those mods.\nThe ElDewrito dev team will not accept bug reports suspected to be caused by mods.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(Application.Current.MainWindow, "Mods are not officially supported by the ElDewrito developers.\nIf you experience bugs while mods are installed, please report them to the creators of those mods.\nThe ElDewrito dev team will not accept bug reports suspected to be caused by mods.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     myModsAlert.Visibility = Visibility.Collapsed;
                 }
 
-                if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "fmm-svn")))
+                if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "profiles")))
                 {
-                    Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "fmm-svn"), true);
+                    Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "profiles"));
                 }
 
-                Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "mods"));
-                lookModsDirectory(Path.Combine(Environment.CurrentDirectory, "mods")); // populates local mod list
+                if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "temp")))
+                {
+                    Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "temp"), true);
+                }
+                
+                workerPopulateMyMods.RunWorkerAsync(); // populates local mod list
                 workerPopulateDLMods.RunWorkerAsync(); //populate dl mod list
                 workerPopulateMyMaps.RunWorkerAsync();
                 workerPopulateDLMaps.RunWorkerAsync();
@@ -642,7 +728,7 @@ namespace FMM2
             MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
             MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
 
-            MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
+            MessageBoxResult rsltMessageBox = MessageBox.Show(Application.Current.MainWindow, sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
 
             switch (rsltMessageBox)
             {
@@ -660,7 +746,7 @@ namespace FMM2
 
                     mMods.Clear();
                     infobarScroll.Visibility = Visibility.Collapsed;
-                    lookModsDirectory(Path.Combine(Environment.CurrentDirectory, "mods"));
+                    workerPopulateMyMods.RunWorkerAsync();
                     break;
             }
         }
@@ -672,7 +758,7 @@ namespace FMM2
             MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
             MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
 
-            MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
+            MessageBoxResult rsltMessageBox = MessageBox.Show(Application.Current.MainWindow, sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
 
             switch (rsltMessageBox)
             {
@@ -721,16 +807,16 @@ namespace FMM2
         {
             if (mainTabs.SelectedIndex == 0) //mods
             {
-                if (modsTabs.SelectedIndex == 0) //my
+                if (modsTabs.SelectedIndex == 0 && taskPopulateMyMods.Count == 0) //my
                 {
                     mMods.Clear();
-                    lookModsDirectory(Path.Combine(Environment.CurrentDirectory, "mods"));
+                    workerPopulateMyMods.RunWorkerAsync();
 
                     infobarScroll.Visibility = Visibility.Collapsed;
                 }
                 else if (modsTabs.SelectedIndex == 1) //dl
                 {
-                    if (!workerPopulateDLMods.IsBusy)
+                    if (!workerPopulateDLMods.IsBusy && taskPopulateDLMods.Count == 0)
                     {
                         dMods.Clear();
                         workerPopulateDLMods.RunWorkerAsync(); //populate dl mod list
@@ -743,7 +829,7 @@ namespace FMM2
             {
                 if (mapsTabs.SelectedIndex == 0) //my
                 {
-                    if (!workerPopulateMyMaps.IsBusy)
+                    if (!workerPopulateMyMaps.IsBusy && taskPopulateMyMaps.Count == 0)
                     {
                         mMaps.Clear();
                         workerPopulateMyMaps.RunWorkerAsync();
@@ -786,32 +872,38 @@ namespace FMM2
 
         private void myModsList_HeaderClicked(object sender, RoutedEventArgs e)
         {
-            infobarScroll.Visibility = Visibility.Collapsed;
+            //infobarScroll.Visibility = Visibility.Collapsed;
             listViewHeaderClicked<Mod>(myModsList, mMods, e);
         }
 
         private void downloadableModsList_HeaderClicked(object sender, RoutedEventArgs e)
         {
-            infobarDLScroll.Visibility = Visibility.Collapsed;
+            //infobarDLScroll.Visibility = Visibility.Collapsed;
             listViewHeaderClicked<Mod>(downloadableModsList, dMods, e);
         }
 
         private void myMapsList_HeaderClicked(object sender, RoutedEventArgs e)
         {
-            infobarMMScroll.Visibility = Visibility.Collapsed;
+            //infobarMMScroll.Visibility = Visibility.Collapsed;
             listViewHeaderClicked<Map>(myMapsList, mMaps, e);
         }
 
         private void downloadableMapsList_HeaderClicked(object sender, RoutedEventArgs e)
         {
-            infobarMDLScroll.Visibility = Visibility.Collapsed;
+            //infobarMDLScroll.Visibility = Visibility.Collapsed;
             listViewHeaderClicked<Map>(downloadableMapsList, dMaps, e);
         }
 
         private void serverBrowserList_HeaderClicked(object sender, RoutedEventArgs e)
         {
-            infobarSBScroll.Visibility = Visibility.Collapsed;
+            //infobarSBScroll.Visibility = Visibility.Collapsed;
             listViewHeaderClicked<Server>(serverBrowserList, servers, e);
+        }
+
+        private void infobarSBPlayersList_HeaderClicked(object sender, RoutedEventArgs e)
+        {
+            //infobarSBScroll.Visibility = Visibility.Collapsed;
+            listViewHeaderClicked<Player>(infobarSBPlayers, ((Server)(serverBrowserList.SelectedItem)).players, e);
         }
 
         private void tabsUpdateStatus(object sender, SelectionChangedEventArgs e)
@@ -973,6 +1065,71 @@ namespace FMM2
                 infobarMDLScroll.Visibility = Visibility.Visible;
             if (serverBrowserList.SelectedItems.Count > 0)
                 infobarSBScroll.Visibility = Visibility.Visible;
+        }
+
+        private void infobarCon_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (mainTabs.SelectedIndex == 0 && modsTabs.SelectedIndex == 0)
+            {
+                if (myModsList.SelectedItem != null)
+                {
+                    if (!string.IsNullOrEmpty(((Mod)myModsList.SelectedItem).ImageFull))
+                    {
+                        Process.Start(((Mod)myModsList.SelectedItem).ImageFull);
+                    }
+                    else if (!string.IsNullOrEmpty(((Mod)myModsList.SelectedItem).Url))
+                    {
+                        Process.Start(((Mod)myModsList.SelectedItem).Url);
+                    }
+                }
+            }
+            if (mainTabs.SelectedIndex == 0 && modsTabs.SelectedIndex == 1)
+            {
+                if (downloadableModsList.SelectedItem != null)
+                {
+                    if (!string.IsNullOrEmpty(((Mod)downloadableModsList.SelectedItem).ImageFull))
+                    {
+                        Process.Start(((Mod)downloadableModsList.SelectedItem).ImageFull);
+                    }
+                    else if (!string.IsNullOrEmpty(((Mod)downloadableModsList.SelectedItem).Url))
+                    {
+                        Process.Start(((Mod)downloadableModsList.SelectedItem).Url);
+                    }
+                }
+            }
+            if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 0)
+            {
+                if (myMapsList.SelectedItem != null)
+                {
+                    if (!string.IsNullOrEmpty(((Map)myMapsList.SelectedItem).ImageFull))
+                    {
+                        Process.Start(((Map)myMapsList.SelectedItem).ImageFull);
+                    }
+                    else if (!string.IsNullOrEmpty(((Map)myMapsList.SelectedItem).Url))
+                    {
+                        Process.Start(((Map)myMapsList.SelectedItem).Url);
+                    }
+                }
+            }
+            if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 1)
+            {
+                if (downloadableMapsList.SelectedItem != null)
+                {
+                    if (!string.IsNullOrEmpty(((Map)downloadableMapsList.SelectedItem).ImageFull))
+                    {
+                        Process.Start(((Map)downloadableMapsList.SelectedItem).ImageFull);
+                    }
+                    else if (!string.IsNullOrEmpty(((Map)downloadableMapsList.SelectedItem).Url))
+                    {
+                        Process.Start(((Map)downloadableMapsList.SelectedItem).Url);
+                    }
+                }
+            }
+        }
+
+        private void profile_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(((MenuItem)sender).Header.ToString());
         }
     }
 }

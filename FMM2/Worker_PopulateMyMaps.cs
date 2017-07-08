@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -26,7 +27,6 @@ namespace FMM2
             { 703, "Edge" },
             { 705, "Diamondback" }
         };
-        //Dictionary<int, string> baseVariants = { };
 
         private void populateMyMapsList(object sender, DoWorkEventArgs e)
         {
@@ -52,8 +52,8 @@ namespace FMM2
             if (Path.GetExtension(path) == ".map" || Path.GetExtension(path) == ".bin")
             {
                 string mapName = new string(ReadStringFromFile(path, 0x150, 0x20, Encoding.Unicode).Where(x => !Path.GetInvalidFileNameChars().Contains(x)).ToArray()).Trim();
-                string mapDesc = new string(ReadStringFromFile(path, 0x170, 0x80, Encoding.ASCII).Where(x => !Path.GetInvalidFileNameChars().Contains(x)).ToArray()).Trim();
-                string mapAuthor = new string(ReadStringFromFile(path, 0x1f0, 0x17, Encoding.ASCII).Where(x => !Path.GetInvalidFileNameChars().Contains(x)).ToArray()).Trim();
+                string mapDesc = new string(ReadStringFromFile(path, 0x170, 0x80, Encoding.ASCII).Where(c => !char.IsControl(c)).ToArray()).Trim();
+                string mapAuthor = new string(ReadStringFromFile(path, 0x1f0, 0x17, Encoding.ASCII).Where(c => !char.IsControl(c)).ToArray()).Trim();
                 string mapBaseMap = "";
                 baseMaps.TryGetValue(LittleEndianByteArrayToInteger(ReadByteArrayFromFile(path, 0x120, 0x4), 0x0), out mapBaseMap);
                 await Dispatcher.BeginInvoke(new Action(() => {

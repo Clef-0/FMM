@@ -64,15 +64,19 @@
   <ItemGroup>
     <Reference Include="INIFileParser, Version=2.4.0.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
       <HintPath>..\packages\ini-parser.2.4.0\lib\net20\INIFileParser.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SharpSvn, Version=1.9005.3940.224, Culture=neutral, PublicKeyToken=d729672594885a28, processorArchitecture=x86">
       <HintPath>..\packages\SharpSvn.1.9-x86.1.9005.3940.224\lib\net40\SharpSvn.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SharpSvn.UI, Version=1.9005.3940.224, Culture=neutral, PublicKeyToken=33789aa53ca44aa9, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpSvn.1.9-x86.1.9005.3940.224\lib\net40\SharpSvn.UI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -96,6 +100,7 @@
     </ApplicationDefinition>
     <Compile Include="DLLExtractor.cs" />
     <Compile Include="ListView\Task.cs" />
+    <Compile Include="List_ContextMenu.cs" />
     <Compile Include="List_SelectionChanged.cs" />
     <Compile Include="List_Sort.cs" />
     <Compile Include="Worker_InstallMods.cs" />

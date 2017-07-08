@@ -123,13 +123,30 @@ namespace FMM2
                 writeFMMIni("DeveloperMode", "False");
                 optionsDeveloperSeparator.Visibility = Visibility.Collapsed;
                 optionsDeveloperOptions.Visibility = Visibility.Collapsed;
+                optionsDeveloper.IsChecked = false;
             }
             else
             {
-                developerMode = true;
-                writeFMMIni("DeveloperMode", "True");
-                optionsDeveloperSeparator.Visibility = Visibility.Visible;
-                optionsDeveloperOptions.Visibility = Visibility.Visible;
+                string sMessageBoxText = "Are you sure you want to enable Developer Mode?\nThis will expose settings that can irreversibly modify your game.";
+                string sCaption = "Foundation Mod Manager";
+                MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
+                MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
+
+                MessageBoxResult rsltMessageBox = MessageBox.Show(Application.Current.MainWindow, sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
+
+                switch (rsltMessageBox)
+                {
+                    case MessageBoxResult.Yes:
+                        developerMode = true;
+                        writeFMMIni("DeveloperMode", "True");
+                        optionsDeveloperSeparator.Visibility = Visibility.Visible;
+                        optionsDeveloperOptions.Visibility = Visibility.Visible;
+                        optionsDeveloper.IsChecked = true;
+                        break;
+                    default:
+                        optionsDeveloper.IsChecked = false;
+                        break;
+                }
             }
         }
 
@@ -250,51 +267,6 @@ namespace FMM2
                     mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Top;
                     break;
             }
-            switch (readFMMIni("CreateBackup").ToLower())
-            {
-                case "":
-                    optionsDeveloperBackup.IsChecked = true;
-                    createBackup = true;
-                    break;
-                case "false":
-                    optionsDeveloperBackup.IsChecked = false;
-                    createBackup = false;
-                    break;
-                case "true":
-                    optionsDeveloperBackup.IsChecked = true;
-                    createBackup = true;
-                    break;
-            }
-            switch (readFMMIni("RestoreBackup").ToLower())
-            {
-                case "":
-                    optionsDeveloperRestore.IsChecked = true;
-                    restoreBackup = true;
-                    break;
-                case "false":
-                    optionsDeveloperRestore.IsChecked = false;
-                    restoreBackup = false;
-                    break;
-                case "true":
-                    optionsDeveloperRestore.IsChecked = true;
-                    restoreBackup = true;
-                    break;
-            }
-            switch (readFMMIni("ShowTagTool").ToLower())
-            {
-                case "":
-                    optionsDeveloperTagTool.IsChecked = false;
-                    showTagTool = false;
-                    break;
-                case "false":
-                    optionsDeveloperTagTool.IsChecked = false;
-                    showTagTool = false;
-                    break;
-                case "true":
-                    optionsDeveloperTagTool.IsChecked = true;
-                    showTagTool = true;
-                    break;
-            }
         }
 
         private void optionsTabLeft_Click(object sender, RoutedEventArgs e)
@@ -318,12 +290,10 @@ namespace FMM2
             if (createBackup)
             {
                 createBackup = false;
-                writeFMMIni("CreateBackup", "False");
             }
             else
             {
                 createBackup = true;
-                writeFMMIni("CreateBackup", "True");
             }
         }
 
@@ -332,12 +302,10 @@ namespace FMM2
             if (restoreBackup)
             {
                 restoreBackup = false;
-                writeFMMIni("RestoreBackup", "False");
             }
             else
             {
                 restoreBackup = true;
-                writeFMMIni("RestoreBackup", "True");
             }
         }
 
@@ -346,12 +314,10 @@ namespace FMM2
             if (showTagTool)
             {
                 showTagTool = false;
-                writeFMMIni("ShowTagTool", "False");
             }
             else
             {
                 showTagTool = true;
-                writeFMMIni("ShowTagTool", "True");
             }
         }
     }
