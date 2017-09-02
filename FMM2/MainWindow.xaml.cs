@@ -88,12 +88,14 @@ namespace FMM2
         }
     }
 
-    public class Map : CollectionItem
+    public class FMMFile : CollectionItem
     {
         public string ID { get; set; } = "";
         public string Name { get; set; } = "";
         public string Author { get; set; } = "";
+        public string Version { get; set; } = "";
         public string Desc { get; set; } = "";
+        public string LongDesc { get; set; } = "";
         public string Description
         {
             get
@@ -166,7 +168,7 @@ namespace FMM2
         public string BaseMap { get; set; } = "";
         public int DLs { get; set; } = 0;
 
-        public Map()
+        public FMMFile()
         {
 
         }
@@ -509,7 +511,6 @@ namespace FMM2
     {
         // global settings
         bool installListOrder = true;
-        bool repositoryConduit = true;
         bool offlineMode = false;
         bool developerMode = false;
         bool createBackup = true;
@@ -522,24 +523,33 @@ namespace FMM2
         public static Random Rnd = new Random();
         ObservableCollection<Mod> mMods { get; set; }
         ObservableCollection<Mod> dMods { get; set; }
-        ObservableCollection<Map> mMaps { get; set; }
-        ObservableCollection<Map> dMaps { get; set; }
+        ObservableCollection<FMMFile> mMaps { get; set; }
+        ObservableCollection<FMMFile> dMaps { get; set; }
+        ObservableCollection<FMMFile> mGametypes { get; set; }
+        ObservableCollection<FMMFile> dGametypes { get; set; }
+        ObservableCollection<FMMFile> mMedals { get; set; }
+        ObservableCollection<FMMFile> dMedals { get; set; }
         ObservableCollection<Server> servers { get; set; }
         BackgroundWorker workerPopulateMyMods = new BackgroundWorker();
         BackgroundWorker workerPopulateDLMods = new BackgroundWorker();
         BackgroundWorker workerPopulateMyMaps = new BackgroundWorker();
-        BackgroundWorker workerPopulateDLMaps = new BackgroundWorker();
+        BackgroundWorker workerPopulateMyGametypes = new BackgroundWorker();
+        BackgroundWorker workerPopulateDLFiles = new BackgroundWorker();
         List<Task> taskPopulateMyMods = new List<Task>();
         List<Task> taskPopulateMyMaps = new List<Task>();
+        List<Task> taskPopulateMyGametypes = new List<Task>();
         List<Task> taskPopulateDLMods = new List<Task>();
-        List<Task> taskPopulateDLMaps = new List<Task>();
+        List<Task> taskPopulateDLFiles = new List<Task>();
         BackgroundWorker workerPopulateServers = new BackgroundWorker();
         List<Task> taskPopulateServers = new List<Task>();
         BackgroundWorker workerDownloadMods = new BackgroundWorker();
         BackgroundWorker workerDownloadMaps = new BackgroundWorker();
         BackgroundWorker workerInstallMods = new BackgroundWorker();
+        BackgroundWorker workerBackupCreate = new BackgroundWorker();
+        BackgroundWorker workerBackupRestore = new BackgroundWorker();
 
         const string repository = "https://github.com/Clef-0/FMM-Mods/trunk/";
+        const string filerepository = "https://github.com/Clef-0/FMM-Files/trunk/";
 
         public static string ReturnCleanASCII(string s)
         {
@@ -590,32 +600,49 @@ namespace FMM2
             // add handlers for workers
             workerPopulateMyMods.DoWork += new DoWorkEventHandler(populateMyModsList);
             workerPopulateDLMods.DoWork += new DoWorkEventHandler(populateDLModsList);
-            workerPopulateMyMaps.DoWork += new DoWorkEventHandler(populateMyMapsList);
-            workerPopulateDLMaps.DoWork += new DoWorkEventHandler(populateDLMapsList);
-            workerPopulateServers.DoWork += new DoWorkEventHandler(populateServersList);
-            workerPopulateServers.RunWorkerCompleted += new RunWorkerCompletedEventHandler(populateServersList_Completed);
+            //workerPopulateMyMaps.DoWork += new DoWorkEventHandler(populateMyMapsList);
+            //workerPopulateMyGametypes.DoWork += new DoWorkEventHandler(populateMyGametypesList);
+            //workerPopulateDLFiles.DoWork += new DoWorkEventHandler(populateDLMapsList);
+            //workerPopulateServers.DoWork += new DoWorkEventHandler(populateServersList);
+            //workerPopulateServers.RunWorkerCompleted += new RunWorkerCompletedEventHandler(populateServersList_Completed);
             workerDownloadMods.DoWork += new DoWorkEventHandler(dlModWorker);
-            workerDownloadMaps.DoWork += new DoWorkEventHandler(dlMapWorker);
-            workerInstallMods.DoWork += new DoWorkEventHandler(installModWorker);
-
+            //workerDownloadMaps.DoWork += new DoWorkEventHandler(dlMapWorker);
+            workerInstallMods.DoWork += new DoWorkEventHandler(installModWorker_DoWork);
+            workerInstallMods.RunWorkerCompleted += new RunWorkerCompletedEventHandler(installModWorker_RunWorkerCompleted);
+            workerBackupCreate.DoWork += new DoWorkEventHandler(backupCreate_DoWork);
+            workerBackupCreate.WorkerReportsProgress = true;
+            workerBackupCreate.WorkerSupportsCancellation = true;
+            workerBackupCreate.ProgressChanged += new ProgressChangedEventHandler(backupCreate_ProgressChanged);
+            workerBackupCreate.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backupCreate_RunWorkerCompleted);
+            workerBackupRestore.DoWork += new DoWorkEventHandler(backupRestore_DoWork);
+            workerBackupRestore.WorkerReportsProgress = true;
+            workerBackupRestore.WorkerSupportsCancellation = true;
+            workerBackupRestore.ProgressChanged += new ProgressChangedEventHandler(backupRestore_ProgressChanged);
+            workerBackupRestore.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backupRestore_Completed);
 
             mMods = new ObservableCollection<Mod>();
             dMods = new ObservableCollection<Mod>();
-            mMaps = new ObservableCollection<Map>();
-            dMaps = new ObservableCollection<Map>();
-            servers = new ObservableCollection<Server>();
+            //mMaps = new ObservableCollection<FMMFile>();
+            //dMaps = new ObservableCollection<FMMFile>();
+            //mGametypes = new ObservableCollection<FMMFile>();
+            //dGametypes = new ObservableCollection<FMMFile>();
+            //servers = new ObservableCollection<Server>();
             myModsList.ItemsSource = mMods;
             downloadableModsList.ItemsSource = dMods;
-            myMapsList.ItemsSource = mMaps;
-            downloadableMapsList.ItemsSource = dMaps;
-            serverBrowserList.ItemsSource = servers;
+            //myMapsList.ItemsSource = mMaps;
+            //downloadableMapsList.ItemsSource = dMaps;
+            //myGametypesList.ItemsSource = mGametypes;
+            //downloadableGametypesList.ItemsSource = dGametypes;
+            //serverBrowserList.ItemsSource = servers;
             this.DataContext = this;
 
             mMods.CollectionChanged += new NotifyCollectionChangedEventHandler(tabsUpdateStatus);
             dMods.CollectionChanged += new NotifyCollectionChangedEventHandler(tabsUpdateStatus);
-            mMaps.CollectionChanged += new NotifyCollectionChangedEventHandler(tabsUpdateStatus);
-            dMaps.CollectionChanged += new NotifyCollectionChangedEventHandler(tabsUpdateStatus);
-            servers.CollectionChanged += new NotifyCollectionChangedEventHandler(tabsUpdateStatus);
+            //mMaps.CollectionChanged += new NotifyCollectionChangedEventHandler(tabsUpdateStatus);
+            //dMaps.CollectionChanged += new NotifyCollectionChangedEventHandler(tabsUpdateStatus);
+            //mGametypes.CollectionChanged += new NotifyCollectionChangedEventHandler(tabsUpdateStatus);
+            //dGametypes.CollectionChanged += new NotifyCollectionChangedEventHandler(tabsUpdateStatus);
+            //servers.CollectionChanged += new NotifyCollectionChangedEventHandler(tabsUpdateStatus);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -646,9 +673,12 @@ namespace FMM2
             {
                 new ListViewDragDropManager<Mod>(myModsList);
 
+                installLogGrid.Visibility = Visibility.Collapsed;
+
                 downloadableModsAlert.Visibility = Visibility.Collapsed;
-                downloadableMapsAlert.Visibility = Visibility.Collapsed;
-                serverBrowserAlert.Visibility = Visibility.Collapsed;
+                //downloadableMapsAlert.Visibility = Visibility.Collapsed;
+                //downloadableGametypesAlert.Visibility = Visibility.Collapsed;
+                //serverBrowserAlert.Visibility = Visibility.Collapsed;
 
                 if (!File.Exists("FMM.ini"))
                 {
@@ -669,10 +699,10 @@ namespace FMM2
                     myModsAlert.Visibility = Visibility.Collapsed;
                 }
 
-                if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "profiles")))
-                {
-                    Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "profiles"));
-                }
+                //if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "profiles")))
+                //{
+                //    Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "profiles"));
+                //}
 
                 if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "temp")))
                 {
@@ -681,18 +711,16 @@ namespace FMM2
                 
                 workerPopulateMyMods.RunWorkerAsync(); // populates local mod list
                 workerPopulateDLMods.RunWorkerAsync(); //populate dl mod list
-                workerPopulateMyMaps.RunWorkerAsync();
-                workerPopulateDLMaps.RunWorkerAsync();
-                workerPopulateServers.RunWorkerAsync();
+                //workerPopulateMyMaps.RunWorkerAsync();
+                //workerPopulateDLFiles.RunWorkerAsync();
+                //workerPopulateServers.RunWorkerAsync();
 
                 // hide infobar
-                // {
                 infobarScroll.Visibility = Visibility.Collapsed;
                 infobarDLScroll.Visibility = Visibility.Collapsed;
-                infobarMMScroll.Visibility = Visibility.Collapsed;
-                infobarMDLScroll.Visibility = Visibility.Collapsed;
-                infobarSBScroll.Visibility = Visibility.Collapsed;
-                // }
+                //infobarMMScroll.Visibility = Visibility.Collapsed;
+                //infobarMDLScroll.Visibility = Visibility.Collapsed;
+                //infobarSBScroll.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -751,39 +779,73 @@ namespace FMM2
             }
         }
 
-        private void infobarMMDel_Click(object sender, RoutedEventArgs e)
-        {
-            string sMessageBoxText = "Are you sure you want to delete " + ((Map)myMapsList.SelectedItem).Name + "?" + Environment.NewLine + "This cannot be undone.";
-            string sCaption = "Foundation Mod Manager";
-            MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
-            MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
+        //private void infobarMMDel_Click(object sender, RoutedEventArgs e)
+        //{
+        //    string sMessageBoxText = "Are you sure you want to delete " + ((FMMFile)myMapsList.SelectedItem).Name + "?" + Environment.NewLine + "This cannot be undone.";
+        //    string sCaption = "Foundation Mod Manager";
+        //    MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
+        //    MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
 
-            MessageBoxResult rsltMessageBox = MessageBox.Show(Application.Current.MainWindow, sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
+        //    MessageBoxResult rsltMessageBox = MessageBox.Show(Application.Current.MainWindow, sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
 
-            switch (rsltMessageBox)
-            {
-                case MessageBoxResult.Yes:
-                    int selectedIndex = myMapsList.SelectedIndex;
-                    string locDel = mMaps[selectedIndex].Location;
-                    File.Delete(locDel);
-                    try
-                    {
-                        Directory.Delete(Path.GetDirectoryName(locDel), false);
-                    }
-                    catch (IOException)
-                    {
-                        // directory is not empty, so that's fine.
-                    }
+        //    switch (rsltMessageBox)
+        //    {
+        //        case MessageBoxResult.Yes:
+        //            int selectedIndex = myMapsList.SelectedIndex;
+        //            string locDel = mMaps[selectedIndex].Location;
+        //            File.Delete(locDel);
+        //            try
+        //            {
+        //                Directory.Delete(Path.GetDirectoryName(locDel), false);
+        //            }
+        //            catch (IOException)
+        //            {
+        //                // directory is not empty, so that's fine.
+        //            }
 
-                    if (!workerPopulateMyMaps.IsBusy)
-                    {
-                        mMaps.Clear();
-                        workerPopulateMyMaps.RunWorkerAsync();
-                    }
-                    infobarMMScroll.Visibility = Visibility.Collapsed;
-                    break;
-            }
-        }
+        //            if (!workerPopulateMyMaps.IsBusy)
+        //            {
+        //                mMaps.Clear();
+        //                workerPopulateMyMaps.RunWorkerAsync();
+        //            }
+        //            infobarMMScroll.Visibility = Visibility.Collapsed;
+        //            break;
+        //    }
+        //}
+
+        //private void infobarGTDel_Click(object sender, RoutedEventArgs e)
+        //{
+        //    string sMessageBoxText = "Are you sure you want to delete " + ((FMMFile)myGametypesList.SelectedItem).Name + "?" + Environment.NewLine + "This cannot be undone.";
+        //    string sCaption = "Foundation Mod Manager";
+        //    MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
+        //    MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
+
+        //    MessageBoxResult rsltMessageBox = MessageBox.Show(Application.Current.MainWindow, sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
+
+        //    switch (rsltMessageBox)
+        //    {
+        //        case MessageBoxResult.Yes:
+        //            int selectedIndex = myGametypesList.SelectedIndex;
+        //            string locDel = mGametypes[selectedIndex].Location;
+        //            File.Delete(locDel);
+        //            try
+        //            {
+        //                Directory.Delete(Path.GetDirectoryName(locDel), false);
+        //            }
+        //            catch (IOException)
+        //            {
+        //                // directory is not empty, so that's fine.
+        //            }
+
+        //            if (!workerPopulateMyGametypes.IsBusy)
+        //            {
+        //                mGametypes.Clear();
+        //                workerPopulateMyGametypes.RunWorkerAsync();
+        //            }
+        //            infobarGTScroll.Visibility = Visibility.Collapsed;
+        //            break;
+        //    }
+        //}
 
         private void myModsAlertHide_Click(object sender, RoutedEventArgs e)
         {
@@ -795,19 +857,24 @@ namespace FMM2
             downloadableModsAlert.Visibility = Visibility.Collapsed;
         }
 
-        private void downloadableMapsAlertHide_Click(object sender, RoutedEventArgs e)
-        {
-            downloadableMapsAlert.Visibility = Visibility.Collapsed;
-        }
+        //private void downloadableMapsAlertHide_Click(object sender, RoutedEventArgs e)
+        //{
+        //    downloadableMapsAlert.Visibility = Visibility.Collapsed;
+        //}
 
-        private void serverBrowserAlertHide_Click(object sender, RoutedEventArgs e)
-        {
-            serverBrowserAlert.Visibility = Visibility.Collapsed;
-        }
+        //private void downloadableGametypesAlertHide_Click(object sender, RoutedEventArgs e)
+        //{
+        //    downloadableGametypesAlert.Visibility = Visibility.Collapsed;
+        //}
+
+        //private void serverBrowserAlertHide_Click(object sender, RoutedEventArgs e)
+        //{
+        //    serverBrowserAlert.Visibility = Visibility.Collapsed;
+        //}
 
         private void refreshButton_Click(object sender, RoutedEventArgs e)
         {
-            if (mainTabs.SelectedIndex == 0) //mods
+            //if (mainTabs.SelectedIndex == 0) //mods
             {
                 if (modsTabs.SelectedIndex == 0 && taskPopulateMyMods.Count == 0) //my
                 {
@@ -827,47 +894,66 @@ namespace FMM2
                     }
                 }
             }
-            else if (mainTabs.SelectedIndex == 1) //maps
-            {
-                if (mapsTabs.SelectedIndex == 0) //my
-                {
-                    if (!workerPopulateMyMaps.IsBusy && taskPopulateMyMaps.Count == 0)
-                    {
-                        mMaps.Clear();
-                        workerPopulateMyMaps.RunWorkerAsync();
+            //else if (mainTabs.SelectedIndex == 1) //maps
+            //{
+            //    if (mapsTabs.SelectedIndex == 0) //my
+            //    {
+            //        if (!workerPopulateMyMaps.IsBusy && taskPopulateMyMaps.Count == 0)
+            //        {
+            //            mMaps.Clear();
+            //            workerPopulateMyMaps.RunWorkerAsync();
 
-                        infobarMMScroll.Visibility = Visibility.Collapsed;
-                    }
-                }
-                else if (mapsTabs.SelectedIndex == 1) //dl
-                {
-                    if (!workerPopulateDLMaps.IsBusy && taskPopulateDLMaps.Count == 0)
-                    {
-                        dMaps.Clear();
-                        workerPopulateDLMaps.RunWorkerAsync();
+            //            infobarMMScroll.Visibility = Visibility.Collapsed;
+            //        }
+            //    }
+            //    else if (mapsTabs.SelectedIndex == 1) //dl
+            //    {
+            //        if (!workerPopulateDLFiles.IsBusy && taskPopulateDLFiles.Count == 0)
+            //        {
+            //            dMaps.Clear();
+            //            workerPopulateDLFiles.RunWorkerAsync();
 
-                        infobarMDLScroll.Visibility = Visibility.Collapsed;
-                    }
-                }
-            }
-            else if (mainTabs.SelectedIndex == 2) //gametypes
-            {
-                //TODO
-            }
-            else if (mainTabs.SelectedIndex == 3) //medals
-            {
-                //TODO
-            }
-            else if (mainTabs.SelectedIndex == 4) //server browser
-            {
-                if (!workerPopulateServers.IsBusy && taskPopulateServers.Count == 0)
-                {
-                    servers.Clear();
-                    workerPopulateServers.RunWorkerAsync();
+            //            infobarMDLScroll.Visibility = Visibility.Collapsed;
+            //        }
+            //    }
+            //}
+            //else if (mainTabs.SelectedIndex == 2) //gametypes
+            //{
+            //    if (gametypesTabs.SelectedIndex == 0) //my
+            //    {
+            //        if (!workerPopulateMyGametypes.IsBusy && taskPopulateMyGametypes.Count == 0)
+            //        {
+            //            mGametypes.Clear();
+            //            workerPopulateMyGametypes.RunWorkerAsync();
 
-                    infobarSBScroll.Visibility = Visibility.Collapsed;
-                }
-            }
+            //            infobarGTScroll.Visibility = Visibility.Collapsed;
+            //        }
+            //    }
+            //    else if (gametypesTabs.SelectedIndex == 1) //dl
+            //    {
+            //        if (!workerPopulateDLFiles.IsBusy && taskPopulateDLFiles.Count == 0)
+            //        {
+            //            dGametypes.Clear();
+            //            workerPopulateDLFiles.RunWorkerAsync();
+
+            //            infobarGTDLScroll.Visibility = Visibility.Collapsed;
+            //        }
+            //    }
+            //}
+            //else if (mainTabs.SelectedIndex == 3) //medals
+            //{
+            //    //TODO
+            //}
+            //else if (mainTabs.SelectedIndex == 4) //server browser
+            //{
+            //    if (!workerPopulateServers.IsBusy && taskPopulateServers.Count == 0)
+            //    {
+            //        servers.Clear();
+            //        workerPopulateServers.RunWorkerAsync();
+
+            //        infobarSBScroll.Visibility = Visibility.Collapsed;
+            //    }
+            //}
         }
         GridViewColumnHeader _lastHeaderClicked = null;
         ListSortDirection _lastDirection = ListSortDirection.Ascending;
@@ -884,33 +970,43 @@ namespace FMM2
             listViewHeaderClicked<Mod>(downloadableModsList, dMods, e);
         }
 
-        private void myMapsList_HeaderClicked(object sender, RoutedEventArgs e)
-        {
-            //infobarMMScroll.Visibility = Visibility.Collapsed;
-            listViewHeaderClicked<Map>(myMapsList, mMaps, e);
-        }
+        //private void myMapsList_HeaderClicked(object sender, RoutedEventArgs e)
+        //{
+        //    //infobarMMScroll.Visibility = Visibility.Collapsed;
+        //    listViewHeaderClicked<FMMFile>(myMapsList, mMaps, e);
+        //}
 
-        private void downloadableMapsList_HeaderClicked(object sender, RoutedEventArgs e)
-        {
-            //infobarMDLScroll.Visibility = Visibility.Collapsed;
-            listViewHeaderClicked<Map>(downloadableMapsList, dMaps, e);
-        }
+        //private void downloadableMapsList_HeaderClicked(object sender, RoutedEventArgs e)
+        //{
+        //    //infobarMDLScroll.Visibility = Visibility.Collapsed;
+        //    listViewHeaderClicked<FMMFile>(downloadableMapsList, dMaps, e);
+        //}
 
-        private void serverBrowserList_HeaderClicked(object sender, RoutedEventArgs e)
-        {
-            //infobarSBScroll.Visibility = Visibility.Collapsed;
-            listViewHeaderClicked<Server>(serverBrowserList, servers, e);
-        }
+        //private void myGametypesList_HeaderClicked(object sender, RoutedEventArgs e)
+        //{
+        //    listViewHeaderClicked<FMMFile>(myGametypesList, mGametypes, e);
+        //}
 
-        private void infobarSBPlayersList_HeaderClicked(object sender, RoutedEventArgs e)
-        {
-            //infobarSBScroll.Visibility = Visibility.Collapsed;
-            listViewHeaderClicked<Player>(infobarSBPlayers, ((Server)(serverBrowserList.SelectedItem)).players, e);
-        }
+        //private void downloadableGametypesList_HeaderClicked(object sender, RoutedEventArgs e)
+        //{
+        //    listViewHeaderClicked<FMMFile>(downloadableGametypesList, dGametypes, e);
+        //}
+
+        //private void serverBrowserList_HeaderClicked(object sender, RoutedEventArgs e)
+        //{
+        //    //infobarSBScroll.Visibility = Visibility.Collapsed;
+        //    listViewHeaderClicked<Server>(serverBrowserList, servers, e);
+        //}
+
+        //private void infobarSBPlayersList_HeaderClicked(object sender, RoutedEventArgs e)
+        //{
+        //    //infobarSBScroll.Visibility = Visibility.Collapsed;
+        //    listViewHeaderClicked<Player>(infobarSBPlayers, ((Server)(serverBrowserList.SelectedItem)).players, e);
+        //}
 
         private void tabsUpdateStatus(object sender, SelectionChangedEventArgs e)
         {
-            if (mainTabs.SelectedIndex == 0 && modsTabs.SelectedIndex == 0)
+            if (modsTabs.SelectedIndex == 0)
             {
                 int itemCount = mMods.Count;
                 if (itemCount == 1)
@@ -922,7 +1018,7 @@ namespace FMM2
                     myModsStatusNumber.Content = itemCount + " mods available";
                 }
             }
-            if (mainTabs.SelectedIndex == 0 && modsTabs.SelectedIndex == 1)
+            if (modsTabs.SelectedIndex == 1)
             {
                 int itemCount = dMods.Count;
                 if (itemCount == 1)
@@ -934,42 +1030,42 @@ namespace FMM2
                     dlModsStatusNumber.Content = itemCount + " mods available";
                 }
             }
-            if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 0)
-            {
-                int itemCount = mMaps.Count;
-                if (itemCount == 1)
-                {
-                    myMapsStatusNumber.Content = "1 " + "map available";
-                }
-                else if (itemCount != 1)
-                {
-                    myMapsStatusNumber.Content = itemCount + " maps available";
-                }
-            }
-            if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 1)
-            {
-                int itemCount = dMaps.Count;
-                if (itemCount == 1)
-                {
-                    dlMapsStatusNumber.Content = "1 " + "mod available";
-                }
-                else if (itemCount != 1)
-                {
-                    dlMapsStatusNumber.Content = itemCount + " maps available";
-                }
-            }
-            if (mainTabs.SelectedIndex == 4)
-            {
-                int itemCount = servers.Count;
-                if (itemCount == 1)
-                {
-                    serversStatusNumber.Content = "1 " + "server available";
-                }
-                else if (itemCount != 1)
-                {
-                    serversStatusNumber.Content = itemCount + " servers available";
-                }
-            }
+            //if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 0)
+            //{
+            //    int itemCount = mMaps.Count;
+            //    if (itemCount == 1)
+            //    {
+            //        myMapsStatusNumber.Content = "1 " + "map available";
+            //    }
+            //    else if (itemCount != 1)
+            //    {
+            //        myMapsStatusNumber.Content = itemCount + " maps available";
+            //    }
+            //}
+            //if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 1)
+            //{
+            //    int itemCount = dMaps.Count;
+            //    if (itemCount == 1)
+            //    {
+            //        dlMapsStatusNumber.Content = "1 " + "mod available";
+            //    }
+            //    else if (itemCount != 1)
+            //    {
+            //        dlMapsStatusNumber.Content = itemCount + " maps available";
+            //    }
+            //}
+            //if (mainTabs.SelectedIndex == 4)
+            //{
+            //    int itemCount = servers.Count;
+            //    if (itemCount == 1)
+            //    {
+            //        serversStatusNumber.Content = "1 " + "server available";
+            //    }
+            //    else if (itemCount != 1)
+            //    {
+            //        serversStatusNumber.Content = itemCount + " servers available";
+            //    }
+            //}
         }
         private void tabsUpdateStatus(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -980,29 +1076,37 @@ namespace FMM2
         {
             infobarScroll.Visibility = Visibility.Collapsed;
             infobarDLScroll.Visibility = Visibility.Collapsed;
-            infobarMMScroll.Visibility = Visibility.Collapsed;
-            infobarMDLScroll.Visibility = Visibility.Collapsed;
-            infobarSBScroll.Visibility = Visibility.Collapsed;
-            if (mainTabs.SelectedIndex == 0 && modsTabs.SelectedIndex == 0)
+            //infobarMMScroll.Visibility = Visibility.Collapsed;
+            //infobarMDLScroll.Visibility = Visibility.Collapsed;
+            //infobarSBScroll.Visibility = Visibility.Collapsed;
+            if (modsTabs.SelectedIndex == 0)
             {
                 CollectionViewSource.GetDefaultView(myModsList.ItemsSource).Filter = new Predicate<object>(collectionItemContainsSearch);
             }
-            if (mainTabs.SelectedIndex == 0 && modsTabs.SelectedIndex == 1)
+            if (modsTabs.SelectedIndex == 1)
             {
                 CollectionViewSource.GetDefaultView(downloadableModsList.ItemsSource).Filter = new Predicate<object>(collectionItemContainsSearch);
             }
-            if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 0)
-            {
-                CollectionViewSource.GetDefaultView(myMapsList.ItemsSource).Filter = new Predicate<object>(collectionItemContainsSearch);
-            }
-            if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 1)
-            {
-                CollectionViewSource.GetDefaultView(downloadableMapsList.ItemsSource).Filter = new Predicate<object>(collectionItemContainsSearch);
-            }
-            if (mainTabs.SelectedIndex == 4)
-            {
-                CollectionViewSource.GetDefaultView(serverBrowserList.ItemsSource).Filter = new Predicate<object>(collectionItemContainsSearch);
-            }
+            //if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 0)
+            //{
+            //    CollectionViewSource.GetDefaultView(myMapsList.ItemsSource).Filter = new Predicate<object>(collectionItemContainsSearch);
+            //}
+            //if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 1)
+            //{
+            //    CollectionViewSource.GetDefaultView(downloadableMapsList.ItemsSource).Filter = new Predicate<object>(collectionItemContainsSearch);
+            //}
+            //if (mainTabs.SelectedIndex == 2 && gametypesTabs.SelectedIndex == 0)
+            //{
+            //    CollectionViewSource.GetDefaultView(myGametypesList.ItemsSource).Filter = new Predicate<object>(collectionItemContainsSearch);
+            //}
+            //if (mainTabs.SelectedIndex == 2 && gametypesTabs.SelectedIndex == 1)
+            //{
+            //    CollectionViewSource.GetDefaultView(downloadableGametypesList.ItemsSource).Filter = new Predicate<object>(collectionItemContainsSearch);
+            //}
+            //if (mainTabs.SelectedIndex == 4)
+            //{
+            //    CollectionViewSource.GetDefaultView(serverBrowserList.ItemsSource).Filter = new Predicate<object>(collectionItemContainsSearch);
+            //}
         }
 
         private bool collectionItemContainsSearch(object listItem)
@@ -1011,14 +1115,14 @@ namespace FMM2
             {
                 case "FMM2.Mod":
                     Mod mod = (Mod)listItem;
-                    if (mainTabs.SelectedIndex == 0 && modsTabs.SelectedIndex == 0)
+                    if (modsTabs.SelectedIndex == 0)
                     {
                         if (mod.Name.ToLowerInvariant().Contains(myModsSearchBox.Text.ToLowerInvariant()) || mod.Author.ToLowerInvariant().Contains(myModsSearchBox.Text.ToLowerInvariant()) || mod.Desc.ToLowerInvariant().Contains(myModsSearchBox.Text.ToLowerInvariant()))
                         {
                             return true;
                         }
                     }
-                    if (mainTabs.SelectedIndex == 0 && modsTabs.SelectedIndex == 1)
+                    if (modsTabs.SelectedIndex == 1)
                     {
                         if (mod.Name.ToLowerInvariant().Contains(dlModsSearchBox.Text.ToLowerInvariant()) || mod.Author.ToLowerInvariant().Contains(dlModsSearchBox.Text.ToLowerInvariant()) || mod.Desc.ToLowerInvariant().Contains(dlModsSearchBox.Text.ToLowerInvariant()))
                         {
@@ -1026,30 +1130,44 @@ namespace FMM2
                         }
                     }
                     break;
-                case "FMM2.Map":
-                    Map map = (Map)listItem;
-                    if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 0)
-                    {
-                        if (map.Name.ToLowerInvariant().Contains(myMapsSearchBox.Text.ToLowerInvariant()) || map.Author.ToLowerInvariant().Contains(myMapsSearchBox.Text.ToLowerInvariant()) || map.Desc.ToLowerInvariant().Contains(myMapsSearchBox.Text.ToLowerInvariant()))
-                        {
-                            return true;
-                        }
-                    }
-                    if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 1)
-                    {
-                        if (map.Name.ToLowerInvariant().Contains(dlMapsSearchBox.Text.ToLowerInvariant()) || map.Author.ToLowerInvariant().Contains(dlMapsSearchBox.Text.ToLowerInvariant()) || map.Desc.ToLowerInvariant().Contains(dlMapsSearchBox.Text.ToLowerInvariant()))
-                        {
-                            return true;
-                        }
-                    }
-                    break;
-                case "FMM2.Server":
-                    Server server = (Server)listItem;
-                    if (server.name.ToLowerInvariant().Contains(serversSearchBox.Text.ToLowerInvariant()) || server.Host.ToLowerInvariant().Contains(serversSearchBox.Text.ToLowerInvariant()))
-                    {
-                        return true;
-                    }
-                    break;
+                //case "FMM2.FMMFile":
+                //    FMMFile map = (FMMFile)listItem;
+                //    if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 0)
+                //    {
+                //        if (map.Name.ToLowerInvariant().Contains(myMapsSearchBox.Text.ToLowerInvariant()) || map.Author.ToLowerInvariant().Contains(myMapsSearchBox.Text.ToLowerInvariant()) || map.Desc.ToLowerInvariant().Contains(myMapsSearchBox.Text.ToLowerInvariant()))
+                //        {
+                //            return true;
+                //        }
+                //    }
+                //    if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 1)
+                //    {
+                //        if (map.Name.ToLowerInvariant().Contains(dlMapsSearchBox.Text.ToLowerInvariant()) || map.Author.ToLowerInvariant().Contains(dlMapsSearchBox.Text.ToLowerInvariant()) || map.Desc.ToLowerInvariant().Contains(dlMapsSearchBox.Text.ToLowerInvariant()))
+                //        {
+                //            return true;
+                //        }
+                //    }
+                //    if (mainTabs.SelectedIndex == 2 && gametypesTabs.SelectedIndex == 0)
+                //    {
+                //        if (map.Name.ToLowerInvariant().Contains(myGametypesSearchBox.Text.ToLowerInvariant()) || map.Author.ToLowerInvariant().Contains(myGametypesSearchBox.Text.ToLowerInvariant()) || map.Desc.ToLowerInvariant().Contains(myGametypesSearchBox.Text.ToLowerInvariant()))
+                //        {
+                //            return true;
+                //        }
+                //    }
+                //    if (mainTabs.SelectedIndex == 2 && gametypesTabs.SelectedIndex == 1)
+                //    {
+                //        if (map.Name.ToLowerInvariant().Contains(dlGametypesSearchBox.Text.ToLowerInvariant()) || map.Author.ToLowerInvariant().Contains(dlGametypesSearchBox.Text.ToLowerInvariant()) || map.Desc.ToLowerInvariant().Contains(dlGametypesSearchBox.Text.ToLowerInvariant()))
+                //        {
+                //            return true;
+                //        }
+                //    }
+                //    break;
+                //case "FMM2.Server":
+                //    Server server = (Server)listItem;
+                //    if (server.name.ToLowerInvariant().Contains(serversSearchBox.Text.ToLowerInvariant()) || server.Host.ToLowerInvariant().Contains(serversSearchBox.Text.ToLowerInvariant()))
+                //    {
+                //        return true;
+                //    }
+                //    break;
             }
 
             return false;
@@ -1061,17 +1179,17 @@ namespace FMM2
                 infobarScroll.Visibility = Visibility.Visible;
             if (downloadableModsList.SelectedItems.Count > 0)
                 infobarDLScroll.Visibility = Visibility.Visible;
-            if (myMapsList.SelectedItems.Count > 0)
-                infobarMMScroll.Visibility = Visibility.Visible;
-            if (downloadableMapsList.SelectedItems.Count > 0)
-                infobarMDLScroll.Visibility = Visibility.Visible;
-            if (serverBrowserList.SelectedItems.Count > 0)
-                infobarSBScroll.Visibility = Visibility.Visible;
+            //if (myMapsList.SelectedItems.Count > 0)
+            //    infobarMMScroll.Visibility = Visibility.Visible;
+            //if (downloadableMapsList.SelectedItems.Count > 0)
+            //    infobarMDLScroll.Visibility = Visibility.Visible;
+            //if (serverBrowserList.SelectedItems.Count > 0)
+            //    infobarSBScroll.Visibility = Visibility.Visible;
         }
 
         private void infobarCon_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (mainTabs.SelectedIndex == 0 && modsTabs.SelectedIndex == 0)
+            if (modsTabs.SelectedIndex == 0)
             {
                 if (myModsList.SelectedItem != null)
                 {
@@ -1085,7 +1203,7 @@ namespace FMM2
                     }
                 }
             }
-            if (mainTabs.SelectedIndex == 0 && modsTabs.SelectedIndex == 1)
+            if (modsTabs.SelectedIndex == 1)
             {
                 if (downloadableModsList.SelectedItem != null)
                 {
@@ -1099,39 +1217,82 @@ namespace FMM2
                     }
                 }
             }
-            if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 0)
-            {
-                if (myMapsList.SelectedItem != null)
-                {
-                    if (!string.IsNullOrEmpty(((Map)myMapsList.SelectedItem).ImageFull))
-                    {
-                        Process.Start(((Map)myMapsList.SelectedItem).ImageFull);
-                    }
-                    else if (!string.IsNullOrEmpty(((Map)myMapsList.SelectedItem).Url))
-                    {
-                        Process.Start(((Map)myMapsList.SelectedItem).Url);
-                    }
-                }
-            }
-            if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 1)
-            {
-                if (downloadableMapsList.SelectedItem != null)
-                {
-                    if (!string.IsNullOrEmpty(((Map)downloadableMapsList.SelectedItem).ImageFull))
-                    {
-                        Process.Start(((Map)downloadableMapsList.SelectedItem).ImageFull);
-                    }
-                    else if (!string.IsNullOrEmpty(((Map)downloadableMapsList.SelectedItem).Url))
-                    {
-                        Process.Start(((Map)downloadableMapsList.SelectedItem).Url);
-                    }
-                }
-            }
+            //if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 0)
+            //{
+            //    if (myMapsList.SelectedItem != null)
+            //    {
+            //        if (!string.IsNullOrEmpty(((FMMFile)myMapsList.SelectedItem).ImageFull))
+            //        {
+            //            Process.Start(((FMMFile)myMapsList.SelectedItem).ImageFull);
+            //        }
+            //        else if (!string.IsNullOrEmpty(((FMMFile)myMapsList.SelectedItem).Url))
+            //        {
+            //            Process.Start(((FMMFile)myMapsList.SelectedItem).Url);
+            //        }
+            //    }
+            //}
+            //if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 1)
+            //{
+            //    if (downloadableMapsList.SelectedItem != null)
+            //    {
+            //        if (!string.IsNullOrEmpty(((FMMFile)downloadableMapsList.SelectedItem).ImageFull))
+            //        {
+            //            Process.Start(((FMMFile)downloadableMapsList.SelectedItem).ImageFull);
+            //        }
+            //        else if (!string.IsNullOrEmpty(((FMMFile)downloadableMapsList.SelectedItem).Url))
+            //        {
+            //            Process.Start(((FMMFile)downloadableMapsList.SelectedItem).Url);
+            //        }
+            //    }
+            //}
+            //if (mainTabs.SelectedIndex == 2 && gametypesTabs.SelectedIndex == 0)
+            //{
+            //    if (myGametypesList.SelectedItem != null)
+            //    {
+            //        if (!string.IsNullOrEmpty(((FMMFile)myGametypesList.SelectedItem).ImageFull))
+            //        {
+            //            Process.Start(((FMMFile)myGametypesList.SelectedItem).ImageFull);
+            //        }
+            //        else if (!string.IsNullOrEmpty(((FMMFile)myGametypesList.SelectedItem).Url))
+            //        {
+            //            Process.Start(((FMMFile)myGametypesList.SelectedItem).Url);
+            //        }
+            //    }
+            //}
+            //if (mainTabs.SelectedIndex == 2 && gametypesTabs.SelectedIndex == 1)
+            //{
+            //    if (downloadableGametypesList.SelectedItem != null)
+            //    {
+            //        if (!string.IsNullOrEmpty(((FMMFile)downloadableGametypesList.SelectedItem).ImageFull))
+            //        {
+            //            Process.Start(((FMMFile)downloadableGametypesList.SelectedItem).ImageFull);
+            //        }
+            //        else if (!string.IsNullOrEmpty(((FMMFile)downloadableGametypesList.SelectedItem).Url))
+            //        {
+            //            Process.Start(((FMMFile)downloadableGametypesList.SelectedItem).Url);
+            //        }
+            //    }
+            //}
         }
 
         private void profile_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(((MenuItem)sender).Header.ToString());
         }
+
+        //private void infobarSBConnect_Click(object sender, RoutedEventArgs e)
+        //{
+        //    try
+        //    {
+        //        Process ed = new Process();
+        //        ed.StartInfo.FileName = "eldorado.exe";
+        //        ed.StartInfo.Arguments = "--connect " + ((Server)serverBrowserList.SelectedItem).ipAddress;
+        //        ed.Start();
+        //    }
+        //    catch
+        //    {
+        //        MessageBox.Show(Application.Current.MainWindow, "Could not open eldorado.exe.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
     }
 }

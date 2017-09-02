@@ -85,22 +85,6 @@ namespace FMM2
             }
         }
 
-        private void optionsRepoConduit_Click(object sender, RoutedEventArgs e)
-        {
-            optionsRepoConduit.IsChecked = true;
-            optionsRepoMarchi.IsChecked = false;
-            repositoryConduit = true;
-            writeFMMIni("Repo", "Conduit");
-        }
-
-        private void optionsRepoMarchi_Click(object sender, RoutedEventArgs e)
-        {
-            optionsRepoConduit.IsChecked = false;
-            optionsRepoMarchi.IsChecked = true;
-            repositoryConduit = false;
-            writeFMMIni("Repo", "Marchi");
-        }
-
         private void optionsOffline_Click(object sender, RoutedEventArgs e)
         {
             if (offlineMode)
@@ -229,61 +213,42 @@ namespace FMM2
                     installListOrder = false;
                     break;
             }
-            switch (readFMMIni("Repo").ToLower())
-            {
-                case "":
-                    writeFMMIni("Repo", "Conduit");
-                    optionsRepoConduit.IsChecked = true;
-                    optionsRepoMarchi.IsChecked = false;
-                    repositoryConduit = true;
-                    break;
-                case "conduit":
-                    optionsRepoConduit.IsChecked = true;
-                    optionsRepoMarchi.IsChecked = false;
-                    repositoryConduit = true;
-                    break;
-                case "marchi":
-                    optionsRepoConduit.IsChecked = false;
-                    optionsRepoMarchi.IsChecked = true;
-                    repositoryConduit = false;
-                    break;
-            }
-            switch (readFMMIni("Tab").ToLower())
-            {
-                case "":
-                    writeFMMIni("Tab", "Left");
-                    optionsTabLeft.IsChecked = true;
-                    optionsTabTop.IsChecked = false;
-                    mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Left;
-                    break;
-                case "left":
-                    optionsTabLeft.IsChecked = true;
-                    optionsTabTop.IsChecked = false;
-                    mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Left;
-                    break;
-                case "top":
-                    optionsTabLeft.IsChecked = false;
-                    optionsTabTop.IsChecked = true;
-                    mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Top;
-                    break;
-            }
+            //switch (readFMMIni("Tab").ToLower())
+            //{
+            //    case "":
+            //        writeFMMIni("Tab", "Left");
+            //        optionsTabLeft.IsChecked = true;
+            //        optionsTabTop.IsChecked = false;
+            //        mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Left;
+            //        break;
+            //    case "left":
+            //        optionsTabLeft.IsChecked = true;
+            //        optionsTabTop.IsChecked = false;
+            //        mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Left;
+            //        break;
+            //    case "top":
+            //        optionsTabLeft.IsChecked = false;
+            //        optionsTabTop.IsChecked = true;
+            //        mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Top;
+            //        break;
+            //}
         }
 
-        private void optionsTabLeft_Click(object sender, RoutedEventArgs e)
-        {
-            optionsTabLeft.IsChecked = true;
-            optionsTabTop.IsChecked = false;
-            mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Left;
-            writeFMMIni("Tab", "Left");
-        }
+        //private void optionsTabLeft_Click(object sender, RoutedEventArgs e)
+        //{
+        //    optionsTabLeft.IsChecked = true;
+        //    optionsTabTop.IsChecked = false;
+        //    mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Left;
+        //    writeFMMIni("Tab", "Left");
+        //}
 
-        private void optionsTabTop_Click(object sender, RoutedEventArgs e)
-        {
-            optionsTabLeft.IsChecked = false;
-            optionsTabTop.IsChecked = true;
-            mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Top;
-            writeFMMIni("Tab", "Top");
-        }
+        //private void optionsTabTop_Click(object sender, RoutedEventArgs e)
+        //{
+        //    optionsTabLeft.IsChecked = false;
+        //    optionsTabTop.IsChecked = true;
+        //    mainTabs.TabStripPlacement = System.Windows.Controls.Dock.Top;
+        //    writeFMMIni("Tab", "Top");
+        //}
 
         private void optionsDeveloperBackup_Click(object sender, RoutedEventArgs e)
         {

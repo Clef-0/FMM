@@ -2,6 +2,7 @@
 using IniParser.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -22,9 +23,9 @@ namespace FMM2
                 myModsRefreshButton.IsEnabled = false;
             }));
             BackgroundWorker worker = sender as BackgroundWorker;
-            if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "mods")))
-                Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "mods"));
-            lookModsDirectory(Path.Combine(Environment.CurrentDirectory, "mods"));
+            if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "mods", "tagmods")))
+                Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "mods", "tagmods"));
+            lookModsDirectory(Path.Combine(Environment.CurrentDirectory, "mods", "tagmods"));
 
             Task[] tasks = taskPopulateMyMods.ToArray();
             if (tasks.Length > 0)
@@ -180,11 +181,53 @@ namespace FMM2
         private void myModsBitmapsInBackground_Done(Task[] tasks)
         {
             taskPopulateMyMods.Clear();
+            checkFMMInstallerOrder();
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 myModsRefreshButton.Content = "Refresh";
                 myModsRefreshButton.IsEnabled = true;
             }));
+        }
+        private void checkFMMInstallerOrder()
+        {
+            string fmmdat = Path.Combine(Directory.GetCurrentDirectory(), "fmm.dat");
+            if (File.Exists(fmmdat))
+            {
+                IEnumerable<string> lines = File.ReadLines(fmmdat);
+                IEnumerable<string> linesFor;
+                if (installListOrder)
+                {
+                    linesFor = lines.Reverse();
+                }
+                else
+                {
+                    linesFor = lines;
+                }
+                foreach (string modName in linesFor)
+                {
+                    ObservableCollection<Mod> formod = new ObservableCollection<Mod>();
+
+                    foreach (Mod item in mMods)
+                        formod.Add(item);
+
+                    foreach (Mod item in formod)
+                    {
+                        if (item.Name == modName)
+                        {
+                            try
+                            {
+                                Dispatcher.BeginInvoke(new Action(() =>
+                                {
+                                    mMods.Remove(item);
+                                    mMods.Insert(0, item);
+                                    item.IsChecked = true;
+                                }));
+                            }
+                            catch { }
+                        }
+                    }
+                }
+            }
         }
     }
 }

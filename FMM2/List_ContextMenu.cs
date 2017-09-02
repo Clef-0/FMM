@@ -15,8 +15,8 @@ namespace FMM2
     {
         private void itemLocationOpen_Click(object sender, EventArgs e)
         {
-            if (mainTabs.SelectedIndex == 0) //mods
-            {
+            //if (mainTabs.SelectedIndex == 0) //mods
+            //{
                 string loc = "";
                 if (modsTabs.SelectedIndex == 0)
                 {
@@ -26,27 +26,27 @@ namespace FMM2
                 {
                     Process.Start(loc);
                 }
-            }
-            else if (mainTabs.SelectedIndex == 1) //maps
-            {
-            }
-            else if (mainTabs.SelectedIndex == 2) //gametypes
-            {
-                //TODO
-            }
-            else if (mainTabs.SelectedIndex == 3) //medals
-            {
-                //TODO
-            }
-            else if (mainTabs.SelectedIndex == 4) //server browser
-            {
-            }
+            //}
+            //else if (mainTabs.SelectedIndex == 1) //maps
+            //{
+            //}
+            //else if (mainTabs.SelectedIndex == 2) //gametypes
+            //{
+            //    //TODO
+            //}
+            //else if (mainTabs.SelectedIndex == 3) //medals
+            //{
+            //    //TODO
+            //}
+            //else if (mainTabs.SelectedIndex == 4) //server browser
+            //{
+            //}
         }
 
         private void itemMark_Click(object sender, EventArgs e)
         {
-            if (mainTabs.SelectedIndex == 0) //mods
-            {
+            //if (mainTabs.SelectedIndex == 0) //mods
+            //{
                 if (modsTabs.SelectedIndex == 0)
                 {
                     ((Mod)myModsList.SelectedItem).IsChecked = !((Mod)myModsList.SelectedItem).IsChecked;
@@ -55,21 +55,36 @@ namespace FMM2
                 {
                     ((Mod)downloadableModsList.SelectedItem).IsChecked = !((Mod)downloadableModsList.SelectedItem).IsChecked;
                 }
-            }
-            else if (mainTabs.SelectedIndex == 1) //maps
-            {
-            }
-            else if (mainTabs.SelectedIndex == 2) //gametypes
-            {
-                //TODO
-            }
-            else if (mainTabs.SelectedIndex == 3) //medals
-            {
-                //TODO
-            }
-            else if (mainTabs.SelectedIndex == 4) //server browser
-            {
-            }
+            //}
+            //else if (mainTabs.SelectedIndex == 1) //maps
+            //{
+            //    if (mapsTabs.SelectedIndex == 0)
+            //    {
+            //        ((FMMFile)myMapsList.SelectedItem).IsChecked = !((FMMFile)myMapsList.SelectedItem).IsChecked;
+            //    }
+            //    else if (mapsTabs.SelectedIndex == 1)
+            //    {
+            //        ((FMMFile)downloadableMapsList.SelectedItem).IsChecked = !((FMMFile)downloadableMapsList.SelectedItem).IsChecked;
+            //    }
+            //}
+            //else if (mainTabs.SelectedIndex == 2) //gametypes
+            //{
+            //    if (gametypesTabs.SelectedIndex == 0)
+            //    {
+            //        ((FMMFile)myGametypesList.SelectedItem).IsChecked = !((FMMFile)myGametypesList.SelectedItem).IsChecked;
+            //    }
+            //    else if (gametypesTabs.SelectedIndex == 1)
+            //    {
+            //        ((FMMFile)downloadableGametypesList.SelectedItem).IsChecked = !((FMMFile)downloadableGametypesList.SelectedItem).IsChecked;
+            //    }
+            //}
+            //else if (mainTabs.SelectedIndex == 3) //medals
+            //{
+            //    //TODO
+            //}
+            //else if (mainTabs.SelectedIndex == 4) //server browser
+            //{
+            //}
         }
     }
 }

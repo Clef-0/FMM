@@ -54,7 +54,7 @@ namespace FMM2
             {
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    mainTabs.IsEnabled = false;
+                    modsTabs.IsEnabled = false;
                     menu.IsEnabled = false;
                 }));
 
@@ -71,7 +71,10 @@ namespace FMM2
                     // mod doesn't already exist - all fine
                 }
 
-                Directory.CreateDirectory(localLocation);
+                if (!Directory.Exists(localLocation))
+                {
+                    Directory.CreateDirectory(localLocation);
+                }
 
                 if (Directory.Exists(Path.Combine(localLocation, ".svn")))
                 {
@@ -87,7 +90,7 @@ namespace FMM2
 
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                mainTabs.IsEnabled = true;
+                modsTabs.IsEnabled = true;
                 menu.IsEnabled = true;
                 MessageBox.Show(Application.Current.MainWindow, "Mods downloaded.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -107,7 +110,7 @@ namespace FMM2
 
         private void svnProgress(object sender, SvnProgressEventArgs e)
         {
-            // can't really do progress with SharpSvn, oh well
+            
         }
 
         private void deleteDirectory(string path)

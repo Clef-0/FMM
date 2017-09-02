@@ -103,6 +103,8 @@
     <Compile Include="List_ContextMenu.cs" />
     <Compile Include="List_SelectionChanged.cs" />
     <Compile Include="List_Sort.cs" />
+    <Compile Include="Worker_BackupCreate.cs" />
+    <Compile Include="Worker_BackupRestore.cs" />
     <Compile Include="Worker_InstallMods.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="Converters.cs" />
@@ -110,6 +112,7 @@
     <Compile Include="Worker_PopulateDLMods.cs" />
     <Compile Include="Worker_DownloadMaps.cs" />
     <Compile Include="Worker_DownloadMods.cs" />
+    <Compile Include="Worker_PopulateMyGametypes.cs" />
     <Compile Include="Worker_PopulateMyMods.cs" />
     <Compile Include="Worker_PopulateServers.cs" />
     <Compile Include="Worker_PopulateMyMaps.cs" />
