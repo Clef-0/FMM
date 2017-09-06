@@ -91,11 +91,14 @@ namespace FMM2
             {
                 offlineMode = false;
                 writeFMMIni("OfflineMode", "False");
+                downloadableModsTab.Visibility = Visibility.Visible;
             }
             else
             {
                 offlineMode = true;
                 writeFMMIni("OfflineMode", "True");
+                downloadableModsTab.Visibility = Visibility.Collapsed;
+                myModsTab.IsSelected = true;
             }
         }
 
@@ -111,7 +114,7 @@ namespace FMM2
             }
             else
             {
-                string sMessageBoxText = "Are you sure you want to enable Developer Mode?\nThis will expose settings that can irreversibly modify your game.";
+                string sMessageBoxText = "Are you sure you want to enable Developer Mode?\nThis will expose settings that can irreversibly modify your game.\n\nDeveloper settings are reset to default every time FMM is opened.";
                 string sCaption = "Foundation Mod Manager";
                 MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
                 MessageBoxImage icnMessageBox = MessageBoxImage.Warning;

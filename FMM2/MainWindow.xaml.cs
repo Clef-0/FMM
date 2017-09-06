@@ -699,6 +699,11 @@ namespace FMM2
                     myModsAlert.Visibility = Visibility.Collapsed;
                 }
 
+                if (offlineMode)
+                {
+                    downloadableModsTab.Visibility = Visibility.Collapsed;
+                }
+
                 //if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "profiles")))
                 //{
                 //    Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "profiles"));
@@ -710,7 +715,10 @@ namespace FMM2
                 }
                 
                 workerPopulateMyMods.RunWorkerAsync(); // populates local mod list
-                workerPopulateDLMods.RunWorkerAsync(); //populate dl mod list
+                if (!offlineMode)
+                {
+                    workerPopulateDLMods.RunWorkerAsync(); //populate dl mod list
+                }
                 //workerPopulateMyMaps.RunWorkerAsync();
                 //workerPopulateDLFiles.RunWorkerAsync();
                 //workerPopulateServers.RunWorkerAsync();

@@ -31,27 +31,40 @@ namespace FMM2
                     installLogBox.Text += "-- CREATING BACKUP --" + Environment.NewLine + Environment.NewLine;
                 }));
 
-                foreach (string file in files)
+                if (createBackup)
                 {
-                    string fileloc = file.Replace(Path.Combine(Environment.CurrentDirectory, "maps"), "");
-                    if (fileloc.StartsWith("\\"))
+                    foreach (string file in files)
                     {
-                        fileloc = fileloc.Substring(1);
-                    }
-                    if ((worker.CancellationPending == true || !createBackup))
-                    {
-                        e.Cancel = true;
-                        break;
-                    }
-                    else
-                    {
-                        File.Copy(Path.Combine(mapsPath, fileloc), Path.Combine(mapsPath, "fmmbak", fileloc), true); i++;
-                        float progress = ((float)i / files.Count()) * 100;
-                        worker.ReportProgress(Convert.ToInt32(progress), fileloc);
+                        string fileloc = file.Replace(Path.Combine(Environment.CurrentDirectory, "maps"), "");
+                        if (fileloc.StartsWith("\\"))
+                        {
+                            fileloc = fileloc.Substring(1);
+                        }
+                        if ((worker.CancellationPending == true || !createBackup))
+                        {
+                            e.Cancel = true;
+                            break;
+                        }
+                        else
+                        {
+                            File.Copy(Path.Combine(mapsPath, fileloc), Path.Combine(mapsPath, "fmmbak", fileloc), true); i++;
+                            float progress = ((float)i / files.Count()) * 100;
+                            worker.ReportProgress(Convert.ToInt32(progress), fileloc);
+                        }
                     }
                 }
+                else
+                {
+                    Dispatcher.BeginInvoke(new Action(() => {
+                        installLogBox.Text += "Skipped due to developer setting." + Environment.NewLine + Environment.NewLine;
+                    }));
+                }
+
                 Dispatcher.BeginInvoke(new Action(() => {
-                    installLogBox.Text += "Clean files backed up." + Environment.NewLine + Environment.NewLine;
+                    if (createBackup)
+                    {
+                        installLogBox.Text += "Clean files backed up." + Environment.NewLine + Environment.NewLine;
+                    }
                     workerInstallMods.RunWorkerAsync();
                 }));
             }

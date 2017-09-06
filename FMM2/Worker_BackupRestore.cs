@@ -44,33 +44,42 @@ namespace FMM2
                 installLogBox.Text += "-- RESTORING BACKUP --" + Environment.NewLine + Environment.NewLine;
             }));
 
-            BackgroundWorker worker = sender as BackgroundWorker;
-            int i = 0;
-            foreach (string file in files)
+            if (restoreBackup)
             {
-                string fileloc = file.Replace(Path.Combine(Environment.CurrentDirectory, "maps", "fmmbak"), "");
-                if (fileloc.StartsWith("\\"))
+                BackgroundWorker worker = sender as BackgroundWorker;
+                int i = 0;
+                foreach (string file in files)
                 {
-                    fileloc = fileloc.Substring(1);
-                }
-                if ((worker.CancellationPending == true))
-                {
-                    e.Cancel = true;
-                    break;
-                }
-                else
-                {
-                    if (File.Exists(Path.Combine(mapsPath, "fmmbak", fileloc)))
+                    string fileloc = file.Replace(Path.Combine(Environment.CurrentDirectory, "maps", "fmmbak"), "");
+                    if (fileloc.StartsWith("\\"))
                     {
-                        if (!areBakAndMainEqual(Path.Combine(mapsPath, "fmmbak", fileloc), Path.Combine(mapsPath, fileloc)))
+                        fileloc = fileloc.Substring(1);
+                    }
+                    if ((worker.CancellationPending == true))
+                    {
+                        e.Cancel = true;
+                        break;
+                    }
+                    else
+                    {
+                        if (File.Exists(Path.Combine(mapsPath, "fmmbak", fileloc)))
                         {
-                            File.Copy(Path.Combine(mapsPath, "fmmbak", fileloc), Path.Combine(mapsPath, fileloc), true);
+                            if (!areBakAndMainEqual(Path.Combine(mapsPath, "fmmbak", fileloc), Path.Combine(mapsPath, fileloc)))
+                            {
+                                File.Copy(Path.Combine(mapsPath, "fmmbak", fileloc), Path.Combine(mapsPath, fileloc), true);
+                            }
+                            i++;
+                            float progress = ((float)i / (float)files.Count()) * 100;
+                            worker.ReportProgress(Convert.ToInt32(progress), fileloc);
                         }
-                        i++;
-                        float progress = ((float)i / (float)files.Count()) * 100;
-                        worker.ReportProgress(Convert.ToInt32(progress), fileloc);
                     }
                 }
+            }
+            else
+            {
+                Dispatcher.BeginInvoke(new Action(() => {
+                    installLogBox.Text += "Skipped due to developer setting." + Environment.NewLine + Environment.NewLine;
+                }));
             }
         }
 
@@ -87,7 +96,10 @@ namespace FMM2
             }
             else
             {
-                installLogBox.Text += "Clean files restored." + Environment.NewLine + Environment.NewLine;
+                if (restoreBackup)
+                {
+                    installLogBox.Text += "Clean files restored." + Environment.NewLine + Environment.NewLine;
+                }
                 workerInstallMods.RunWorkerAsync();
             }
         }

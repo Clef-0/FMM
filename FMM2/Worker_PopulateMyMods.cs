@@ -67,7 +67,7 @@ namespace FMM2
                     IniData data = parser.ReadFile(path);
                     
                     Uri iconUri = null;
-                    if ((data["FMMInfo"]["Icon"] != "" && Uri.TryCreate(data["FMMInfo"]["Icon"], UriKind.Absolute, out iconUri) && (data["FMMInfo"]["Icon"].EndsWith(".png") || data["FMMInfo"]["Icon"].EndsWith(".jpg") || data["FMMInfo"]["Icon"].EndsWith(".bmp"))))
+                    if (((data["FMMInfo"]["Icon"] != "" && Uri.TryCreate(data["FMMInfo"]["Icon"], UriKind.Absolute, out iconUri) && (data["FMMInfo"]["Icon"].EndsWith(".png") || data["FMMInfo"]["Icon"].EndsWith(".jpg") || data["FMMInfo"]["Icon"].EndsWith(".bmp")))) && !offlineMode)
                     {
                         try
                         {
@@ -98,13 +98,21 @@ namespace FMM2
                     }
                     else
                     {
-                        bmIcon = null;
+                        try
+                        {
+                            bmIcon = new BitmapImage(new Uri(data["FMMInfo"]["Icon"]));
+                        }
+                        catch
+                        {
+                            // image probably nonexistent
+                            bmIcon = null;
+                        }
                     }
 
                     Uri imageUri = null;
                     
-                    if ((data["FMMInfo"]["ImageFull"] != "" && Uri.TryCreate(data["FMMInfo"]["ImageFull"], UriKind.Absolute, out imageUri) && (data["FMMInfo"]["ImageFull"].EndsWith(".png") || data["FMMInfo"]["ImageFull"].EndsWith(".jpg") || data["FMMInfo"]["ImageFull"].EndsWith(".bmp")))
-                        || (data["FMMInfo"]["ImageThumb"] != "" && Uri.TryCreate(data["FMMInfo"]["ImageThumb"], UriKind.Absolute, out imageUri) && (data["FMMInfo"]["ImageThumb"].EndsWith(".png") || data["FMMInfo"]["ImageThumb"].EndsWith(".jpg") || data["FMMInfo"]["ImageThumb"].EndsWith(".bmp"))))
+                    if (((data["FMMInfo"]["ImageFull"] != "" && Uri.TryCreate(data["FMMInfo"]["ImageFull"], UriKind.Absolute, out imageUri) && (data["FMMInfo"]["ImageFull"].EndsWith(".png") || data["FMMInfo"]["ImageFull"].EndsWith(".jpg") || data["FMMInfo"]["ImageFull"].EndsWith(".bmp")))
+                        || (data["FMMInfo"]["ImageThumb"] != "" && Uri.TryCreate(data["FMMInfo"]["ImageThumb"], UriKind.Absolute, out imageUri) && (data["FMMInfo"]["ImageThumb"].EndsWith(".png") || data["FMMInfo"]["ImageThumb"].EndsWith(".jpg") || data["FMMInfo"]["ImageThumb"].EndsWith(".bmp")))) && !offlineMode)
                     {
                         try
                         {
@@ -135,7 +143,22 @@ namespace FMM2
                     }
                     else
                     {
-                        bmImage = null;
+                        try
+                        {
+                            bmImage = new BitmapImage(new Uri(data["FMMInfo"]["ImageFull"]));
+                        }
+                        catch
+                        {
+                            try
+                            {
+                                bmImage = new BitmapImage(new Uri(data["FMMInfo"]["ImageThumb"]));
+                            }
+                            catch
+                            {
+                                // image probably nonexistent
+                                bmImage = null;
+                            }
+                        }
                     }
 
                     Dispatcher.BeginInvoke(new Action(() => {
