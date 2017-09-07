@@ -733,7 +733,7 @@
             <!--</TabControl> -->
             <Menu x:Name="menu" IsMainMenu="True" VerticalAlignment="Top" Height="18">
                 <MenuItem x:Name="file" Header="_File">
-                    <MenuItem x:Name="fileAbout" Header="_About" />
+                    <MenuItem x:Name="fileAbout" Header="_About" Click="fileAbout_Click" />
                     <Separator />
                     <MenuItem x:Name="fileExit" Header="_Exit" Click="fileExit_Click" />
                 </MenuItem>
@@ -747,8 +747,8 @@
                         <MenuItem x:Name="optionsTabLeft" Header="_Left" IsCheckable="True" IsChecked="True" Click="optionsTabLeft_Click" />
                         <MenuItem x:Name="optionsTabTop" Header="_Top" IsCheckable="True" IsChecked="False" Click="optionsTabTop_Click" />
                     </MenuItem>-->
-                    <MenuItem Header="_Install Order">
-                        <MenuItem x:Name="optionsOrderList" Header="_List Order" IsCheckable="True" IsChecked="True" Click="optionsOrderList_Click" />
+                    <MenuItem Header="_List Order">
+                        <MenuItem x:Name="optionsOrderList" Header="_Install Order" IsCheckable="True" IsChecked="True" Click="optionsOrderList_Click" />
                         <MenuItem x:Name="optionsOrderPriority" Header="_Priority Order" IsCheckable="True" IsChecked="False" Click="optionsOrderPriority_Click" />
                     </MenuItem>
                     <Separator></Separator>

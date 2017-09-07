@@ -55,6 +55,11 @@ namespace FMM2
             
         }
 
+        private static bool IsLocalPath(string p)
+        {
+            return new Uri(p).IsFile;
+        }
+
         private void lookModsFile(string path)
         {
             if (Path.GetExtension(path) == ".ini")
@@ -96,7 +101,7 @@ namespace FMM2
                             bmIcon = null;
                         }
                     }
-                    else
+                    else if (IsLocalPath(data["FMMInfo"]["Icon"]))
                     {
                         try
                         {
@@ -107,6 +112,10 @@ namespace FMM2
                             // image probably nonexistent
                             bmIcon = null;
                         }
+                    }
+                    else
+                    {
+                        bmIcon = null;
                     }
 
                     Uri imageUri = null;
@@ -141,7 +150,7 @@ namespace FMM2
                             bmImage = null;
                         }
                     }
-                    else
+                    else if (IsLocalPath(data["FMMInfo"]["ImageFull"]))
                     {
                         try
                         {
@@ -149,16 +158,39 @@ namespace FMM2
                         }
                         catch
                         {
-                            try
+                            if (IsLocalPath(data["FMMInfo"]["ImageThumb"]))
                             {
-                                bmImage = new BitmapImage(new Uri(data["FMMInfo"]["ImageThumb"]));
+                                try
+                                {
+                                    bmImage = new BitmapImage(new Uri(data["FMMInfo"]["ImageThumb"]));
+                                }
+                                catch
+                                {
+                                    // image probably nonexistent
+                                    bmImage = null;
+                                }
                             }
-                            catch
+                            else
                             {
-                                // image probably nonexistent
                                 bmImage = null;
                             }
                         }
+                    }
+                    else if (IsLocalPath(data["FMMInfo"]["ImageThumb"]))
+                    {
+                        try
+                        {
+                            bmImage = new BitmapImage(new Uri(data["FMMInfo"]["ImageThumb"]));
+                        }
+                        catch
+                        {
+                            // image probably nonexistent
+                            bmImage = null;
+                        }
+                    }
+                    else
+                    {
+                        bmImage = null;
                     }
 
                     Dispatcher.BeginInvoke(new Action(() => {

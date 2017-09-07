@@ -13,3 +13,5 @@ C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Release\FMM2.csproj.GenerateResour
 C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Release\FMM.exe
 C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Release\FMM.pdb
 C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Release\FMM2.csprojResolveAssemblyReference.cache
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Release\About.g.cs
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Release\About.baml

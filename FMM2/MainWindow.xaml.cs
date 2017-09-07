@@ -1288,6 +1288,13 @@ namespace FMM2
             MessageBox.Show(((MenuItem)sender).Header.ToString());
         }
 
+        private void fileAbout_Click(object sender, RoutedEventArgs e)
+        {
+            Window aboutWind = new About();
+            aboutWind.Owner = this;
+            aboutWind.ShowDialog();
+        }
+
         //private void infobarSBConnect_Click(object sender, RoutedEventArgs e)
         //{
         //    try

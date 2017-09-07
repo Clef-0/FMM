@@ -1,0 +1,26 @@
+﻿<Window x:Class="FMM2.About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FMM2"
+        mc:Ignorable="d"
+        Title="About" Height="130.979" Width="436.285" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid>
+        <Rectangle HorizontalAlignment="Left" Margin="10,10,0,10" Width="92" StrokeThickness="0">
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="FMM.png" Stretch="Uniform"/>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <ScrollViewer Margin="102,0,10,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" VerticalAlignment="Center" VerticalContentAlignment="Center" MaxHeight="95">
+            <Grid>
+                <Label Content="Foundation Mod Manager" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                <Label Content="v2.00 Kandinsky" HorizontalAlignment="Left" Margin="0,15,0,0" VerticalAlignment="Top"/>
+                <Label Content="Developed by Clef" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top"/>
+                <Label Content="Code contributions from shad0wshayd3 and jabukufo" HorizontalAlignment="Left" Margin="0,45,0,0" VerticalAlignment="Top"/>
+            </Grid>
+        </ScrollViewer>
+
+    </Grid>
+</Window>
