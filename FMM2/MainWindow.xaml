@@ -47,7 +47,7 @@
                                 <ColumnDefinition Width="5"/>
                                 <ColumnDefinition Width="250"/>
                             </Grid.ColumnDefinitions>
-                            <ListView x:Name="myModsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="myModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="myModsList_HeaderClicked" GotFocus="modsList_GotFocus">
+                            <ListView x:Name="myModsList" BorderThickness="0" SelectionMode="Single" Background="{x:Null}" AllowDrop="True" SelectionChanged="myModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="myModsList_HeaderClicked" GotFocus="modsList_GotFocus">
                                 <ListView.Resources>
                                     <ContextMenu x:Key="ItemContextMenu">
                                         <MenuItem Header="Mark/Unmark for Installation" Click="itemMark_Click" />
@@ -178,7 +178,7 @@
                                 <ColumnDefinition Width="5"/>
                                 <ColumnDefinition Width="250"/>
                             </Grid.ColumnDefinitions>
-                            <ListView x:Name="downloadableModsList" BorderThickness="0" SelectionMode="Single" Foreground="Black" Background="{x:Null}" AllowDrop="True" SelectionChanged="downloadableModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="downloadableModsList_HeaderClicked" GotFocus="modsList_GotFocus">
+                            <ListView x:Name="downloadableModsList" BorderThickness="0" SelectionMode="Single" Background="{x:Null}" AllowDrop="True" SelectionChanged="downloadableModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="downloadableModsList_HeaderClicked" GotFocus="modsList_GotFocus">
                                 <ListView.ItemContainerStyle>
                                     <Style TargetType="{x:Type ListViewItem}">
                                         <Setter Property="ToolTip" Value="{Binding Path=Description}"/>
@@ -731,7 +731,7 @@
                     </Grid>
                 </TabItem>-->
             <!--</TabControl> -->
-            <Menu x:Name="menu" IsMainMenu="True" VerticalAlignment="Top" Height="18">
+            <Menu x:Name="menu" IsMainMenu="True" VerticalAlignment="Top">
                 <MenuItem x:Name="file" Header="_File">
                     <MenuItem x:Name="fileAbout" Header="_About" Click="fileAbout_Click" />
                     <Separator />

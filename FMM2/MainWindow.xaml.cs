@@ -668,11 +668,20 @@ namespace FMM2
                     MessageBox.Show(Application.Current.MainWindow, "Error: FMM failed to deploy its libraries.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+#if !DEBUG
+            if (!File.Exists("mtndew.dll"))
+            {
+                doNotInit = true;
+                MessageBox.Show(Application.Current.MainWindow, "Error: FMM.exe should be placed in the ElDewrito folder next to mtndew.dll.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
+            }
+#endif
 
             if (doNotInit != true)
             {
                 new ListViewDragDropManager<Mod>(myModsList);
 
+                modsTabs.Margin = new Thickness { Bottom = 0, Left = 0, Right = 0, Top = menu.ActualHeight };
                 installLogGrid.Visibility = Visibility.Collapsed;
 
                 downloadableModsAlert.Visibility = Visibility.Collapsed;

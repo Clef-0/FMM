@@ -38,3 +38,5 @@ C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM2.csproj.GenerateResource
 C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM.exe
 C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM.pdb
 C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM2.csprojResolveAssemblyReference.cache
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\About.g.cs
+C:\Users\Niall\Source\Repos\FMM2\FMM2\obj\x86\Debug\About.baml

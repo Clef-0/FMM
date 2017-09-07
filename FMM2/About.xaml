@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FMM2"
         mc:Ignorable="d"
-        Title="About" Height="130.979" Width="436.285" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+        Title="About" Height="130.979" Width="461.285" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
     <Grid>
         <Rectangle HorizontalAlignment="Left" Margin="10,10,0,10" Width="92" StrokeThickness="0">
             <Rectangle.Fill>
@@ -18,7 +18,7 @@
                 <Label Content="Foundation Mod Manager" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
                 <Label Content="v2.00 Kandinsky" HorizontalAlignment="Left" Margin="0,15,0,0" VerticalAlignment="Top"/>
                 <Label Content="Developed by Clef" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top"/>
-                <Label Content="Code contributions from shad0wshayd3 and jabukufo" HorizontalAlignment="Left" Margin="0,45,0,0" VerticalAlignment="Top"/>
+                <Label Content="Special thanks to jabukufo, dany5639 and shad0wshayd3" HorizontalAlignment="Left" Margin="0,45,0,0" VerticalAlignment="Top"/>
             </Grid>
         </ScrollViewer>
 
