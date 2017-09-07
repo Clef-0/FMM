@@ -769,7 +769,7 @@
             </ScrollViewer>
             <StatusBar Height="30" VerticalAlignment="Bottom" Padding="5,0" Background="#B2F0F0F0">
                 <StatusBarItem HorizontalContentAlignment="Right">
-                    <Button x:Name="closeLogButton" Content="Close Install Log" Width="150" Click="closeLogButton_Click"/>
+                    <Button x:Name="closeLogButton" Content="Close Log" Width="150" Click="closeLogButton_Click"/>
                 </StatusBarItem>
             </StatusBar>
         </Grid>
