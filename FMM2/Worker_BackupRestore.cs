@@ -38,9 +38,12 @@ namespace FMM2
             List<string> files = lookBackupDirectory(Path.Combine(Environment.CurrentDirectory, "maps", "fmmbak"));
 
             Dispatcher.BeginInvoke(new Action(() => {
+                modsTabs.IsEnabled = false;
+                menu.IsEnabled = false;
                 installLogGrid.Visibility = Visibility.Visible;
                 closeLogButton.Visibility = Visibility.Collapsed;
                 closeLogButton.Focus();
+                installLogBox.Text = "";
                 installLogBox.Text += "-- RESTORING BACKUP --" + Environment.NewLine + Environment.NewLine;
             }));
 
@@ -64,13 +67,26 @@ namespace FMM2
                     {
                         if (File.Exists(Path.Combine(mapsPath, "fmmbak", fileloc)))
                         {
-                            if (!areBakAndMainEqual(Path.Combine(mapsPath, "fmmbak", fileloc), Path.Combine(mapsPath, fileloc)))
-                            {
-                                File.Copy(Path.Combine(mapsPath, "fmmbak", fileloc), Path.Combine(mapsPath, fileloc), true);
-                            }
                             i++;
                             float progress = ((float)i / (float)files.Count()) * 100;
                             worker.ReportProgress(Convert.ToInt32(progress), fileloc);
+                            try
+                            {
+                                if (!areBakAndMainEqual(Path.Combine(mapsPath, "fmmbak", fileloc), Path.Combine(mapsPath, fileloc)))
+                                {
+                                    File.Copy(Path.Combine(mapsPath, "fmmbak", fileloc), Path.Combine(mapsPath, fileloc), true);
+                                }
+                                Dispatcher.BeginInvoke(new Action(() => {
+                                    installLogBox.Text += "| File restored successfully." + Environment.NewLine;
+                                }));
+                            }
+                            catch
+                            {
+                                Dispatcher.BeginInvoke(new Action(() =>
+                                {
+                                    installLogBox.Text += "| File failed to restore." + Environment.NewLine;
+                                }));
+                            }
                         }
                     }
                 }
@@ -85,7 +101,7 @@ namespace FMM2
 
         private void backupRestore_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            installLogBox.Text += "Restoring clean files (" + e.ProgressPercentage + "%) : " + Path.GetFileName((string)e.UserState) + " restored." + Environment.NewLine;
+            installLogBox.Text += "Restoring clean files (" + e.ProgressPercentage + "%) : " + Path.GetFileName((string)e.UserState) + Environment.NewLine;
         }
         
         private void backupRestore_Completed(object sender, RunWorkerCompletedEventArgs e)

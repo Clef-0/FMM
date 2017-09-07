@@ -516,7 +516,6 @@ namespace FMM2
         bool createBackup = true;
         bool restoreBackup = true;
         bool showTagTool = false;
-        string profile = "Default";
         // end
 
 
@@ -649,25 +648,6 @@ namespace FMM2
         {
             initialiseAssembly();
             bool doNotInit = false;
-            if (!File.Exists(Path.Combine("FMM", "lib", "INIFileParser.dll")))
-            {
-                doNotInit = true;
-                ExtractDLLs();
-                if (File.Exists(Path.Combine("FMM", "lib", "INIFileParser.dll")))
-                {
-                    ProcessStartInfo Info = new ProcessStartInfo();
-                    Info.Arguments = "/C choice /C Y /N /D Y /T 1 & START \"\" \"" + Assembly.GetExecutingAssembly().Location + "\"";
-                    Info.WindowStyle = ProcessWindowStyle.Hidden;
-                    Info.CreateNoWindow = true;
-                    Info.FileName = "cmd.exe";
-                    Process.Start(Info);
-                    Application.Current.Shutdown();
-                }
-                else
-                {
-                    MessageBox.Show(Application.Current.MainWindow, "Error: FMM failed to deploy its libraries.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
 #if !DEBUG
             if (!File.Exists("mtndew.dll"))
             {
@@ -677,7 +657,30 @@ namespace FMM2
             }
 #endif
 
-            if (doNotInit != true)
+            if (!File.Exists(Path.Combine("FMM", "lib", "INIFileParser.dll")))
+            {
+                if (!doNotInit)
+                {
+                    doNotInit = true;
+                    ExtractDLLs();
+                    if (File.Exists(Path.Combine("FMM", "lib", "INIFileParser.dll")))
+                    {
+                        ProcessStartInfo Info = new ProcessStartInfo();
+                        Info.Arguments = "/C choice /C Y /N /D Y /T 1 & START \"\" \"" + Assembly.GetExecutingAssembly().Location + "\"";
+                        Info.WindowStyle = ProcessWindowStyle.Hidden;
+                        Info.CreateNoWindow = true;
+                        Info.FileName = "cmd.exe";
+                        Process.Start(Info);
+                        Application.Current.Shutdown();
+                    }
+                    else
+                    {
+                        MessageBox.Show(Application.Current.MainWindow, "Error: FMM failed to deploy its libraries.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+
+            if (!doNotInit)
             {
                 new ListViewDragDropManager<Mod>(myModsList);
 
@@ -1302,6 +1305,29 @@ namespace FMM2
             Window aboutWind = new About();
             aboutWind.Owner = this;
             aboutWind.ShowDialog();
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (installLogGrid.Visibility == Visibility.Visible && closeLogButton.Visibility == Visibility.Collapsed)
+            {
+                string sMessageBoxText = "FMM is currently working and quitting while performing file operations or mod installations can be dangerous.\nAre you sure you want to quit?";
+                string sCaption = "Foundation Mod Manager";
+                MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
+                MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
+
+                MessageBoxResult rsltMessageBox = MessageBox.Show(Application.Current.MainWindow, sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
+
+                switch (rsltMessageBox)
+                {
+                    case MessageBoxResult.Yes:
+                        e.Cancel = false;
+                        break;
+                    default:
+                        e.Cancel = true;
+                        break;
+                }
+            }
         }
 
         //private void infobarSBConnect_Click(object sender, RoutedEventArgs e)

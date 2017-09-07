@@ -202,6 +202,8 @@ namespace FMM2
         {
 
             Dispatcher.BeginInvoke(new Action(() => {
+                modsTabs.IsEnabled = false;
+                menu.IsEnabled = false;
                 installLogGrid.Visibility = Visibility.Visible;
                 closeLogButton.Visibility = Visibility.Collapsed;
                 closeLogButton.Focus();
@@ -248,7 +250,7 @@ namespace FMM2
             {
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    MessageBox.Show("Backup restored.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Backup restored.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
                     closeLogButton.Visibility = Visibility.Visible;
                 }));
                 return;
@@ -340,7 +342,7 @@ namespace FMM2
 
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                MessageBox.Show("Checked mods installed.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Checked mods installed.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
                 closeLogButton.Visibility = Visibility.Visible;
             }));
         }

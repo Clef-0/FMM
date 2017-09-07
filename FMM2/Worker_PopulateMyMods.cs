@@ -66,21 +66,50 @@ namespace FMM2
             {
                 if (File.Exists(path.Replace(".ini", ".fm")))
                 {
-                    BitmapImage bmIcon = new BitmapImage();
-                    BitmapImage bmImage = new BitmapImage();
+                    BitmapImage bmIcon = null;
+                    BitmapImage bmImage = null;
                     var parser = new FileIniDataParser();
                     IniData data = parser.ReadFile(path);
-                    
+
+                    string iconstring = data["FMMInfo"]["Icon"];
+                    string imagefullstring = data["FMMInfo"]["ImageFull"];
+                    string imagethumbstring = data["FMMInfo"]["ImageThumb"];
+
+                    //icon loads
                     Uri iconUri = null;
-                    if (((data["FMMInfo"]["Icon"] != "" && Uri.TryCreate(data["FMMInfo"]["Icon"], UriKind.Absolute, out iconUri) && (data["FMMInfo"]["Icon"].EndsWith(".png") || data["FMMInfo"]["Icon"].EndsWith(".jpg") || data["FMMInfo"]["Icon"].EndsWith(".bmp")))) && !offlineMode)
+
+                    if (!string.IsNullOrEmpty(iconstring) && !iconstring.Contains("/"))
                     {
-                        try
+                        if (File.Exists(Path.Combine(Directory.GetParent(path).FullName, iconstring)))
                         {
-                            var mS = GetStreamFromUrl(iconUri.OriginalString);
+                            var mS = File.OpenRead(Path.Combine(Directory.GetParent(path).FullName, iconstring));
                             if (mS != null)
                             {
                                 using (WrappingStream wrapper = new WrappingStream(mS))
                                 {
+                                    bmIcon = new BitmapImage();
+                                    bmIcon.BeginInit();
+                                    bmIcon.DecodePixelWidth = 200;
+                                    bmIcon.CacheOption = BitmapCacheOption.OnLoad;
+                                    bmIcon.StreamSource = wrapper;
+                                    bmIcon.EndInit();
+                                    bmIcon.Freeze();
+                                }
+                                mS.Dispose();
+                                mS.Close();
+                            }
+                        }
+                    }
+                    else if (!offlineMode && !string.IsNullOrEmpty(iconstring) && Uri.TryCreate(iconstring, UriKind.Absolute, out iconUri))
+                    {
+                        try
+                        {
+                            var mS = GetStreamFromUrl(iconstring);
+                            if (mS != null)
+                            {
+                                using (WrappingStream wrapper = new WrappingStream(mS))
+                                {
+                                    bmIcon = new BitmapImage();
                                     bmIcon.BeginInit();
                                     bmIcon.DecodePixelWidth = 200;
                                     bmIcon.CacheOption = BitmapCacheOption.OnLoad;
@@ -90,46 +119,69 @@ namespace FMM2
                                 }
                                 mS.Dispose();
                             }
-                            else
-                            {
-                                bmIcon = null;
-                            }
                         }
                         catch
                         {
-                            // image probably corrupted or intercepted
-                            bmIcon = null;
                         }
-                    }
-                    else if (IsLocalPath(data["FMMInfo"]["Icon"]))
-                    {
-                        try
-                        {
-                            bmIcon = new BitmapImage(new Uri(data["FMMInfo"]["Icon"]));
-                        }
-                        catch
-                        {
-                            // image probably nonexistent
-                            bmIcon = null;
-                        }
-                    }
-                    else
-                    {
-                        bmIcon = null;
                     }
 
+                    //image loads
                     Uri imageUri = null;
-                    
-                    if (((data["FMMInfo"]["ImageFull"] != "" && Uri.TryCreate(data["FMMInfo"]["ImageFull"], UriKind.Absolute, out imageUri) && (data["FMMInfo"]["ImageFull"].EndsWith(".png") || data["FMMInfo"]["ImageFull"].EndsWith(".jpg") || data["FMMInfo"]["ImageFull"].EndsWith(".bmp")))
-                        || (data["FMMInfo"]["ImageThumb"] != "" && Uri.TryCreate(data["FMMInfo"]["ImageThumb"], UriKind.Absolute, out imageUri) && (data["FMMInfo"]["ImageThumb"].EndsWith(".png") || data["FMMInfo"]["ImageThumb"].EndsWith(".jpg") || data["FMMInfo"]["ImageThumb"].EndsWith(".bmp")))) && !offlineMode)
+
+                    if (!string.IsNullOrEmpty(imagefullstring) && !imagefullstring.Contains("/"))
                     {
-                        try
+                        if (File.Exists(Path.Combine(Directory.GetParent(path).FullName, imagefullstring)))
                         {
-                            var mS = GetStreamFromUrl(imageUri.OriginalString);
+                            var mS = File.OpenRead(Path.Combine(Directory.GetParent(path).FullName, imagefullstring));
                             if (mS != null)
                             {
                                 using (WrappingStream wrapper = new WrappingStream(mS))
                                 {
+                                    bmImage = new BitmapImage();
+                                    bmImage.BeginInit();
+                                    bmImage.DecodePixelWidth = 200;
+                                    bmImage.CacheOption = BitmapCacheOption.OnLoad;
+                                    bmImage.StreamSource = wrapper;
+                                    bmImage.EndInit();
+                                    bmImage.Freeze();
+                                }
+                                mS.Dispose();
+                                mS.Close();
+                            }
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(imagethumbstring) && !imagethumbstring.Contains("/"))
+                    {
+                        if (File.Exists(Path.Combine(Directory.GetParent(path).FullName, imagethumbstring)))
+                        {
+                            var mS = File.OpenRead(Path.Combine(Directory.GetParent(path).FullName, imagethumbstring));
+                            if (mS != null)
+                            {
+                                using (WrappingStream wrapper = new WrappingStream(mS))
+                                {
+                                    bmImage = new BitmapImage();
+                                    bmImage.BeginInit();
+                                    bmImage.DecodePixelWidth = 200;
+                                    bmImage.CacheOption = BitmapCacheOption.OnLoad;
+                                    bmImage.StreamSource = wrapper;
+                                    bmImage.EndInit();
+                                    bmImage.Freeze();
+                                }
+                                mS.Dispose();
+                                mS.Close();
+                            }
+                        }
+                    }
+                    else if (!offlineMode && !string.IsNullOrEmpty(imagefullstring) && Uri.TryCreate(imagefullstring, UriKind.Absolute, out imageUri) && (imagefullstring.EndsWith(".png") || imagefullstring.EndsWith(".jpg") || imagefullstring.EndsWith(".bmp")))
+                    {
+                        try
+                        {
+                            var mS = GetStreamFromUrl(imagefullstring);
+                            if (mS != null)
+                            {
+                                using (WrappingStream wrapper = new WrappingStream(mS))
+                                {
+                                    bmImage = new BitmapImage();
                                     bmImage.BeginInit();
                                     bmImage.DecodePixelWidth = 200;
                                     bmImage.CacheOption = BitmapCacheOption.OnLoad;
@@ -139,59 +191,38 @@ namespace FMM2
                                 }
                                 mS.Dispose();
                             }
-                            else
+                        }
+                        catch
+                        {
+                            // image probably corrupted or intercepted
+                        }
+                    }
+                    else if (!offlineMode && !string.IsNullOrEmpty(imagethumbstring) && Uri.TryCreate(imagethumbstring, UriKind.Absolute, out imageUri) && (imagethumbstring.EndsWith(".png") || imagethumbstring.EndsWith(".jpg") || imagethumbstring.EndsWith(".bmp")))
+                    {
+                        try
+                        {
+                            var mS = GetStreamFromUrl(imagethumbstring);
+                            if (mS != null)
                             {
-                                bmImage = null;
+                                using (WrappingStream wrapper = new WrappingStream(mS))
+                                {
+                                    bmImage = new BitmapImage();
+                                    bmImage.BeginInit();
+                                    bmImage.DecodePixelWidth = 200;
+                                    bmImage.CacheOption = BitmapCacheOption.OnLoad;
+                                    bmImage.StreamSource = wrapper;
+                                    bmImage.EndInit();
+                                    bmImage.Freeze();
+                                }
+                                mS.Dispose();
                             }
                         }
                         catch
                         {
                             // image probably corrupted or intercepted
-                            bmImage = null;
                         }
                     }
-                    else if (IsLocalPath(data["FMMInfo"]["ImageFull"]))
-                    {
-                        try
-                        {
-                            bmImage = new BitmapImage(new Uri(data["FMMInfo"]["ImageFull"]));
-                        }
-                        catch
-                        {
-                            if (IsLocalPath(data["FMMInfo"]["ImageThumb"]))
-                            {
-                                try
-                                {
-                                    bmImage = new BitmapImage(new Uri(data["FMMInfo"]["ImageThumb"]));
-                                }
-                                catch
-                                {
-                                    // image probably nonexistent
-                                    bmImage = null;
-                                }
-                            }
-                            else
-                            {
-                                bmImage = null;
-                            }
-                        }
-                    }
-                    else if (IsLocalPath(data["FMMInfo"]["ImageThumb"]))
-                    {
-                        try
-                        {
-                            bmImage = new BitmapImage(new Uri(data["FMMInfo"]["ImageThumb"]));
-                        }
-                        catch
-                        {
-                            // image probably nonexistent
-                            bmImage = null;
-                        }
-                    }
-                    else
-                    {
-                        bmImage = null;
-                    }
+
 
                     Dispatcher.BeginInvoke(new Action(() => {
                         Mod newMod = new Mod();

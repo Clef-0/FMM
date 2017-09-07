@@ -21,6 +21,7 @@ using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using SharpSvn;
+using System.Windows.Media.Effects;
 
 namespace FMM2
 {
@@ -50,12 +51,26 @@ namespace FMM2
                 return;
             }
 
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                modsTabs.IsEnabled = false;
+                menu.IsEnabled = false;
+                everythingGrid.Effect = new BlurEffect { Radius = 10 };
+                installLogGrid.Visibility = Visibility.Visible;
+                closeLogButton.Visibility = Visibility.Collapsed;
+                closeLogButton.Focus();
+                installLogBox.Text = "";
+                installLogBox.Text += "-- DOWNLOADING MODS --" + Environment.NewLine + Environment.NewLine;
+            }));
+
+            int i = 0;
+
             foreach (Mod checkedMod in checkedMods)
             {
+                i++;
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    modsTabs.IsEnabled = false;
-                    menu.IsEnabled = false;
+                    installLogBox.Text += "Downloading mods (" + i + "/" + checkedMods.Count + ") : " + checkedMod.Name + " " + checkedMod.Version + Environment.NewLine;
                 }));
 
                 SvnClient svnClient = new SvnClient();
@@ -84,15 +99,24 @@ namespace FMM2
                 try
                 {
                     svnClient.CheckOut(new Uri(remoteLocation), localLocation);
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        installLogBox.Text += "| Mod downloaded successfully." + Environment.NewLine;
+                    }));
                 }
-                catch { }
+                catch
+                {
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        installLogBox.Text += "| Mod failed to download." + Environment.NewLine;
+                    }));
+                }
             }
 
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                modsTabs.IsEnabled = true;
-                menu.IsEnabled = true;
                 MessageBox.Show(Application.Current.MainWindow, "Mods downloaded.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                closeLogButton.Visibility = Visibility.Visible;
 
                 foreach (Mod listedMod in downloadableModsList.Items)
                 {

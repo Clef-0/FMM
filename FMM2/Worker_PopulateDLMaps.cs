@@ -75,8 +75,36 @@ namespace FMM2
 
         }
 
-        private static Stream GetStreamFromUrl(string url)
+        public class WebClientEx : WebClient
+    {
+        /// <summary>
+        /// Time in milliseconds
+        /// </summary>
+        public int Timeout { get; set; }
+
+        public WebClientEx() : this(60000) { }
+
+        public WebClientEx(int timeout)
         {
+            this.Timeout = timeout;
+        }
+
+        protected override WebRequest GetWebRequest(Uri address)
+        {
+            var request = base.GetWebRequest(address);
+            if (request != null)
+            {
+                request.Timeout = this.Timeout;
+            }
+            return request;
+        }
+    }
+
+    private static Stream GetStreamFromUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+                return null;
+
             if (url.StartsWith("//"))
             {
                 url = "http:" + url;
@@ -91,7 +119,7 @@ namespace FMM2
 
             try
             {
-                using (var wc = new WebClient())
+                using (var wc = new WebClientEx(10000))
                     imageData = wc.DownloadData(url);
             }
             catch
