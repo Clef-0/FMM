@@ -84,6 +84,20 @@ namespace FMM2
 
             }
         }
+        private void writeFMMLang(string property, string value)
+        {
+            try
+            {
+                var parser = new FileIniDataParser();
+                IniData data = parser.ReadFile("FMM_Lang.ini");
+                data["FMMLang"][property] = value;
+                parser.WriteFile("FMM_Lang.ini", data);
+            }
+            catch
+            {
+
+            }
+        }
 
         private void optionsOffline_Click(object sender, RoutedEventArgs e)
         {
@@ -145,6 +159,26 @@ namespace FMM2
             {
                 IniData data = parser.ReadFile("FMM.ini");
                 value = data["FMMPrefs"][property];
+            }
+            catch
+            {
+                value = "";
+            }
+            if (value == null)
+            {
+                value = "";
+            }
+            return value;
+        }
+
+        private string readFMMLang(string property)
+        {
+            var parser = new FileIniDataParser();
+            string value;
+            try
+            {
+                IniData data = parser.ReadFile("FMM_Lang.ini");
+                value = data["FMMLang"][property];
             }
             catch
             {

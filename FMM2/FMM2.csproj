@@ -106,6 +106,7 @@
     <Compile Include="List_ContextMenu.cs" />
     <Compile Include="List_SelectionChanged.cs" />
     <Compile Include="List_Sort.cs" />
+    <Compile Include="LoadFMMLanguage.cs" />
     <Compile Include="Worker_BackupCreate.cs" />
     <Compile Include="Worker_BackupRestore.cs" />
     <Compile Include="Worker_InstallMods.cs" />

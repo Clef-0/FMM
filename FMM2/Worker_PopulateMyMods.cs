@@ -172,31 +172,6 @@ namespace FMM2
                             }
                         }
                     }
-                    else if (!offlineMode && !string.IsNullOrEmpty(imagefullstring) && Uri.TryCreate(imagefullstring, UriKind.Absolute, out imageUri) && (imagefullstring.EndsWith(".png") || imagefullstring.EndsWith(".jpg") || imagefullstring.EndsWith(".bmp")))
-                    {
-                        try
-                        {
-                            var mS = GetStreamFromUrl(imagefullstring);
-                            if (mS != null)
-                            {
-                                using (WrappingStream wrapper = new WrappingStream(mS))
-                                {
-                                    bmImage = new BitmapImage();
-                                    bmImage.BeginInit();
-                                    bmImage.DecodePixelWidth = 200;
-                                    bmImage.CacheOption = BitmapCacheOption.OnLoad;
-                                    bmImage.StreamSource = wrapper;
-                                    bmImage.EndInit();
-                                    bmImage.Freeze();
-                                }
-                                mS.Dispose();
-                            }
-                        }
-                        catch
-                        {
-                            // image probably corrupted or intercepted
-                        }
-                    }
                     else if (!offlineMode && !string.IsNullOrEmpty(imagethumbstring) && Uri.TryCreate(imagethumbstring, UriKind.Absolute, out imageUri) && (imagethumbstring.EndsWith(".png") || imagethumbstring.EndsWith(".jpg") || imagethumbstring.EndsWith(".bmp")))
                     {
                         try

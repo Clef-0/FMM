@@ -77,12 +77,10 @@ namespace FMM2
 
         public class WebClientEx : WebClient
     {
-        /// <summary>
-        /// Time in milliseconds
-        /// </summary>
+        
         public int Timeout { get; set; }
 
-        public WebClientEx() : this(60000) { }
+        public WebClientEx() : this(2000) { }
 
         public WebClientEx(int timeout)
         {
@@ -119,7 +117,7 @@ namespace FMM2
 
             try
             {
-                using (var wc = new WebClientEx(10000))
+                using (var wc = new WebClientEx())
                     imageData = wc.DownloadData(url);
             }
             catch

@@ -701,6 +701,7 @@ namespace FMM2
                     catch { }
                 }
                 loadFMMSettings();
+                loadFMMLang();
                 if (readFMMIni("FirstTime") != "False")
                 {
                     writeFMMIni("FirstTime", "False");
@@ -1024,6 +1025,9 @@ namespace FMM2
         //    listViewHeaderClicked<Player>(infobarSBPlayers, ((Server)(serverBrowserList.SelectedItem)).players, e);
         //}
 
+        string modAvailable = "mod available";
+        string modsAvailable = "mods available";
+
         private void tabsUpdateStatus(object sender, SelectionChangedEventArgs e)
         {
             if (modsTabs.SelectedIndex == 0)
@@ -1031,11 +1035,11 @@ namespace FMM2
                 int itemCount = mMods.Count;
                 if (itemCount == 1)
                 {
-                    myModsStatusNumber.Content = "1 " + "mod available";
+                    myModsStatusNumber.Content = "1 " + modAvailable;
                 }
                 else if (itemCount != 1)
                 {
-                    myModsStatusNumber.Content = itemCount + " mods available";
+                    myModsStatusNumber.Content = itemCount + " " + modsAvailable;
                 }
             }
             if (modsTabs.SelectedIndex == 1)
@@ -1043,11 +1047,11 @@ namespace FMM2
                 int itemCount = dMods.Count;
                 if (itemCount == 1)
                 {
-                    dlModsStatusNumber.Content = "1 " + "mod available";
+                    dlModsStatusNumber.Content = "1 " + modAvailable;
                 }
                 else if (itemCount != 1)
                 {
-                    dlModsStatusNumber.Content = itemCount + " mods available";
+                    dlModsStatusNumber.Content = itemCount + " " + modsAvailable;
                 }
             }
             //if (mainTabs.SelectedIndex == 1 && mapsTabs.SelectedIndex == 0)

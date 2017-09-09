@@ -70,11 +70,11 @@
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
-                                        <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}" Width="90"/>
-                                        <GridViewColumn Header="Version" DisplayMemberBinding="{Binding Version}" Width="90"/>
-                                        <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}" Width="200"/>
-                                        <GridViewColumn Header="Warnings" DisplayMemberBinding="{Binding Warnings}" Width="170"/>
+                                        <GridViewColumn x:Name="gv1Name" Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                        <GridViewColumn x:Name="gv1Author" Header="Author" DisplayMemberBinding="{Binding Author}" Width="90"/>
+                                        <GridViewColumn x:Name="gv1Version" Header="Version" DisplayMemberBinding="{Binding Version}" Width="90"/>
+                                        <GridViewColumn x:Name="gv1Description" Header="Description" DisplayMemberBinding="{Binding Description}" Width="200"/>
+                                        <GridViewColumn x:Name="gv1Warnings" Header="Warnings" DisplayMemberBinding="{Binding Warnings}" Width="170"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -193,11 +193,11 @@
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
-                                        <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}" Width="90"/>
-                                        <GridViewColumn Header="Version" DisplayMemberBinding="{Binding Version}" Width="90"/>
-                                        <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}" Width="200"/>
-                                        <GridViewColumn Header="Warnings" DisplayMemberBinding="{Binding Warnings}" Width="170"/>
+                                        <GridViewColumn x:Name="gv2Name" Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                        <GridViewColumn x:Name="gv2Author" Header="Author" DisplayMemberBinding="{Binding Author}" Width="90"/>
+                                        <GridViewColumn x:Name="gv2Version" Header="Version" DisplayMemberBinding="{Binding Version}" Width="90"/>
+                                        <GridViewColumn x:Name="gv2Description" Header="Description" DisplayMemberBinding="{Binding Description}" Width="200"/>
+                                        <GridViewColumn x:Name="gv2Warnings" Header="Warnings" DisplayMemberBinding="{Binding Warnings}" Width="170"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -747,7 +747,7 @@
                         <MenuItem x:Name="optionsTabLeft" Header="_Left" IsCheckable="True" IsChecked="True" Click="optionsTabLeft_Click" />
                         <MenuItem x:Name="optionsTabTop" Header="_Top" IsCheckable="True" IsChecked="False" Click="optionsTabTop_Click" />
                     </MenuItem>-->
-                    <MenuItem Header="_List Order">
+                    <MenuItem x:Name="optionsOrder" Header="_List Order">
                         <MenuItem x:Name="optionsOrderList" Header="_Install Order" IsCheckable="True" IsChecked="True" Click="optionsOrderList_Click" />
                         <MenuItem x:Name="optionsOrderPriority" Header="_Priority Order" IsCheckable="True" IsChecked="False" Click="optionsOrderPriority_Click" />
                     </MenuItem>
