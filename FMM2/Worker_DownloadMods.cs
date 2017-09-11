@@ -35,6 +35,11 @@ namespace FMM2
             }
         }
 
+        string modsdownloaded = "Mods downloaded.";
+        string moddlsuccess = "Mod downloaded successfully.";
+        string moddlfailed = "Mod failed to download.";
+        string downloadingmods = "Downloading mods";
+
         private void dlModWorker(object sender, DoWorkEventArgs e)
         {
             List<Mod> checkedMods = new List<Mod>();
@@ -51,7 +56,7 @@ namespace FMM2
                 return;
             }
 
-            Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
                 modsTabs.IsEnabled = false;
                 menu.IsEnabled = false;
@@ -60,7 +65,7 @@ namespace FMM2
                 closeLogButton.Visibility = Visibility.Collapsed;
                 closeLogButton.Focus();
                 installLogBox.Text = "";
-                installLogBox.Text += "-- DOWNLOADING MODS --" + Environment.NewLine + Environment.NewLine;
+                installLogBox.Text += "-- " + downloadingmods.ToUpper() + " --" + Environment.NewLine + Environment.NewLine;
             }));
 
             int i = 0;
@@ -68,9 +73,9 @@ namespace FMM2
             foreach (Mod checkedMod in checkedMods)
             {
                 i++;
-                Dispatcher.BeginInvoke(new Action(() =>
+                Dispatcher.Invoke(new Action(() =>
                 {
-                    installLogBox.Text += "Downloading mods (" + i + "/" + checkedMods.Count + ") : " + checkedMod.Name + " " + checkedMod.Version + Environment.NewLine;
+                    installLogBox.Text += downloadingmods + " (" + i + "/" + checkedMods.Count + ") : " + checkedMod.Name + " " + checkedMod.Version + Environment.NewLine;
                 }));
 
                 SvnClient svnClient = new SvnClient();
@@ -99,23 +104,23 @@ namespace FMM2
                 try
                 {
                     svnClient.CheckOut(new Uri(remoteLocation), localLocation);
-                    Dispatcher.BeginInvoke(new Action(() =>
+                    Dispatcher.Invoke(new Action(() =>
                     {
-                        installLogBox.Text += "| Mod downloaded successfully." + Environment.NewLine;
+                        installLogBox.Text += "| " + moddlsuccess + Environment.NewLine;
                     }));
                 }
                 catch
                 {
-                    Dispatcher.BeginInvoke(new Action(() =>
+                    Dispatcher.Invoke(new Action(() =>
                     {
-                        installLogBox.Text += "| Mod failed to download." + Environment.NewLine;
+                        installLogBox.Text += "| " + moddlfailed + Environment.NewLine;
                     }));
                 }
             }
 
-            Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
-                MessageBox.Show(Application.Current.MainWindow, "Mods downloaded.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(Application.Current.MainWindow, modsdownloaded, this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
                 closeLogButton.Visibility = Visibility.Visible;
 
                 foreach (Mod listedMod in downloadableModsList.Items)

@@ -218,12 +218,22 @@ namespace FMM2
 
             if (string.IsNullOrEmpty(readFMMLang("Button_Refresh")))
             {
-                writeFMMLang("Button_Refresh", myModsRefreshButton.Content.ToString());
+                writeFMMLang("Button_Refresh", refreshString);
             }
             else
             {
                 myModsRefreshButton.Content = readFMMLang("Button_Refresh");
                 dlModsRefreshButton.Content = readFMMLang("Button_Refresh");
+                refreshString = readFMMLang("Button_Refresh");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Button_Loading")))
+            {
+                writeFMMLang("Button_Loading", loadingString);
+            }
+            else
+            {
+                loadingString = readFMMLang("Button_Loading");
             }
 
             if (string.IsNullOrEmpty(readFMMLang("Button_ApplyCheckedMods")))
@@ -262,6 +272,285 @@ namespace FMM2
                 modsAvailable = readFMMLang("String_ModsAvailable");
                 myModsStatusNumber.Content = "0 " + modsAvailable;
                 dlModsStatusNumber.Content = "0 " + modsAvailable;
+            }
+            
+            if (string.IsNullOrEmpty(readFMMLang("MB_ConfirmDelete")))
+            {
+                writeFMMLang("MB_ConfirmDelete", sureyouwanttodelete);
+            }
+            else
+            {
+                sureyouwanttodelete = readFMMLang("MB_ConfirmDelete");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_CantUndo")))
+            {
+                writeFMMLang("MB_CantUndo", thiscannotbeundone);
+            }
+            else
+            {
+                thiscannotbeundone = readFMMLang("MB_CantUndo");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_FailedDeploy")))
+            {
+                writeFMMLang("MB_FailedDeploy", faileddeploy);
+            }
+            else
+            {
+                faileddeploy = readFMMLang("MB_FailedDeploy");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_DevsDontSupport")))
+            {
+                writeFMMLang("MB_DevsDontSupport", modsnotsupported);
+            }
+            else
+            {
+                modsnotsupported = readFMMLang("MB_DevsDontSupport");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_DevsDontSupport")))
+            {
+                writeFMMLang("MB_DevsDontSupport", modsnotsupported);
+            }
+            else
+            {
+                modsnotsupported = readFMMLang("MB_DevsDontSupport");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_ReportToCreators")))
+            {
+                writeFMMLang("MB_ReportToCreators", ifbugsexperienced);
+            }
+            else
+            {
+                ifbugsexperienced = readFMMLang("MB_ReportToCreators");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_WontAcceptBugs")))
+            {
+                writeFMMLang("MB_WontAcceptBugs", wontacceptsusp);
+            }
+            else
+            {
+                wontacceptsusp = readFMMLang("MB_WontAcceptBugs");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_FMMCurrentlyWorking")))
+            {
+                writeFMMLang("MB_FMMCurrentlyWorking", fmmcurrentlyworking);
+            }
+            else
+            {
+                fmmcurrentlyworking = readFMMLang("MB_FMMCurrentlyWorking");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_ConfirmQuit")))
+            {
+                writeFMMLang("MB_ConfirmQuit", areyousurequit);
+            }
+            else
+            {
+                areyousurequit = readFMMLang("MB_ConfirmQuit");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_ModsDownloaded")))
+            {
+                writeFMMLang("MB_ModsDownloaded", modsdownloaded);
+            }
+            else
+            {
+                modsdownloaded = readFMMLang("MB_ModsDownloaded");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_BackupRestored")))
+            {
+                writeFMMLang("MB_BackupRestored", backuprestored);
+            }
+            else
+            {
+                backuprestored = readFMMLang("MB_BackupRestored");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_ErrorInstalling")))
+            {
+                writeFMMLang("MB_ErrorInstalling", errorinstalling);
+            }
+            else
+            {
+                errorinstalling = readFMMLang("MB_ErrorInstalling");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_ConsultDiscord")))
+            {
+                writeFMMLang("MB_ConsultDiscord", pleaseconsultdiscord);
+            }
+            else
+            {
+                pleaseconsultdiscord = readFMMLang("MB_ConsultDiscord");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_CheckedModsInstalled")))
+            {
+                writeFMMLang("MB_CheckedModsInstalled", checkedmodsinstalled);
+            }
+            else
+            {
+                checkedmodsinstalled = readFMMLang("MB_CheckedModsInstalled");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_FilesInUse")))
+            {
+                writeFMMLang("MB_FilesInUse", filesinuse);
+            }
+            else
+            {
+                filesinuse = readFMMLang("MB_FilesInUse");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_ConfirmApply")))
+            {
+                writeFMMLang("MB_ConfirmApply", yousureapply);
+            }
+            else
+            {
+                yousureapply = readFMMLang("MB_ConfirmApply");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_UnsafeLocations")))
+            {
+                writeFMMLang("MB_UnsafeLocations", unsafelocations);
+            }
+            else
+            {
+                unsafelocations = readFMMLang("MB_UnsafeLocations");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("MB_PleaseCheckMods")))
+            {
+                writeFMMLang("MB_PleaseCheckMods", pleasecheckmods);
+            }
+            else
+            {
+                pleasecheckmods = readFMMLang("MB_PleaseCheckMods");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_DLSuccess")))
+            {
+                writeFMMLang("Log_DLSuccess", moddlsuccess);
+            }
+            else
+            {
+                moddlsuccess = readFMMLang("Log_DLSuccess");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_DLFailed")))
+            {
+                writeFMMLang("Log_DLFailed", moddlfailed);
+            }
+            else
+            {
+                moddlfailed = readFMMLang("Log_DLFailed");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_BakCreateSuccess")))
+            {
+                writeFMMLang("Log_BakCreateSuccess", bakcreatesuccess);
+            }
+            else
+            {
+                bakcreatesuccess = readFMMLang("Log_BakCreateSuccess");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_BakCreateFailed")))
+            {
+                writeFMMLang("Log_BakCreateFailed", bakcreatefailed);
+            }
+            else
+            {
+                bakcreatefailed = readFMMLang("Log_BakCreateFailed");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_BakRestoreSuccess")))
+            {
+                writeFMMLang("Log_BakRestoreSuccess", bakrestoresuccess);
+            }
+            else
+            {
+                bakrestoresuccess = readFMMLang("Log_BakRestoreSuccess");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_BakRestoreFailed")))
+            {
+                writeFMMLang("Log_BakRestoreFailed", bakrestorefailed);
+            }
+            else
+            {
+                bakrestorefailed = readFMMLang("Log_BakRestoreFailed");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_DownloadingMods")))
+            {
+                writeFMMLang("Log_DownloadingMods", downloadingmods);
+            }
+            else
+            {
+                downloadingmods = readFMMLang("Log_DownloadingMods");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_InstallingMods")))
+            {
+                writeFMMLang("Log_InstallingMods", installingmods);
+            }
+            else
+            {
+                installingmods = readFMMLang("Log_InstallingMods");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_PreparingBackup")))
+            {
+                writeFMMLang("Log_PreparingBackup", preparingbackup);
+            }
+            else
+            {
+                preparingbackup = readFMMLang("Log_PreparingBackup");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_RestoringBackup")))
+            {
+                writeFMMLang("Log_RestoringBackup", restoringbackup);
+            }
+            else
+            {
+                restoringbackup = readFMMLang("Log_RestoringBackup");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_CreatingBackup")))
+            {
+                writeFMMLang("Log_CreatingBackup", creatingbackup);
+            }
+            else
+            {
+                creatingbackup = readFMMLang("Log_CreatingBackup");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_CleanFilesBacked")))
+            {
+                writeFMMLang("Log_CleanFilesBacked", cleanfilesbacked);
+            }
+            else
+            {
+                cleanfilesbacked = readFMMLang("Log_CleanFilesBacked");
+            }
+
+            if (string.IsNullOrEmpty(readFMMLang("Log_DeveloperSkip")))
+            {
+                writeFMMLang("Log_DeveloperSkip", skippeddev);
+            }
+            else
+            {
+                skippeddev = readFMMLang("Log_DeveloperSkip");
             }
         }
     }

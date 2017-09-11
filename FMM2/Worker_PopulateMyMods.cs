@@ -15,11 +15,14 @@ namespace FMM2
 {
     public partial class MainWindow : Window
     {
+        string loadingString = "Loading...";
+        string refreshString = "Refresh";
+
         private void populateMyModsList(object sender, DoWorkEventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
-                myModsRefreshButton.Content = "Loading...";
+                myModsRefreshButton.Content = loadingString;
                 myModsRefreshButton.IsEnabled = false;
             }));
             BackgroundWorker worker = sender as BackgroundWorker;
@@ -35,9 +38,9 @@ namespace FMM2
             }
             else
             {
-                Dispatcher.BeginInvoke(new Action(() =>
+                Dispatcher.Invoke(new Action(() =>
                 {
-                    myModsRefreshButton.Content = "Refresh";
+                    myModsRefreshButton.Content = refreshString;
                     myModsRefreshButton.IsEnabled = true;
                 }));
             }
@@ -82,7 +85,9 @@ namespace FMM2
                     {
                         if (File.Exists(Path.Combine(Directory.GetParent(path).FullName, iconstring)))
                         {
-                            var mS = File.OpenRead(Path.Combine(Directory.GetParent(path).FullName, iconstring));
+                            try
+                            {
+                                var mS = File.OpenRead(Path.Combine(Directory.GetParent(path).FullName, iconstring));
                             if (mS != null)
                             {
                                 using (WrappingStream wrapper = new WrappingStream(mS))
@@ -97,6 +102,11 @@ namespace FMM2
                                 }
                                 mS.Dispose();
                                 mS.Close();
+                                }
+                            }
+                            catch
+                            {
+                                bmIcon = null;
                             }
                         }
                     }
@@ -122,6 +132,7 @@ namespace FMM2
                         }
                         catch
                         {
+                            bmIcon = null;
                         }
                     }
 
@@ -132,21 +143,28 @@ namespace FMM2
                     {
                         if (File.Exists(Path.Combine(Directory.GetParent(path).FullName, imagefullstring)))
                         {
-                            var mS = File.OpenRead(Path.Combine(Directory.GetParent(path).FullName, imagefullstring));
-                            if (mS != null)
+                            try
                             {
-                                using (WrappingStream wrapper = new WrappingStream(mS))
+                                var mS = File.OpenRead(Path.Combine(Directory.GetParent(path).FullName, imagefullstring));
+                                if (mS != null)
                                 {
-                                    bmImage = new BitmapImage();
-                                    bmImage.BeginInit();
-                                    bmImage.DecodePixelWidth = 200;
-                                    bmImage.CacheOption = BitmapCacheOption.OnLoad;
-                                    bmImage.StreamSource = wrapper;
-                                    bmImage.EndInit();
-                                    bmImage.Freeze();
+                                    using (WrappingStream wrapper = new WrappingStream(mS))
+                                    {
+                                        bmImage = new BitmapImage();
+                                        bmImage.BeginInit();
+                                        bmImage.DecodePixelWidth = 200;
+                                        bmImage.CacheOption = BitmapCacheOption.OnLoad;
+                                        bmImage.StreamSource = wrapper;
+                                        bmImage.EndInit();
+                                        bmImage.Freeze();
+                                    }
+                                    mS.Dispose();
+                                    mS.Close();
                                 }
-                                mS.Dispose();
-                                mS.Close();
+                            }
+                            catch
+                            {
+                                bmImage = null;
                             }
                         }
                     }
@@ -154,21 +172,28 @@ namespace FMM2
                     {
                         if (File.Exists(Path.Combine(Directory.GetParent(path).FullName, imagethumbstring)))
                         {
-                            var mS = File.OpenRead(Path.Combine(Directory.GetParent(path).FullName, imagethumbstring));
-                            if (mS != null)
+                            try
                             {
-                                using (WrappingStream wrapper = new WrappingStream(mS))
+                                var mS = File.OpenRead(Path.Combine(Directory.GetParent(path).FullName, imagethumbstring));
+                                if (mS != null)
                                 {
-                                    bmImage = new BitmapImage();
-                                    bmImage.BeginInit();
-                                    bmImage.DecodePixelWidth = 200;
-                                    bmImage.CacheOption = BitmapCacheOption.OnLoad;
-                                    bmImage.StreamSource = wrapper;
-                                    bmImage.EndInit();
-                                    bmImage.Freeze();
+                                    using (WrappingStream wrapper = new WrappingStream(mS))
+                                    {
+                                        bmImage = new BitmapImage();
+                                        bmImage.BeginInit();
+                                        bmImage.DecodePixelWidth = 200;
+                                        bmImage.CacheOption = BitmapCacheOption.OnLoad;
+                                        bmImage.StreamSource = wrapper;
+                                        bmImage.EndInit();
+                                        bmImage.Freeze();
+                                    }
+                                    mS.Dispose();
+                                    mS.Close();
                                 }
-                                mS.Dispose();
-                                mS.Close();
+                            }
+                            catch
+                            {
+                                bmImage = null;
                             }
                         }
                     }
@@ -194,12 +219,12 @@ namespace FMM2
                         }
                         catch
                         {
-                            // image probably corrupted or intercepted
+                            bmImage = null;
                         }
                     }
 
 
-                    Dispatcher.BeginInvoke(new Action(() => {
+                    Dispatcher.Invoke(new Action(() => {
                         Mod newMod = new Mod();
                         newMod.Name = data["FMMInfo"]["Name"];
                         newMod.Author = data["FMMInfo"]["Author"];
@@ -243,9 +268,9 @@ namespace FMM2
         {
             taskPopulateMyMods.Clear();
             checkFMMInstallerOrder();
-            Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
-                myModsRefreshButton.Content = "Refresh";
+                myModsRefreshButton.Content = refreshString;
                 myModsRefreshButton.IsEnabled = true;
             }));
         }
@@ -266,18 +291,13 @@ namespace FMM2
                 }
                 foreach (string modName in linesFor)
                 {
-                    ObservableCollection<Mod> formod = new ObservableCollection<Mod>();
-
-                    foreach (Mod item in mMods)
-                        formod.Add(item);
-
-                    foreach (Mod item in formod)
+                    foreach (Mod item in mMods.ToList())
                     {
                         if (item.Name == modName)
                         {
                             try
                             {
-                                Dispatcher.BeginInvoke(new Action(() =>
+                                Dispatcher.Invoke(new Action(() =>
                                 {
                                     mMods.Remove(item);
                                     mMods.Insert(0, item);

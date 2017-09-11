@@ -37,6 +37,11 @@ namespace FMM2
             return false;
         }
 
+        string filesinuse = "The game files are in use and cannot be modified. Please close the game or any game files you have open.";
+        string yousureapply = "Are you sure you want to apply these mods?";
+        string unsafelocations = "Mods downloaded from unsafe locations may harm your computer.";
+        string pleasecheckmods = "Please check the mods you want to install before applying.";
+
         private void infobarApply_Click(object sender, RoutedEventArgs e)
         {
             List<Mod> checkedMods = new List<Mod>();
@@ -77,8 +82,8 @@ namespace FMM2
                     }
                     else if (isFileLocked(new FileInfo(Path.Combine(mapsPath, "tags.dat"))))
                     {
-                        string sMessageBoxText = "The game files are in use and cannot be restored. Please close the game or any game files you have open.";
-                        string sCaption = "Foundation Mod Manager";
+                        string sMessageBoxText = filesinuse;
+                        string sCaption = this.Title;
                         MessageBoxButton btnMessageBox = MessageBoxButton.OK;
                         MessageBoxImage icnMessageBox = MessageBoxImage.Error;
 
@@ -89,7 +94,7 @@ namespace FMM2
                     else if (workerBackupRestore.IsBusy == true)
                     {
                         string sMessageBoxText = "Worker busy.";
-                        string sCaption = "Foundation Mod Manager";
+                        string sCaption = this.Title;
                         MessageBoxButton btnMessageBox = MessageBoxButton.OK;
                         MessageBoxImage icnMessageBox = MessageBoxImage.Error;
 
@@ -100,8 +105,8 @@ namespace FMM2
                 }
                 else
                 {
-                    string sMessageBoxText = "Please check the mods you want to install before applying.";
-                    string sCaption = "Foundation Mod Manager";
+                    string sMessageBoxText = pleasecheckmods;
+                    string sCaption = this.Title;
                     MessageBoxButton btnMessageBox = MessageBoxButton.OK;
                     MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
 
@@ -113,8 +118,8 @@ namespace FMM2
             else
             {
                 {
-                    string sMessageBoxText = "Are you sure you want to apply these mods?\nMods downloaded from unsafe locations may harm your computer.";
-                    string sCaption = "Foundation Mod Manager";
+                    string sMessageBoxText = yousureapply + Environment.NewLine + unsafelocations;
+                    string sCaption = this.Title;
                     MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
                     MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
 
@@ -144,8 +149,8 @@ namespace FMM2
                     }
                     else if (isFileLocked(new FileInfo(Path.Combine(mapsPath, "tags.dat"))))
                     {
-                        string sMessageBoxText = "The game files are in use and cannot be modified. Please close the game or any game files you have open.";
-                        string sCaption = "Foundation Mod Manager";
+                        string sMessageBoxText = filesinuse;
+                        string sCaption = this.Title;
                         MessageBoxButton btnMessageBox = MessageBoxButton.OK;
                         MessageBoxImage icnMessageBox = MessageBoxImage.Error;
 
@@ -154,7 +159,7 @@ namespace FMM2
                     else if (workerBackupRestore.IsBusy == true)
                     {
                         string sMessageBoxText = "Worker busy.";
-                        string sCaption = "Foundation Mod Manager";
+                        string sCaption = this.Title;
                         MessageBoxButton btnMessageBox = MessageBoxButton.OK;
                         MessageBoxImage icnMessageBox = MessageBoxImage.Error;
 
@@ -198,16 +203,19 @@ namespace FMM2
             }
         }
 
+        string installingmods = "Installing mods";
+        string backuprestored = "Backup restored.";
+
         private void installModWorker_DoWork(object sender, DoWorkEventArgs e)
         {
 
-            Dispatcher.BeginInvoke(new Action(() => {
+            Dispatcher.Invoke(new Action(() => {
                 modsTabs.IsEnabled = false;
                 menu.IsEnabled = false;
                 installLogGrid.Visibility = Visibility.Visible;
                 closeLogButton.Visibility = Visibility.Collapsed;
                 closeLogButton.Focus();
-                installLogBox.Text += "-- INSTALLING MODS --" + Environment.NewLine + Environment.NewLine;
+                installLogBox.Text += "-- " + installingmods.ToUpper() + " --" + Environment.NewLine + Environment.NewLine;
             }));
 
             BackgroundWorker worker = sender as BackgroundWorker;
@@ -248,9 +256,9 @@ namespace FMM2
 
             if (checkedMods.Count == 0)
             {
-                Dispatcher.BeginInvoke(new Action(() =>
+                Dispatcher.Invoke(new Action(() =>
                 {
-                    MessageBox.Show("Backup restored.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(backuprestored, this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
                     closeLogButton.Visibility = Visibility.Visible;
                 }));
                 return;
@@ -286,7 +294,7 @@ namespace FMM2
                     startInfo.FileName = batFile;
                     startInfo.WorkingDirectory = System.IO.Directory.GetCurrentDirectory();
 
-                    Dispatcher.BeginInvoke(new Action(() => {
+                    Dispatcher.Invoke(new Action(() => {
                         installLogGrid.Visibility = Visibility.Visible;
                         closeLogButton.Visibility = Visibility.Collapsed;
                         closeLogButton.Focus();
@@ -306,7 +314,7 @@ namespace FMM2
                                 {
                                     string output = standard_output.Trim().Replace("FMM_OUTPUT ", "");
 
-                                    Dispatcher.BeginInvoke(new Action(() =>
+                                    Dispatcher.Invoke(new Action(() =>
                                     {
                                         installLogBox.Text += "| " + output + Environment.NewLine;
                                     }));
@@ -315,7 +323,7 @@ namespace FMM2
                                 {
                                     standard_output = standard_output.Trim().Replace("FMM_ALERT ", "");
 
-                                    Dispatcher.BeginInvoke(new Action(() => { MessageBox.Show(standard_output); }));
+                                    Dispatcher.Invoke(new Action(() => { MessageBox.Show(standard_output); }));
                                 }
                             }
                         }
@@ -328,11 +336,11 @@ namespace FMM2
                 catch (Exception ex)
                 {
 
-                    Dispatcher.BeginInvoke(new Action(() =>
+                    Dispatcher.Invoke(new Action(() =>
                     {
                         WindowInteropHelper wih = new WindowInteropHelper(this);
                     }));
-                    MessageBox.Show("Error installing " + item.Name + ".\nPlease consult the ElDewrito Discord server for help.\n\n\"" + ex.Message + "\"", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(errorinstalling + " '" + item.Name + "'." + Environment.NewLine + pleaseconsultdiscord + Environment.NewLine + Environment.NewLine + "\"" + ex.Message + "\"", this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {
@@ -340,12 +348,16 @@ namespace FMM2
                 }
             }
 
-            Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
-                MessageBox.Show("Checked mods installed.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(checkedmodsinstalled, this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
                 closeLogButton.Visibility = Visibility.Visible;
             }));
         }
+
+        string errorinstalling = "Error installing";
+        string pleaseconsultdiscord = "Please consult the ElDewrito Discord server for help.";
+        string checkedmodsinstalled = "Checked mods installed.";
 
         private void installModWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {

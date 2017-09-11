@@ -27,9 +27,9 @@ namespace FMM2
     {
         private void populateDLModsList(object sender, DoWorkEventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
-                dlModsRefreshButton.Content = "Loading...";
+                dlModsRefreshButton.Content = loadingString;
                 dlModsRefreshButton.IsEnabled = false;
             }));
             Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "temp"));
@@ -162,7 +162,7 @@ namespace FMM2
                     imageBm = null;
                 }
 
-                Dispatcher.BeginInvoke(new Action(() =>
+                Dispatcher.Invoke(new Action(() =>
                 {
                     newMod.Name = data["FMMInfo"]["Name"];
                     newMod.Author = data["FMMInfo"]["Author"];
@@ -188,9 +188,9 @@ namespace FMM2
         private void dlModsBitmapsInBackground_Done(Task[] tasks)
         {
             taskPopulateDLMods.Clear();
-            Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
-                dlModsRefreshButton.Content = "Refresh";
+                dlModsRefreshButton.Content = refreshString;
                 dlModsRefreshButton.IsEnabled = true;
             }));
         }

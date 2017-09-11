@@ -53,7 +53,7 @@
 //        /// </summary>
 //        private void UpdateServerList()
 //        {
-//            Dispatcher.BeginInvoke(new Action(() =>
+//            Dispatcher.Invoke(new Action(() =>
 //            {
 //                serversRefreshButton.Content = "Loading...";
 //                serversRefreshButton.IsEnabled = false;
@@ -127,7 +127,7 @@
 //            {
 //                server[2] = "9999";
 //            }
-//            Dispatcher.BeginInvoke(new Action(() =>
+//            Dispatcher.Invoke(new Action(() =>
 //            {
 //                // Serialize the server-info .json at index [0] in the "server-string[]" into a HostServer object.
 //                Server host = JsonConvert.DeserializeObject<Server>(server[0]);
@@ -235,7 +235,7 @@
 //        private void AddServersToListView_Done(Task[] tasks)
 //        {
 //            taskPopulateServers.Clear();
-//            Dispatcher.BeginInvoke(new Action(() =>
+//            Dispatcher.Invoke(new Action(() =>
 //            {
 //                serversRefreshButton.Content = "Refresh";
 //                serversRefreshButton.IsEnabled = true;

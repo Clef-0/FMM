@@ -52,7 +52,7 @@
 
 //            foreach (FMMFile checkedMap in checkedMaps)
 //            {
-//                Dispatcher.BeginInvoke(new Action(() =>
+//                Dispatcher.Invoke(new Action(() =>
 //                {
 //                    mainTabs.IsEnabled = false;
 //                    menu.IsEnabled = false;
@@ -89,7 +89,7 @@
 //                catch { }
 //            }
 
-//            Dispatcher.BeginInvoke(new Action(() =>
+//            Dispatcher.Invoke(new Action(() =>
 //            {
 //                mainTabs.IsEnabled = true;
 //                menu.IsEnabled = true;

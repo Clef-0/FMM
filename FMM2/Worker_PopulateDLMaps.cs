@@ -131,7 +131,7 @@ namespace FMM2
 
         //        private void populateDLMapsList(object sender, DoWorkEventArgs e)
         //        {
-        //            Dispatcher.BeginInvoke(new Action(() =>
+        //            Dispatcher.Invoke(new Action(() =>
         //            {
         //                dlMapsRefreshButton.Content = "Loading...";
         //                dlMapsRefreshButton.IsEnabled = false;
@@ -154,7 +154,7 @@ namespace FMM2
         //                }
         //                catch
         //                {
-        //                    Dispatcher.BeginInvoke(new Action(() =>
+        //                    Dispatcher.Invoke(new Action(() =>
         //                    {
         //                        downloadableMapsAlert.Visibility = Visibility.Visible;
         //                        downloadableGametypesAlert.Visibility = Visibility.Visible;
@@ -294,7 +294,7 @@ namespace FMM2
         //                    imageBm = null;
         //                }
 
-        //                Dispatcher.BeginInvoke(new Action(() =>
+        //                Dispatcher.Invoke(new Action(() =>
         //                {
         //                    newFile.Name = data["FMMInfo"]["Name"];
         //                    newFile.Author = data["FMMInfo"]["Author"];
@@ -365,7 +365,7 @@ namespace FMM2
         //                bmi = null;
         //            }
 
-        //            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (ThreadStart)delegate ()
+        //            Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, (ThreadStart)delegate ()
         //            {
         //                FMMFile newMap = new FMMFile();
         //                newMap.Name = mapJson.title;
@@ -437,7 +437,7 @@ namespace FMM2
         //        private void dlFilesBitmapsInBackground_Done(Task[] tasks)
         //        {
         //            taskPopulateDLFiles.Clear();
-        //            Dispatcher.BeginInvoke(new Action(() =>
+        //            Dispatcher.Invoke(new Action(() =>
         //            {
         //                dlMapsRefreshButton.Content = "Refresh";
         //                dlMapsRefreshButton.IsEnabled = true;

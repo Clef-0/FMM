@@ -135,7 +135,7 @@ namespace FMM2
         //                    bmImage = null;
         //                }
 
-        //                await Dispatcher.BeginInvoke(new Action(() => {
+        //                await Dispatcher.Invoke(new Action(() => {
         //                    FMMFile newMap = new FMMFile();
         //                    newMap.Name = data["FMMInfo"]["Name"];
         //                    newMap.Author = data["FMMInfo"]["Author"];
@@ -178,7 +178,7 @@ namespace FMM2
         //            string mapAuthor = new string(ReadStringFromFile(path, 0x1f0, 0x17, Encoding.ASCII).Where(c => !char.IsControl(c)).ToArray()).Trim();
         //            string mapBaseMap = "";
         //            baseMaps.TryGetValue(LittleEndianByteArrayToInteger(ReadByteArrayFromFile(path, 0x120, 0x4), 0x0), out mapBaseMap);
-        //            await Dispatcher.BeginInvoke(new Action(() => {
+        //            Dispatcher.Invoke(new Action(() => {
         //                mMaps.Add(new FMMFile { Name = mapName, Desc = mapDesc, Author = mapAuthor, BaseMap = mapBaseMap, Icon = null, Location = path });
         //            }));
         //        }

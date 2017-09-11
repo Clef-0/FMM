@@ -129,7 +129,7 @@ namespace FMM2
             else
             {
                 string sMessageBoxText = "Are you sure you want to enable Developer Mode?\nThis will expose settings that can irreversibly modify your game.\n\nDeveloper settings are reset to default every time FMM is opened.";
-                string sCaption = "Foundation Mod Manager";
+                string sCaption = this.Title;
                 MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
                 MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
 

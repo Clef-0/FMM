@@ -24,14 +24,14 @@ namespace FMM2
             {
                 List<string> files = lookBackupDirectory(Path.Combine(Environment.CurrentDirectory, "maps"));
 
-                Dispatcher.BeginInvoke(new Action(() => {
+                Dispatcher.Invoke(new Action(() => {
                     modsTabs.IsEnabled = false;
                     menu.IsEnabled = false;
                     installLogGrid.Visibility = Visibility.Visible;
                     closeLogButton.Visibility = Visibility.Collapsed;
                     closeLogButton.Focus();
                     installLogBox.Text = "";
-                    installLogBox.Text += "-- CREATING BACKUP --" + Environment.NewLine + Environment.NewLine;
+                    installLogBox.Text += "-- " + creatingbackup.ToUpper() + " --" + Environment.NewLine + Environment.NewLine;
                 }));
 
                 if (createBackup)
@@ -56,14 +56,14 @@ namespace FMM2
                             try
                             {
                                 File.Copy(Path.Combine(mapsPath, fileloc), Path.Combine(mapsPath, "fmmbak", fileloc), true);
-                                Dispatcher.BeginInvoke(new Action(() => {
-                                    installLogBox.Text += "| File backed up successfully." + Environment.NewLine;
+                                Dispatcher.Invoke(new Action(() => {
+                                    installLogBox.Text += "| " + bakcreatesuccess + Environment.NewLine;
                                 }));
                             }
                             catch
                             {
-                                Dispatcher.BeginInvoke(new Action(() => {
-                                    installLogBox.Text += "| File failed to back up." + Environment.NewLine;
+                                Dispatcher.Invoke(new Action(() => {
+                                    installLogBox.Text += "| " + bakcreatefailed + Environment.NewLine;
                                 }));
                             }
                         }
@@ -71,15 +71,15 @@ namespace FMM2
                 }
                 else
                 {
-                    Dispatcher.BeginInvoke(new Action(() => {
-                        installLogBox.Text += "Skipped due to developer setting." + Environment.NewLine + Environment.NewLine;
+                    Dispatcher.Invoke(new Action(() => {
+                        installLogBox.Text += skippeddev + Environment.NewLine + Environment.NewLine;
                     }));
                 }
 
-                Dispatcher.BeginInvoke(new Action(() => {
+                Dispatcher.Invoke(new Action(() => {
                     if (createBackup)
                     {
-                        installLogBox.Text += "Clean files backed up." + Environment.NewLine + Environment.NewLine;
+                        installLogBox.Text += cleanfilesbacked + Environment.NewLine + Environment.NewLine;
                     }
                     workerInstallMods.RunWorkerAsync();
                 }));
@@ -89,6 +89,11 @@ namespace FMM2
                 workerBackupRestore.RunWorkerAsync(new string[] { mapsPath });
             }
         }
+        string creatingbackup = "Creating backup";
+        string bakcreatesuccess = "File backed up successfully.";
+        string bakcreatefailed = "File failed to back up.";
+        string skippeddev = "Skipped due to developer setting.";
+        string cleanfilesbacked = "Clean files backed up.";
 
         private bool areBakAndMainEqual(string file1, string file2)
         {
@@ -130,16 +135,18 @@ namespace FMM2
             return true;
         }
 
+        string preparingbackup = "Preparing a backup";
+
         private void backupCreate_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            installLogBox.Text += "Preparing a backup (" + e.ProgressPercentage + "%) : " + Path.GetFileName((string)e.UserState) + Environment.NewLine;
+            installLogBox.Text += preparingbackup + " (" + e.ProgressPercentage + "%) : " + Path.GetFileName((string)e.UserState) + Environment.NewLine;
         }
 
         private void backupCreate_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (!(e.Error == null))
             {
-                MessageBox.Show("Error: " + e.Error.Message, "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: " + e.Error.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

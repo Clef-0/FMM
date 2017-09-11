@@ -644,15 +644,21 @@ namespace FMM2
             //servers.CollectionChanged += new NotifyCollectionChangedEventHandler(tabsUpdateStatus);
         }
 
+        string faileddeploy = "Error: FMM failed to deploy its libraries.";
+        string modsnotsupported = "Mods are not officially supported by the ElDewrito developers";
+        string ifbugsexperienced = "If you experience bugs while mods are installed, please report them to the creators of those mods.";
+        string wontacceptsusp = "The ElDewrito dev team will not accept bug reports suspected to be caused by mods.";
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             initialiseAssembly();
+            loadFMMLang();
             bool doNotInit = false;
 #if !DEBUG
             if (!File.Exists("mtndew.dll"))
             {
                 doNotInit = true;
-                MessageBox.Show(Application.Current.MainWindow, "Error: FMM.exe should be placed in the ElDewrito folder next to mtndew.dll.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Application.Current.MainWindow, "Error: FMM.exe should be placed in the ElDewrito folder next to mtndew.dll.", this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 Application.Current.Shutdown();
             }
 #endif
@@ -675,7 +681,7 @@ namespace FMM2
                     }
                     else
                     {
-                        MessageBox.Show(Application.Current.MainWindow, "Error: FMM failed to deploy its libraries.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(Application.Current.MainWindow, faileddeploy, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }
@@ -701,11 +707,10 @@ namespace FMM2
                     catch { }
                 }
                 loadFMMSettings();
-                loadFMMLang();
                 if (readFMMIni("FirstTime") != "False")
                 {
                     writeFMMIni("FirstTime", "False");
-                    MessageBox.Show(Application.Current.MainWindow, "Mods are not officially supported by the ElDewrito developers.\nIf you experience bugs while mods are installed, please report them to the creators of those mods.\nThe ElDewrito dev team will not accept bug reports suspected to be caused by mods.", "Foundation Mod Manager", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(Application.Current.MainWindow, modsnotsupported + Environment.NewLine + ifbugsexperienced + Environment.NewLine + wontacceptsusp, this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
@@ -770,10 +775,13 @@ namespace FMM2
             }
         }
 
+        string sureyouwanttodelete = "Are you sure you want to delete";
+        string thiscannotbeundone = "This cannot be undone.";
+
         private void infobarDel_Click(object sender, RoutedEventArgs e)
         {
-            string sMessageBoxText = "Are you sure you want to delete " + ((Mod)myModsList.SelectedItem).Name + "?" + Environment.NewLine + "This cannot be undone.";
-            string sCaption = "Foundation Mod Manager";
+            string sMessageBoxText = sureyouwanttodelete + " '" + ((Mod)myModsList.SelectedItem).Name + "'?" + Environment.NewLine + thiscannotbeundone;
+            string sCaption = this.Title;
             MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
             MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
 
@@ -803,7 +811,7 @@ namespace FMM2
         //private void infobarMMDel_Click(object sender, RoutedEventArgs e)
         //{
         //    string sMessageBoxText = "Are you sure you want to delete " + ((FMMFile)myMapsList.SelectedItem).Name + "?" + Environment.NewLine + "This cannot be undone.";
-        //    string sCaption = "Foundation Mod Manager";
+        //    string sCaption = this.Title;
         //    MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
         //    MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
 
@@ -1311,12 +1319,16 @@ namespace FMM2
             aboutWind.ShowDialog();
         }
 
+        string fmmcurrentlyworking = "FMM is currently working and quitting while performing file operations or mod installations can be dangerous.";
+        string areyousurequit = "Are you sure you want to quit?";
+
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             if (installLogGrid.Visibility == Visibility.Visible && closeLogButton.Visibility == Visibility.Collapsed)
             {
-                string sMessageBoxText = "FMM is currently working and quitting while performing file operations or mod installations can be dangerous.\nAre you sure you want to quit?";
-                string sCaption = "Foundation Mod Manager";
+                string sMessageBoxText = fmmcurrentlyworking + Environment.NewLine + areyousurequit;
+                string sCaption = this.Title;
                 MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
                 MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
 
