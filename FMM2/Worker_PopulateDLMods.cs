@@ -86,8 +86,15 @@ namespace FMM2
             {
                 Mod newMod = new Mod();
                 var parser = new FileIniDataParser();
-                IniData data = parser.ReadFile(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "temp", System.IO.Path.GetFileName(moduri.LocalPath)), Encoding.Unicode);
-
+                IniData data;
+                try
+                {
+                    data = parser.ReadFile(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "temp", System.IO.Path.GetFileName(moduri.LocalPath)), Encoding.Unicode);
+                }
+                catch
+                {
+                    data = parser.ReadFile(Path.Combine(Directory.GetCurrentDirectory(), "fmm", "temp", System.IO.Path.GetFileName(moduri.LocalPath)));
+                }
                 Uri iconUri = null;
                 BitmapImage iconBm = new BitmapImage();
 

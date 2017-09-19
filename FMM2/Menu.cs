@@ -74,24 +74,43 @@ namespace FMM2
         {
             try
             {
-                var parser = new FileIniDataParser();
-                IniData data = parser.ReadFile("FMM.ini", Encoding.Unicode);
-                data["FMMPrefs"][property] = value;
-                parser.WriteFile("FMM.ini", data, Encoding.Unicode);
+                try
+                {
+                    var parser = new FileIniDataParser();
+                    IniData data = parser.ReadFile("FMM.ini", Encoding.Unicode);
+                    data["FMMPrefs"][property] = value;
+                    parser.WriteFile("FMM.ini", data, Encoding.Unicode);
+                }
+                catch
+                {
+                    var parser = new FileIniDataParser();
+                    IniData data = parser.ReadFile("FMM.ini");
+                    data["FMMPrefs"][property] = value;
+                    parser.WriteFile("FMM.ini", data);
+                }
             }
             catch
             {
-
             }
         }
         private void writeFMMLang(string property, string value)
         {
             try
             {
-                var parser = new FileIniDataParser();
-                IniData data = parser.ReadFile("FMM_Lang.ini", Encoding.Unicode);
-                data["FMMLang"][property] = value;
-                parser.WriteFile("FMM_Lang.ini", data, Encoding.Unicode);
+                try
+                {
+                    var parser = new FileIniDataParser();
+                    IniData data = parser.ReadFile("FMM_Lang.ini", Encoding.Unicode);
+                    data["FMMLang"][property] = value;
+                    parser.WriteFile("FMM_Lang.ini", data, Encoding.Unicode);
+                }
+                catch
+                {
+                    var parser = new FileIniDataParser();
+                    IniData data = parser.ReadFile("FMM_Lang.ini");
+                    data["FMMLang"][property] = value;
+                    parser.WriteFile("FMM_Lang.ini", data);
+                }
             }
             catch
             {
@@ -157,8 +176,16 @@ namespace FMM2
             string value;
             try
             {
-                IniData data = parser.ReadFile("FMM.ini", Encoding.Unicode);
-                value = data["FMMPrefs"][property];
+                try
+                {
+                    IniData data = parser.ReadFile("FMM.ini", Encoding.Unicode);
+                    value = data["FMMPrefs"][property];
+                }
+                catch
+                {
+                    IniData data = parser.ReadFile("FMM.ini");
+                    value = data["FMMPrefs"][property];
+                }
             }
             catch
             {
@@ -177,8 +204,16 @@ namespace FMM2
             string value;
             try
             {
-                IniData data = parser.ReadFile("FMM_Lang.ini", Encoding.Unicode);
+                try
+                {
+                    IniData data = parser.ReadFile("FMM_Lang.ini", Encoding.Unicode);
                 value = data["FMMLang"][property];
+                }
+                catch
+                {
+                    IniData data = parser.ReadFile("FMM_Lang.ini");
+                    value = data["FMMLang"][property];
+                }
             }
             catch
             {

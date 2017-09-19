@@ -72,7 +72,15 @@ namespace FMM2
                     BitmapImage bmIcon = null;
                     BitmapImage bmImage = null;
                     var parser = new FileIniDataParser();
-                    IniData data = parser.ReadFile(path, Encoding.Unicode);
+                    IniData data;
+                    try
+                    {
+                        data = parser.ReadFile(path, Encoding.Unicode);
+                    }
+                    catch
+                    {
+                        data = parser.ReadFile(path);
+                    }
 
                     string iconstring = data["FMMInfo"]["Icon"];
                     string imagefullstring = data["FMMInfo"]["ImageFull"];
