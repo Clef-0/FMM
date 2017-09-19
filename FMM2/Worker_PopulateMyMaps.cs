@@ -61,7 +61,7 @@ namespace FMM2
                         BitmapImage bmIcon = new BitmapImage();
                         BitmapImage bmImage = new BitmapImage();
                         var parser = new FileIniDataParser();
-                        IniData data = parser.ReadFile(Path.GetDirectoryName(path) + Path.GetFileName(Path.GetDirectoryName(path)) + ".ini");
+                        IniData data = parser.ReadFile(Path.GetDirectoryName(path) + Path.GetFileName(Path.GetDirectoryName(path)) + ".ini", Encoding.Unicode);
 
                         Uri iconUri = null;
                         if ((data["FMMInfo"]["Icon"] != "" && Uri.TryCreate(data["FMMInfo"]["Icon"], UriKind.Absolute, out iconUri) && (data["FMMInfo"]["Icon"].EndsWith(".png") || data["FMMInfo"]["Icon"].EndsWith(".jpg") || data["FMMInfo"]["Icon"].EndsWith(".bmp"))))
