@@ -43,11 +43,13 @@
                         </Grid>
                         <Grid x:Name="myModsGrid" UseLayoutRounding="False" Margin="0" Grid.Row="2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="115*"/>
+                                <ColumnDefinition Width="28*"/>
+                                <ColumnDefinition Width="388*"/>
                                 <ColumnDefinition Width="5"/>
                                 <ColumnDefinition Width="250"/>
                             </Grid.ColumnDefinitions>
-                            <ListView x:Name="myModsList" BorderThickness="0" SelectionMode="Single" Background="{x:Null}" AllowDrop="True" SelectionChanged="myModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="myModsList_HeaderClicked" GotFocus="modsList_GotFocus">
+                            <ListView x:Name="myModsList" BorderThickness="0" SelectionMode="Single" Background="{x:Null}" AllowDrop="True" SelectionChanged="myModsList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" GridViewColumnHeader.Click="myModsList_HeaderClicked" GotFocus="modsList_GotFocus" Grid.ColumnSpan="3">
                                 <ListView.Resources>
                                     <ContextMenu x:Key="ItemContextMenu">
                                         <MenuItem Header="Mark/Unmark for Installation" Click="itemMark_Click" />
@@ -78,8 +80,8 @@
                                     </GridView>
                                 </ListView.View>
                             </ListView>
-                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="WhiteSmoke" />
-                            <Grid x:Name="infobar" Grid.Column="2" Margin="0,0,0,0">
+                            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" Background="WhiteSmoke" />
+                            <Grid x:Name="infobar" Grid.Column="4" Margin="0,0,0,0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition Height="40"/>

@@ -124,14 +124,18 @@ namespace FMM2
                     {
                         uncheck = false;
                     }
+                    
                 }
 
                 foreach (T item in ((ObservableCollection<T>)colOC))
                 {
-                    if (uncheck)
-                        item.IsChecked = false;
-                    else
-                        item.IsChecked = true;
+                    //added logic to only check shown items
+                    if (list.Items.Contains(item)) { 
+                        if (uncheck)
+                            item.IsChecked = false;
+                        else
+                            item.IsChecked = true;
+                    }
                 }
             }
         }
