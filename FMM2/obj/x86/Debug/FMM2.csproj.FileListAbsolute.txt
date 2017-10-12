@@ -66,3 +66,4 @@ C:\Users\jacallahan\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM2.Properties.Resourc
 C:\Users\jacallahan\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM2.csproj.GenerateResource.Cache
 C:\Users\jacallahan\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM.exe
 C:\Users\jacallahan\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM.pdb
+C:\Users\jacallahan\Source\Repos\FMM2\FMM2\obj\x86\Debug\FMM2.csproj.CoreCompileInputs.cache
