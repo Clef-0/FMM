@@ -628,6 +628,13 @@ namespace FMM2
             //servers = new ObservableCollection<Server>();
             myModsList.ItemsSource = mMods;
             downloadableModsList.ItemsSource = dMods;
+            
+            // maybe some day?
+            //PropertyGroupDescription groupDescription = new PropertyGroupDescription("Author");
+            //CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(downloadableModsList.ItemsSource);
+            //view.GroupDescriptions.Add(groupDescription);
+
+
             //myMapsList.ItemsSource = mMaps;
             //downloadableMapsList.ItemsSource = dMaps;
             //myGametypesList.ItemsSource = mGametypes;
@@ -652,7 +659,6 @@ namespace FMM2
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             initialiseAssembly();
-            loadFMMLang();
             bool doNotInit = false;
 #if !DEBUG
             if (!File.Exists("mtndew.dll"))
@@ -663,9 +669,9 @@ namespace FMM2
             }
 #endif
 
-            if (!File.Exists(Path.Combine("FMM", "lib", "INIFileParser.dll")))
+            if (!doNotInit)
             {
-                if (!doNotInit)
+                if (!File.Exists(Path.Combine("FMM", "lib", "INIFileParser.dll")))
                 {
                     doNotInit = true;
                     ExtractDLLs();
@@ -684,10 +690,9 @@ namespace FMM2
                         MessageBox.Show(Application.Current.MainWindow, faileddeploy, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
-            }
 
-            if (!doNotInit)
-            {
+                loadFMMLang();
+
                 new ListViewDragDropManager<Mod>(myModsList);
 
                 modsTabs.Margin = new Thickness { Bottom = 0, Left = 0, Right = 0, Top = menu.ActualHeight };

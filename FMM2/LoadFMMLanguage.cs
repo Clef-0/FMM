@@ -18,7 +18,9 @@ namespace FMM2
                 {
                     using (new FileStream("FMM_Lang.ini", FileMode.CreateNew)) { }
                 }
-                catch { }
+                catch {
+                    MessageBox.Show("Couldn't create FMM_Lang.ini file.");
+                }
             }
 
 
