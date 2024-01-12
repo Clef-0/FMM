@@ -41,7 +41,7 @@ namespace FMM2
             {
                 try
                 {
-                    client.DownloadFile("https://raw.githubusercontent.com/Clef-0/FMM-Mods/master/meta/links.txt", Path.Combine(Directory.GetCurrentDirectory(), "fmm", "temp", "links.txt"));
+                    client.DownloadFile("https://raw.githubusercontent.com/Clef-0/FMM-Mods/master/meta/links2.txt", Path.Combine(Directory.GetCurrentDirectory(), "fmm", "temp", "links.txt"));
                 }
                 catch
                 {

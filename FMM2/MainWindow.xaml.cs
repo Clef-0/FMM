@@ -547,8 +547,7 @@ namespace FMM2
         BackgroundWorker workerBackupCreate = new BackgroundWorker();
         BackgroundWorker workerBackupRestore = new BackgroundWorker();
 
-        const string repository = "https://github.com/Clef-0/FMM-Mods/trunk/";
-        const string filerepository = "https://github.com/Clef-0/FMM-Files/trunk/";
+        const string repository = "svn://icebox.mx.mt/FMM-Mods/master/";
 
         public static string ReturnCleanASCII(string s)
         {

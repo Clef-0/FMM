@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FMM2"
         mc:Ignorable="d"
-        Title="Foundation Mod Manager v2.01 Longest" Height="670" Width="800" Loaded="Window_Loaded" DataContext="{Binding RelativeSource={RelativeSource Self}}" Closing="Window_Closing">
+        Title="Foundation Mod Manager v2.02 Midship" Height="670" Width="800" Loaded="Window_Loaded" DataContext="{Binding RelativeSource={RelativeSource Self}}" Closing="Window_Closing">
     <Window.Background>
         <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
     </Window.Background>

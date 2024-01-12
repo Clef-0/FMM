@@ -24,14 +24,14 @@ namespace FMM2
             }
 
 
-            if (string.IsNullOrEmpty(readFMMLang("Title")))
-            {
-                writeFMMLang("Title", this.Title);
-            }
-            else
-            {
-                this.Title = readFMMLang("Title");
-            }
+            //if (string.IsNullOrEmpty(readFMMLang("Title")))
+            //{
+            //    writeFMMLang("Title", this.Title);
+            //}
+            //else
+            //{
+            //    this.Title = readFMMLang("Title");
+            //}
 
             if (string.IsNullOrEmpty(readFMMLang("Tab_MyMods")))
             {
